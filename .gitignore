@@ -1,0 +1,14 @@
+# Local working artifacts — not part of the published deck
+export/
+screenshots/
+.claude/
+.thumbnail
+scratchpad.md
+Directions.html
+design-canvas.jsx
+image-slot-standalone.js
+Apps Script Playground (standalone).html
+standalone-src.html
+
+# Original heavy media sources (web-optimized copies are tracked instead)
+media/*_*

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Apps Script Playground</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  :root {
+    --pad-x: 120px;
+    --pad-top: 96px;
+    --pad-bottom: 80px;
+    --type-kicker: 26px;
+    --type-title: 76px;
+    --type-display: 150px;
+    --type-subtitle: 42px;
+    --type-body: 32px;
+    --type-small: 26px;
+    --gap-title: 44px;
+    --gap-item: 28px;
+    --navy-grad: linear-gradient(150deg, #1d2a5d 0%, #0c1230 100%);
+  }
+  html, body { margin: 0; background: #0c1230; }
+  deck-stage:not(:defined) { visibility: hidden; }
+
+  /* ---------- slide frames ---------- */
+  .s {
+    box-sizing: border-box;
+    padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+    display: flex; flex-direction: column;
+    font-family: var(--font-display);
+    overflow: hidden;
+  }
+  .navy { background: var(--navy-grad); color: #fff; }
+  .light { background: var(--ot-white); color: var(--ot-gray-dark); }
+
+  /* ---------- shared type ---------- */
+  .kicker {
+    font-size: var(--type-kicker); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.16em; display: inline-flex; align-items: center; gap: 18px; margin: 0;
+  }
+  .kicker::before { content: ""; width: 56px; height: 3px; background: currentColor; display: inline-block; flex: none; }
+  .light .kicker { color: var(--ot-blue); }
+  /* brand red-light lifted one step for AA contrast on the navy gradient */
+  .navy .kicker { color: #e57e7f; }
+
+  .title {
+    font-size: var(--type-title); font-weight: 800; line-height: 1.08;
+    letter-spacing: -0.025em; margin: var(--gap-title) 0 0; text-wrap: balance;
+  }
+  .light .title { color: var(--ot-blue-dark); }
+  .navy .title { color: #fff; }
+
+  .lead { font-size: var(--type-subtitle); font-weight: 400; line-height: 1.45; margin: var(--gap-item) 0 0; max-width: 1400px; }
+  .light .lead { color: var(--ot-gray-dark); }
+  .navy .lead { color: #c7cbe0; }
+
+  .body { font-size: var(--type-body); line-height: 1.5; }
+  .small { font-size: var(--type-small); }
+
+  .spacer { flex: 1 1 auto; }
+  .footmark { display: flex; align-items: center; gap: 22px; font-size: var(--type-small); }
+  .footmark .rule { width: 4px; height: 52px; background: var(--ot-red); flex: none; }
+  .navy .footmark { color: #9aa1c4; }
+  .light .footmark { color: var(--ot-gray); }
+
+  /* ---------- cover ---------- */
+  .cover .wordmark { height: 48px; width: auto; align-self: flex-start; }
+  .cover .kicker { margin-top: 84px; font-size: 30px; }
+  .cover h1 { font-size: var(--type-display); line-height: 1.02; font-weight: 800; color: #fff; letter-spacing: -0.03em; margin: 36px 0 0; max-width: 1400px; }
+  .cover .sub { font-size: var(--type-subtitle); color: #c7cbe0; font-weight: 300; line-height: 1.45; max-width: 1180px; margin-top: 38px; }
+  .cover .chip {
+    margin-top: 40px; display: inline-flex; align-items: center; gap: 22px; align-self: flex-start;
+    font-family: var(--font-mono); font-size: 32px; color: #aeb8e0;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 12px; padding: 22px 34px;
+  }
+  .cover .chip .arrow { color: var(--ot-red-light); }
+  .cover .torch-bg { position: absolute; right: 30px; top: 60px; height: 1020px; opacity: 0.07; pointer-events: none; }
+
+  /* ---------- statement ---------- */
+  .statement { justify-content: center; }
+  .statement .big { font-size: 132px; font-weight: 800; line-height: 1.06; letter-spacing: -0.03em; margin: 28px 0 0; max-width: 1500px; text-wrap: balance; }
+  .navy.statement .big { color: #fff; }
+  .navy.statement .big .hl { color: var(--ot-red-light); }
+  .statement .sub2 { font-size: var(--type-subtitle); font-weight: 300; color: #c7cbe0; margin-top: 26px; max-width: 1560px; line-height: 1.5; white-space: pre-line; }
+
+  /* ---------- section divider ---------- */
+  .divider { justify-content: center; position: relative; overflow: hidden; }
+  .divider .bignum { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); font-size: 620px; font-weight: 800; color: transparent; -webkit-text-stroke: 3px rgba(255,255,255,0.12); line-height: 0.8; pointer-events: none; }
+  .divider .kicker { font-size: 30px; position: relative; }
+  .divider h2 { font-size: 132px; font-weight: 800; color: #fff; letter-spacing: -0.03em; line-height: 1.05; margin: 32px 0 0; position: relative; }
+  .divider .ubar { width: 220px; height: 10px; background: var(--ot-red); margin-top: 40px; border-radius: 6px; position: relative; }
+  .divider .desc { font-size: var(--type-subtitle); color: #c7cbe0; font-weight: 300; max-width: 1560px; margin-top: 40px; line-height: 1.5; position: relative; }
+
+  /* ---------- content helpers ---------- */
+  .head-block { max-width: 1500px; }
+
+  /* stack diagram */
+  .flow { display: flex; align-items: stretch; gap: 0; margin-top: 64px; }
+  .node { flex: 1; background: var(--ot-blue-lighter); border: 2px solid var(--ot-blue); border-radius: var(--r-lg); padding: 40px 36px; display: flex; flex-direction: column; gap: 12px; }
+  .node .nlabel { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-blue); }
+  .node .nname { font-size: 38px; font-weight: 700; color: var(--ot-blue-dark); }
+  .node .nmeta { font-size: 25px; color: var(--ot-gray); font-family: var(--font-mono); }
+  .node.sheet { background: var(--success-bg); border-color: var(--success-fg); }
+  .node.sheet .nlabel, .node.sheet .nname { color: var(--success-fg); }
+  .flowarrow { flex: none; width: 156px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  .flowarrow .glyph { font-size: 56px; color: var(--ot-red); line-height: 1; }
+  .flowarrow .alabel { font-size: 24px; font-family: var(--font-mono); color: var(--ot-gray); text-align: center; line-height: 1.2; word-break: break-word; }
+  .whys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 56px; }
+  .why { border-top: 4px solid var(--ot-red); padding-top: 22px; }
+  .why h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 10px; }
+  .why p { font-size: 25px; line-height: 1.45; color: var(--ot-gray-dark); margin: 0; }
+
+  /* playground map — 3 columns */
+  .map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 40px; }
+  .mapcol { background: var(--ot-gray-lightest); border-radius: var(--r-lg); padding: 30px 34px; border-top: 5px solid var(--ot-blue); }
+  .mapcol h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 20px; }
+  .mapcol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .mapcol li { font-size: 28px; line-height: 1.3; color: var(--ot-gray-darkest); font-weight: 600; }
+  .mapcol li span { display: block; font-size: 24px; font-weight: 400; line-height: 1.35; color: var(--ot-gray); margin-top: 5px; }
+
+  /* tool grids */
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 32px; margin-top: 52px; flex: 1 1 auto; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
+  .grid3 .toolcard { min-height: 380px; }
+  .grid5 { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 1fr 1fr; gap: 32px; margin-top: 48px; flex: 1 1 auto; }
+  .grid5 .toolcard:nth-child(-n+3) { grid-column: span 2; }
+  .grid5 .toolcard:nth-child(n+4) { grid-column: span 3; }
+  .toolcard { background: var(--ot-white); border: 1px solid var(--border-1); border-left: 6px solid var(--ot-blue); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 36px 40px; display: flex; flex-direction: column; justify-content: center; }
+  .toolcard h3 { font-size: 36px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 12px; }
+  .toolcard p { font-size: 27px; line-height: 1.45; color: var(--ot-gray-dark); margin: 0; }
+  .toolcard .tag { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-red); margin-bottom: 14px; }
+
+  /* demo slide */
+  .demo { flex-direction: row; gap: 72px; align-items: stretch; }
+  .demo .demo-left { width: 40%; display: flex; flex-direction: column; justify-content: center; }
+  .demo .demo-right { flex: 1; display: flex; align-items: center; }
+  .demo .demo-badge { display: inline-flex; align-items: center; gap: 14px; align-self: flex-start; background: var(--ot-red); color: #fff; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 24px; border-radius: var(--r-pill); }
+  .demo .demo-badge .dot { width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+  .demo h2.title { font-size: 64px; margin-top: 28px; }
+  .demo .watch { margin-top: 36px; }
+  .demo .watch .wl { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-gray); margin-bottom: 18px; }
+  .demo .watch ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+  .demo .watch li { font-size: 28px; line-height: 1.4; color: var(--ot-gray-dark); padding-left: 38px; position: relative; }
+  .demo .watch li::before { content: "→"; position: absolute; left: 0; color: var(--ot-red); font-weight: 700; }
+  image-slot { width: 100%; height: 760px; box-shadow: var(--shadow-2); }
+  .demo media-slot, .arch media-slot { width: 100%; height: 760px; box-shadow: var(--shadow-2); }
+
+  /* phone frame (portrait demo) */
+  .phone { width: 400px; height: 840px; background: #0c1230; border-radius: 54px; padding: 16px; box-sizing: border-box; position: relative; box-shadow: var(--shadow-2), inset 0 0 0 2px rgba(255,255,255,0.06); }
+  .phone::before { content: ""; position: absolute; top: 24px; left: 50%; transform: translateX(-50%); width: 118px; height: 8px; border-radius: 5px; background: rgba(255,255,255,0.18); z-index: 3; }
+  .phone .screen { width: 100%; height: 100%; border-radius: 40px; overflow: hidden; background: #000; }
+  .phone .screen media-slot { width: 100%; height: 100%; box-shadow: none; }
+
+  /* landscape device (tablet / computer) frame + device pairs */
+  .devicepair { display: flex; align-items: center; justify-content: center; gap: 44px; width: 100%; }
+  .device { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .devcap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; }
+  .tablet { flex: none; background: #0c1230; border-radius: 26px; padding: 16px; box-sizing: border-box; box-shadow: var(--shadow-2), inset 0 0 0 2px rgba(255,255,255,0.06); }
+  .tablet .screen { border-radius: 14px; overflow: hidden; background: #000; }
+  .tablet .screen media-slot { display: block; width: 100%; height: 100%; box-shadow: none; }
+  .devicepair .phone { width: 206px; height: 420px; border-radius: 38px; padding: 12px; }
+  .devicepair .phone::before { width: 78px; height: 7px; top: 18px; }
+  .devicepair .phone .screen { border-radius: 28px; }
+
+  /* spreadsheet problem — pain points */
+  .pains { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; margin-top: 12px; }
+  .pain { border-top: 4px solid var(--ot-red); padding-top: 22px; }
+  .pain h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 10px; }
+  .pain p { font-size: 25px; line-height: 1.4; color: var(--ot-gray-dark); margin: 0; }
+
+  /* take-it-further — subtle table */
+  .ftable { margin-top: 48px; flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; }
+  .frow { display: grid; grid-template-columns: 440px 1fr; gap: 56px; align-items: baseline; padding: 30px 4px; border-top: 1px solid var(--border-1); }
+  .frow:last-child { border-bottom: 1px solid var(--border-1); }
+  .ft-term { font-size: 32px; font-weight: 700; color: var(--ot-blue-dark); }
+  .ft-def { font-size: 28px; line-height: 1.4; color: var(--ot-gray-dark); }
+
+  /* recipe step QR */
+  .step-qr { margin-left: auto; flex: none; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 170px; }
+  .step-qr .qrbox { width: 132px; height: 132px; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 9px; box-sizing: border-box; }
+  .step-qr .qrbox image-slot { width: 100%; height: 100%; }
+  .step-qr .ql { font-size: 24px; font-weight: 600; color: var(--ot-blue); text-align: center; line-height: 1.15; }
+
+  /* cohesion media */
+  .cohesion { flex-direction: row; gap: 64px; align-items: stretch; }
+  .cohesion .coh-left { width: 44%; display: flex; flex-direction: column; justify-content: center; }
+  .cohesion .coh-left .whys { grid-template-columns: 1fr; gap: 24px; margin-top: 40px; }
+  .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+  .cohesion .coh-bottom { display: flex; gap: 28px; align-items: flex-start; justify-content: space-evenly; }
+  .mediafig { display: flex; flex-direction: column; }
+  .mediacap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
+  .cohesion .coh-right media-slot { width: 100%; box-shadow: var(--shadow-2); display: block; }
+  .cohesion .coh-shots { display: flex; gap: 28px; align-items: stretch; }
+  .cohesion .fig-page { flex: 1; }
+  .cohesion .fig-page media-slot { height: 460px; }
+  .cohesion .fig-qr { flex: none; width: 410px; align-items: center; text-align: center; }
+  .cohesion .fig-qr .qrbox2 { width: 410px; height: 410px; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 18px; box-sizing: border-box; }
+  .cohesion .fig-qr .qrbox2 image-slot { width: 100%; height: 100%; }
+
+  /* recipe — four inline cards */
+  .recipe4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
+  .rcard { background: var(--ot-gray-lightest); border-radius: var(--r-lg); border-top: 5px solid var(--ot-blue); padding: 34px 30px; display: flex; flex-direction: column; }
+  .rcard .rnum { width: 62px; height: 62px; border-radius: 50%; background: var(--ot-blue); color: #fff; font-size: 30px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; margin-bottom: 22px; }
+  .rcard .rh { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 12px; }
+  .rcard .rp { font-size: 25px; line-height: 1.4; color: var(--ot-gray-dark); margin: 0; }
+  .rcard .rqr { margin-top: auto; padding-top: 24px; display: flex; align-items: center; gap: 16px; }
+  .rcard .rqr .qbox { width: 132px; height: 132px; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 9px; box-sizing: border-box; flex: none; }
+  .rcard .rqr .qbox image-slot { width: 100%; height: 100%; }
+  .rcard .rqr .qcap { font-size: 24px; font-weight: 600; color: var(--ot-blue); line-height: 1.15; }
+
+  /* spartan architecture */
+  .arch { flex-direction: row; gap: 72px; align-items: stretch; }
+  .arch .arch-left { width: 40%; display: flex; flex-direction: column; justify-content: center; }
+  .arch .arch-right { flex: 1; display: flex; align-items: center; }
+  .stacklist { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+  .stackrow { background: var(--ot-gray-lightest); border-radius: var(--r-md); padding: 16px 28px; }
+  .stackrow .sr-h { font-size: 28px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 6px; }
+  .stackrow .sr-p { font-size: 24px; color: var(--ot-gray); margin: 0; font-family: var(--font-mono); line-height: 1.4; }
+
+  /* recipe steps */
+  .recipe { display: flex; flex-direction: column; gap: 26px; margin-top: 52px; flex: 1 1 auto; justify-content: center; }
+  .step { display: flex; align-items: center; gap: 36px; }
+  .step .num { flex: none; width: 76px; height: 76px; border-radius: 50%; background: var(--ot-blue); color: #fff; font-size: 38px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step .stext { font-size: 34px; line-height: 1.35; color: var(--ot-gray-darkest); }
+  .step .stext b { color: var(--ot-blue-dark); font-weight: 700; }
+  .step .stext span { color: var(--ot-gray); }
+
+  /* starter ideas list */
+  .ideas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 56px; margin-top: 40px; flex: 1 1 auto; align-content: center; }
+  .idea { display: flex; align-items: flex-start; gap: 26px; }
+  .idea .ic { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--ot-red); margin-top: 12px; }
+  .idea .it { font-size: 30px; line-height: 1.35; color: var(--ot-gray-darkest); }
+  .idea .it b { display: block; color: var(--ot-red); font-weight: 700; }
+  .idea .it span { display: block; font-size: 24px; color: var(--ot-gray); margin-top: 3px; }
+
+  /* gotchas */
+  .gotchas { display: flex; flex-direction: column; gap: 30px; margin-top: 52px; flex: 1 1 auto; justify-content: center; }
+  .gotcha { display: flex; gap: 32px; align-items: baseline; }
+  .gotcha h3 { flex: none; width: 360px; font-size: 32px; font-weight: 700; color: var(--ot-blue-dark); margin: 0; }
+  .gotcha p { font-size: 28px; line-height: 1.4; color: var(--ot-gray-dark); margin: 0; }
+
+  /* resources */
+  .res { flex-direction: row; gap: 80px; align-items: stretch; }
+  .res .res-left { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .res .res-right { width: 460px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .reslist { display: flex; flex-direction: column; gap: 30px; margin-top: 44px; }
+  .resrow .rr-h { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #e57e7f; margin: 0 0 8px; }
+  .resrow .rr-p { font-size: 34px; color: #fff; margin: 0; font-family: var(--font-mono); }
+  .qrwrap { width: 380px; height: 380px; background: #fff; border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+  .qrwrap image-slot { width: 340px; height: 340px; }
+  .qrcap { font-size: 24px; color: #9aa1c4; margin-top: 24px; font-family: var(--font-mono); }
+
+  /* close */
+  .close .wordmark { height: 44px; width: auto; align-self: flex-start; }
+  .close { justify-content: center; }
+  .close .thanks { font-size: 120px; font-weight: 800; color: #fff; letter-spacing: -0.03em; margin: 0; }
+  .close .ct { font-size: var(--type-subtitle); color: #c7cbe0; font-weight: 300; margin-top: 32px; max-width: 1100px; line-height: 1.5; }
+  .close .contact { font-family: var(--font-mono); font-size: 30px; color: #aeb8e0; margin-top: 48px; }
+
+  /* entrance animation — resting state is VISIBLE; only non-active slides
+     pre-hide their content, so content always shows when the animation clock
+     is paused (print, reduced-motion, html-to-image capture, background tab)
+     while still fading in on navigation when the slide is actually viewed. */
+  @media (prefers-reduced-motion: no-preference) {
+    .anim, .anim2, .anim3 {
+      opacity: 1; transform: none;
+      transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+    }
+    .s:not([data-deck-active]) .anim,
+    .s:not([data-deck-active]) .anim2,
+    .s:not([data-deck-active]) .anim3 {
+      opacity: 0; transform: translateY(14px);
+    }
+    [data-deck-active] .anim2 { transition-delay: .12s; }
+    [data-deck-active] .anim3 { transition-delay: .24s; }
+  }
+
+  /* thank-you morph — "Let's make something meaningful." → "Let's make meaning."
+     Resting state is the full phrase (print / reduced-motion / export show it);
+     on the live slide the marked spans fade out leftward and collapse so the
+     rest of the line slides over. */
+  .thanks .morph-out { display: inline-block; white-space: pre; overflow: hidden;
+    max-width: var(--mw, 12ch); vertical-align: bottom; }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-deck-active] .thanks .morph-out { animation: thanksMorph 1.1s var(--ease-inout) forwards; }
+    [data-deck-active] .thanks .morph-out.m1 { animation-delay: 2.4s; }
+    [data-deck-active] .thanks .morph-out.m2 { animation-delay: 2.8s; }
+    @keyframes thanksMorph {
+      0%   { opacity: 1; max-width: var(--mw, 12ch); transform: translateX(0); }
+      55%  { opacity: 0; transform: translateX(-0.35em); }
+      100% { opacity: 0; max-width: 0; transform: translateX(-0.35em); }
+    }
+  }
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- 1 · COVER -->
+  <section data-label="Cover" class="s navy cover">
+    <img class="torch-bg" src="assets/orono-torch-white-outlined.png" alt="">
+    <img class="wordmark anim" src="assets/orono-technology-logo-white.png" alt="Orono Technology">
+    <p class="kicker anim">MN Thought Leaders Summit · 2026</p>
+    <h1 class="anim">The Apps Script Playground</h1>
+    <p class="sub anim2"></p>
+    <div class="spacer"></div>
+    <div class="footmark anim3"><div class="rule"></div><span>Orono Public Schools · Technology Department</span></div>
+  </section>
+
+  <!-- 2 · PREMISE -->
+  <section data-label="Premise" class="s navy statement">
+    <p class="kicker anim">The premise</p>
+    <p class="big anim2" style="font-size: 92px">You can make an interactive web app today.</p>
+    <p class="sub2 anim3">It's not that "anybody can learn to code," but that they can describe what they need, in plain language, and build a working tool in minutes in hours, not days.
+
+We aren't building the car. We are steering, accelerating, slowing down, stopping and, importantly, learning the rules of the road to keep ourselves and others safe.</p>
+  </section>
+
+  <!-- 3 · PROBLEM -->
+  <section data-label="Spreadsheet problem" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">The spreadsheet problem</p>
+      <h2 class="title anim">Our systems are already built on many disconnected spreadsheets</h2>
+      <p class="lead anim2">
+
+Every school runs on them — rosters, points, sign-ins, observations, forms, forms, and more forms.  A spreadsheet is a fine place to store data, but we all agree it's a miserable place to do the actual work.
+
+
+
+</p>
+    </div>
+    <div class="pains anim3">
+      <div class="pain"><h3>No guardrails</h3><p>Nothing stops a bad entry or the wrong format.</p></div>
+      <div class="pain"><h3>No roles</h3><p>Everyone sees everything — or you play whack-a-mole protecting ranges.</p></div>
+      <div class="pain"><h3>One click from chaos</h3><p>A stray paste or delete can wipe a whole column.</p></div>
+      <div class="pain"><h3>Wrong device</h3><p>Never built for the person on a phone in a hallway.</p></div>
+    </div>
+    <div class="spacer" style="height: 200px"></div>
+    <div class="footmark anim3"><div class="rule"></div><span>Sick of protecting cells and ranges, or sharing more data than people need? <span style="color: #ad2122">Stop asking them to work in the sheet.</span></span></div>
+  </section>
+
+  <!-- 4 · REFRAME -->
+  <section data-label="Sheet is a database" class="s navy statement">
+    <p class="kicker anim">The reframe</p>
+    <p class="big anim2">Spreadsheets are your storage, not your app.</p>
+    <p class="sub2 anim3">It has tables, rows, and columns. It just needs a front door: a real interface, intuitively designed for the humans using it — not a wall of cells.
+
+That front door is a web app.</p>
+  </section>
+
+  <!-- 5 · THE STACK -->
+  <section data-label="The stack" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">The stack</p>
+      <h2 class="title anim">A full web app, free, inside Google Workspace</h2>
+    </div>
+    <div class="flow anim2">
+      <div class="node">
+        <div class="nlabel">Front door</div>
+        <div class="nname">The browser</div>
+        <div class="nmeta" style="font-family: Lexend">What people see</div>
+      </div>
+      <div class="flowarrow"><div class="glyph">→</div></div>
+      <div class="node">
+        <div class="nlabel">The brains</div>
+        <div class="nname">Apps Script</div>
+        <div class="nmeta" style="font-family: Lexend">Your logic</div>
+      </div>
+      <div class="flowarrow"><div class="glyph">→</div></div>
+      <div class="node sheet">
+        <div class="nlabel">The data</div>
+        <div class="nname">Google Sheet</div>
+        <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
+      </div>
+    </div>
+    <div class="whys anim3">
+      <div class="why"><h3>Free</h3><p>No server, no hosting bill. It runs on Google's infrastructure and deploys as a link.</p></div>
+      <div class="why"><h3>Persistent</h3><p>Every action reads and writes to a real Google Sheet you can open, audit, and edit at anytime.</p></div>
+      <div class="why"><h3>Native</h3><p>Google login, Drive sharing, and your Workspace data — authentication built in.</p></div>
+    </div>
+  </section>
+
+  <!-- 6 · THE UNLOCK -->
+  <section data-label="The unlock" class="s navy statement">
+    <p class="kicker anim">"I DON'T KNOW WHERE TO START."</p>
+    <p class="big anim2">Describe it. Let AI build it.  Iterate.</p>
+    <p class="sub2 anim3">The hard part was never entering data into a spreadsheet. It was building making the spreadsheet data accessible and intuitive. 
+
+Now you describe what you want. Use screenshots. explain your sheet layout and let AI build your vision.
+
+Something not right? Describe it again and let AI fix it.</p>
+  </section>
+
+  <!-- 7 · PLAYGROUND MAP -->
+  <section data-label="Twelve tools" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">KEEP YOUR SPREADSHEETS OUT OF SIGHT</p>
+      <h2 class="title anim">OPS Tools for different audiences,  all built on top of spreadsheets.</h2>
+    </div>
+    <div class="map anim2">
+      <div class="mapcol">
+        <h3>For teachers</h3>
+        <ul>
+          <li>Digital Microscope<span>Upload screenshots &amp; label zones directly in the browser</span></li>
+          <li>Doc2LMS<span>MC, FIB, and Short answer quiz in Google Doc → 2 clicks to LMS-ready quiz</span></li>
+          <li>Gamified Ranking<span>Earn XP, ranks, and custom badges by completing required or enrichment activities.</span></li>
+        </ul>
+      </div>
+      <div class="mapcol">
+        <h3>For buildings &amp; teams</h3>
+        <ul>
+          <li>Assessment Portal<span>Secure assessment sharing, adjustable accessibility built in (tts, spacing, etc.)</span></li>
+          <li>OMS Agenda Sync<span>50+ teacher agendas synced to one web app so students, parents, and support staff have it all in one web app.</span></li>
+          <li>Flex Sign-In<span>Flex space attendance and customizable approve/deny flags based on grades, sign-ups, available tests, etc.</span></li>
+          <li>The Spartan Cup<span>Geo-verified check-ins at home events, with leaderboards, awards, and custom badges.</span></li>
+        </ul>
+      </div>
+      <div class="mapcol">
+        <h3>For districts</h3>
+        <ul>
+          <li>Subbing for Teachers<span>Teachers submit coverage requests and earned hours, view full log of hours </span></li>
+          <li>Peer Observation Portal<span>Structured observation materials, interactive rubrics, recording, transcription, evidence tagging, etc.</span></li>
+          <li>Digital Learning Hub<span>Custom Google Sites landing page(s) linked to staff digital guides.</span></li>
+          <li>Research &amp; Annotations<span>Highlight text on websites, online databases, and PDFs, automatically cite sources and build bibliographies.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · DIVIDER 01 -->
+  <section data-label="For teachers" class="s navy divider">
+    <div class="bignum">01</div>
+    <p class="kicker anim">For teachers</p>
+    <h2 class="anim2">In the classroom</h2>
+    <div class="ubar anim2"></div>
+    <p class="desc anim3">Classroom tools a teacher can build and run themselves — interactive labs, content conversion, and a little friendly competition.</p>
+  </section>
+
+  <!-- 9 · TEACHERS GRID -->
+  <section data-label="Teacher tools" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">For teachers</p>
+      <h2 class="title anim">Three tools actively used in classrooms</h2>
+    </div>
+    <div class="grid3 anim2">
+      <div class="toolcard"><div class="tag">Science</div><h3>OHS Digital Microscope</h3><p>Capture, label, and save microscope views on any device right from a web browser.
+
+</p></div>
+      <div class="toolcard"><div class="tag">CONTENT CONVERSION</div><h3>Doc2LMS</h3><p>Turn a finished Google Doc MC, FIB, or short answer assessment into a clean, LMS-ready quiz in a few clicks.</p></div>
+      <div class="toolcard"><div class="tag">Engagement</div><h3>Gamified Learning</h3><p>A mythology-themed XP and ranking layer that builds class culture.
+
+</p></div>
+    </div>
+  </section>
+
+  <!-- 10 · DEMO: ASSESSMENT -->
+  <section data-label="Demo: Digital Microscope" class="s light demo">
+    <div class="demo-left">
+      <span class="demo-badge">DEMO</span>
+      <h2 class="title">OHS Digital Microscope</h2>
+      <div class="watch">
+        <div class="wl">FEATURES</div>
+        <ul>
+          <li>Upload images in a teacher-only web page</li>
+          <li>Create click zones with labels and banners</li>
+          <li>All images, click zones, and information are saved into a Sheet and Drive folder.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-right">
+      <media-slot id="demo-microscope" shape="rounded" radius="14" src="media/10-digital-microscope.mp4" placeholder="Drop a demo clip (MP4) or GIF of the Digital Microscope"></media-slot>
+    </div>
+  </section>
+
+  <!-- 11 · DIVIDER 02 -->
+  <section data-label="For buildings & teams" class="s navy divider">
+    <div class="bignum">02</div>
+    <p class="kicker anim">For buildings &amp; teams</p>
+    <h2 class="anim2">Across the building</h2>
+    <div class="ubar anim2"></div>
+    <p class="desc anim3">Tools for building leadership, administrators, and technology teams — the logistics a building runs on, minus the email chains and paper forms.</p>
+  </section>
+
+  <!-- 12 · TEAMS GRID -->
+  <section data-label="Team tools" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">For buildings &amp; teams</p>
+      <h2 class="title anim">Tools that streamline buildings &amp; teams</h2>
+    </div>
+    <div class="grid4 anim2">
+      <div class="toolcard"><div class="tag">Assessment</div><h3>Orono Assessment Portal</h3><p>Teachers securely share assessments, with accessibility tools built in for every student.</p></div>
+      <div class="toolcard"><div class="tag">Communication</div><h3>OMS Agenda Sync</h3><p>Write the daily agenda once; it appears on every screen and page that needs it.</p></div>
+      <div class="toolcard"><div class="tag">Attendance</div><h3>OPS Flex Sign-In</h3><p>Flex-period sign-in, live rosters, and attendance at a glance.</p></div>
+      <div class="toolcard"><div class="tag">Engagement</div><h3>The Spartan Cup</h3><p>Location-verified event check-ins, points, badges, and live leaderboards.</p></div>
+    </div>
+  </section>
+
+  <!-- 13 · DEMO: FLEX -->
+  <section data-label="Demo: Flex Sign-In" class="s light demo">
+    <div class="demo-left">
+      <span class="demo-badge">DEMO</span>
+      <h2 class="title">OPS Flex Sign-In</h2>
+      <div class="watch">
+        <div class="wl">Watch for</div>
+        <ul>
+          <li>A staff member scanning a student's QR code</li>
+          <li>No student devices needed — one staff device runs the room</li>
+          <li>The roster updating live, recorded to one sheet</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-right">
+      <div class="devicepair">
+        <div class="device">
+          <div class="tablet" style="width:653px;"><div class="screen" style="aspect-ratio:16/10;"><media-slot id="demo-flex-tablet" shape="rect" fit="cover" src="media/13-flex-computer.mp4" placeholder="Drop a tablet / desktop GIF or MP4 of Flex Sign-In"></media-slot></div></div>
+          <span class="devcap">Staff view</span>
+        </div>
+        <div class="device">
+          <div class="phone"><div class="screen"><media-slot id="demo-flex" shape="rect" fit="cover" src="media/13-flex-mobile.mp4" placeholder="Drop a phone GIF / MP4"></media-slot></div></div>
+          <span class="devcap">MONITOR SCAN</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · DIVIDER 03 -->
+  <section data-label="For districts" class="s navy divider">
+    <div class="bignum">03</div>
+    <p class="kicker anim">For districts</p>
+    <h2 class="anim2">At scale</h2>
+    <div class="ubar anim2"></div>
+    <p class="desc anim3">Tools that go district-wide — hundreds of users, real data ownership, and the polish to put in front of everyone.</p>
+  </section>
+
+  <!-- 15 · DISTRICT GRID -->
+  <section data-label="District tools" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">For districts</p>
+      <h2 class="title anim">Four tools that scale district-wide</h2>
+    </div>
+    <div class="grid4 anim2">
+      <div class="toolcard"><div class="tag">Coverage</div><h3>Subbing for Teachers</h3><p>Request and claim internal coverage across the district — no reply-all chain.</p></div>
+      <div class="toolcard"><div class="tag">Growth</div><h3>Peer Observation Portal</h3><p>Structured peer observations with shared rubrics, district-wide.</p></div>
+      <div class="toolcard"><div class="tag">Resources</div><h3>Digital Learning Hub</h3><p>One front door to the district's tools, guides, and resources.</p></div>
+      <div class="toolcard"><div class="tag">Research</div><h3>Research &amp; Annotations</h3><p>Students collect, tag, and cite sources; teachers see it all — replacing Scrible.</p></div>
+    </div>
+  </section>
+
+  <!-- 16 · INSIDE OBSERVATION PORTAL -->
+  <section data-label="Inside the Observation Portal" class="s light arch">
+    <div class="arch-left">
+      <p class="kicker anim">Inside one app</p>
+      <h2 class="title anim" style="font-size:54px;">Inside the Observation Portal</h2>
+      <p class="body anim2" style="margin-top:16px; color:var(--ot-gray-dark);">A multi-role Danielson rubric for peer observations across Orono — and proof the pattern scales.</p>
+      <div class="stacklist anim3">
+        <div class="stackrow"><p class="sr-h">Web app</p><p class="sr-p">Apps Script doGet(e) serves a single-page rubric</p></div>
+        <div class="stackrow"><p class="sr-h">Google Sheets — the database</p><p class="sr-p">Staff · Settings · Role rubrics · Observation_Data</p></div>
+        <div class="stackrow"><p class="sr-h">Google Drive</p><p class="sr-p">Recordings, tagged evidence &amp; exported PDFs — private until finalized</p></div>
+        <div class="stackrow"><p class="sr-h">Multi-role access</p><p class="sr-p">Teacher · Administrator · Peer Evaluator · Full Access</p></div>
+      </div>
+    </div>
+    <div class="arch-right">
+      <div class="devicepair">
+        <div class="device" style="width:100%;">
+          <div class="tablet" style="width:100%;"><div class="screen" style="aspect-ratio:16/10;"><media-slot id="demo-observation" shape="rect" fit="cover" src="media/16-observation-portal.mp4" placeholder="Drop a desktop / laptop GIF or MP4 of the rubric view"></media-slot></div></div>
+          <span class="devcap">Rubric &amp; evidence</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 · DESIGN COHESION -->
+  <section data-label="One DESIGN.md" class="s light cohesion">
+    <div class="coh-left">
+      <p class="kicker anim">The cohesion story</p>
+      <h2 class="title anim" style="font-size:60px;">One DESIGN.md, one product family</h2>
+      <p class="lead anim2" style="font-family: Lexend">We wrote our look down once — a single DESIGN.md the AI reads before it builds. So a dozen different tools, from different team members, all feel like the same product.</p>
+      <div class="whys anim3">
+        <div class="why"><h3>Write it once</h3><p>Tokens, type scale, and component rules in one structured Markdown file.</p></div>
+        <div class="why"><h3>AI reads it first</h3><p>Every build starts from the same house style.</p></div>
+        <div class="why"><h3>Everything matches</h3><p>Users learn one interface, recognize it everywhere.</p></div>
+      </div>
+    </div>
+    <div class="coh-right anim2">
+      <div class="coh-shots">
+        <div class="mediafig fig-page">
+          <p class="mediacap">Our DESIGN.md</p>
+          <media-slot id="coh-designmd" shape="rounded" radius="14" src="media/17-design-md.mp4" placeholder="Drop a DESIGN.md screenshot"></media-slot>
+        </div>
+        <div class="mediafig fig-page">
+          <p class="mediacap">OPS TECH STYLE GUIDE</p>
+          <media-slot id="coh-styleguide" shape="rounded" radius="14" src="media/17-style-guide.png" placeholder="Drop an OPS Style Guide screenshot"></media-slot>
+        </div>
+      </div>
+      <div class="coh-bottom">
+        <div class="mediafig fig-qr">
+          <p class="mediacap">See our DESIGN.md</p>
+          <div class="qrbox2"><image-slot id="qr-seeours-17" shape="rect" src="media/17-qr-see-ours.png" placeholder="QR"></image-slot></div>
+        </div>
+        <div class="mediafig fig-qr">
+          <p class="mediacap">Build yours</p>
+          <div class="qrbox2"><image-slot id="qr-buildyours-17" shape="rect" src="media/17-qr-build-yours.png" placeholder="QR"></image-slot></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 · DIVIDER 04 -->
+  <section data-label="Make & take" class="s navy divider">
+    <div class="bignum">04</div>
+    <p class="kicker anim">Make &amp; take</p>
+    <h2 class="anim2">Get started</h2>
+    <div class="ubar anim2"></div>
+    <p class="desc anim3">4 steps to get you started, 15 project ideas, and a few ways to take it further.</p>
+  </section>
+
+  <!-- 19 · THE RECIPE -->
+  <section data-label="The recipe" class="s light" style="justify-content:center;">
+    <div class="head-block">
+      <p class="kicker anim">The repeatable recipe</p>
+      <h2 class="title anim">Get started in 4 steps</h2>
+    </div>
+    <div class="recipe4 anim2">
+      <div class="rcard">
+        <div class="rnum">1</div>
+        <h3 class="rh">Start with the sheet</h3>
+        <p class="rp">Model your data as tabs and columns — that's your database.</p>
+      </div>
+      <div class="rcard">
+        <div class="rnum">2</div>
+        <h3 class="rh">Write a DESIGN.md</h3>
+        <p class="rp">Your colors, fonts, and components — the house style.</p>
+        <div class="rqr"><div class="qbox"><image-slot id="qr-design" shape="rect" src="media/19-qr-brand-skill.png" placeholder="QR"></image-slot></div><span class="qcap">OPS Tech Brand SKILL &amp; DESIGN.md</span></div>
+      </div>
+      <div class="rcard">
+        <div class="rnum">3</div>
+        <h3 class="rh">Describe it to AI</h3>
+        <p class="rp">It writes the app that reads and writes your sheet.</p>
+        <div class="rqr"><div class="qbox"><image-slot id="qr-prompts" shape="rect" src="media/19-qr-starter-prompts.png" placeholder="QR"></image-slot></div><span class="qcap">Starter prompts</span></div>
+      </div>
+      <div class="rcard">
+        <div class="rnum">4</div>
+        <h3 class="rh">Deploy as a web app</h3>
+        <p class="rp">Share it like any Google link. Done.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 · STARTER IDEAS -->
+  <section data-label="Ten projects" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">Make &amp; take</p>
+      <h2 class="title anim">15 ideas to get you started</h2>
+    </div>
+    <div class="ideas anim2">
+      <div class="idea"><div class="ic"></div><div class="it"><b>A sign-in kiosk</b> <span>Tap a name, stamp the time.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A form-to-dashboard</b> <span>Responses become a live summary.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A points &amp; leaderboard</b> <span>Award, total, rank — automatically.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A request-and-approve queue</b> <span>Subs, passes, tickets in one tap.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A directory or resource hub</b> <span>One searchable front door.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A paperless forms portal</b> <span>Reimbursements, travel, expenses.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>An inventory tracker</b> <span>Devices and equipment, in and out.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>An event check-in</b> <span>RSVPs, attendance, name tags.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A reading log</b> <span>Track progress over time.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A survey &amp; feedback collector</b> <span>Quick pulse checks, live results.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A digital hall pass</b> <span>Issue, time, and log every pass.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A room &amp; resource booking</b> <span>Claim a slot, no clashes.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A student portfolio</b> <span>Work collected over time.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A volunteer &amp; chaperone signup</b> <span>Slots fill themselves.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A help-desk ticket queue</b> <span>Report, assign, resolve.</span></div></div>
+    </div>
+  </section>
+
+  <!-- 21 · GOTCHAS -->
+  <section data-label="Before you ship" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">Once you're rolling</p>
+      <h2 class="title anim">Other considerations</h2>
+    </div>
+    <div class="ftable anim2">
+      <div class="frow"><div class="ft-term">Pick your access level</div><div class="ft-def">Just you, your whole organization, or anyone with the link — Google login decides who gets in.</div></div>
+      <div class="frow"><div class="ft-term">Role-based views</div><div class="ft-def">Add a Roles tab to your sheet so students, teachers, and admins each see only their part of the app.</div></div>
+      <div class="frow"><div class="ft-term">Two-way configuration</div><div class="ft-def">Build an admin panel that reshapes the sheet — edits flow both ways, sheet to app and app to sheet.</div></div>
+      <div class="frow"><div class="ft-term">Your data stays with you</div><div class="ft-def">Your data lives in your own Google Sheets, under the district agreement — not a third party.</div></div>
+    </div>
+  </section>
+
+  <!-- 22 · RESOURCES -->
+  <section data-label="Resources" class="s navy res">
+    <div class="res-left">
+      <p class="kicker anim">Take the playground home</p>
+      <h2 class="title anim" style="color:#fff;">Everything's open</h2>
+      <div class="reslist anim2">
+        <div class="resrow"><p class="rr-h">All twelve repos</p><p class="rr-p" style="font-family: Lexend">github.com/OPS-PIvers</p></div>
+        <div class="resrow"><p class="rr-h">Start here</p><p class="rr-p" style="font-family: Lexend">Copy a DESIGN.md · open a sheet · describe it</p></div>
+        <div class="resrow"><p class="rr-h">Questions later?</p><p class="rr-p" style="font-family: Lexend">Orono Public Schools · Technology</p></div>
+      </div>
+    </div>
+    <div class="res-right anim3">
+      <div class="qrwrap"><image-slot id="qr" shape="rect" src="media/22-qr-github.png" placeholder="Drop QR"></image-slot></div>
+      <p class="qrcap">scan for the repos</p>
+    </div>
+  </section>
+
+  <!-- 23 · THANK YOU -->
+  <section data-label="Thank you" class="s navy close">
+    <p class="kicker anim">Thank you</p>
+    <p class="thanks anim2" style="white-space:nowrap;font-size:88px;">Let's make <span class="morph-out m1" style="--mw:500px">something </span>meaning<span class="morph-out m2" style="--mw:125px">ful</span>.</p>
+    <p class="contact anim3" style="font-family: Lexend">github.com/OPS-PIvers · Orono Public Schools Technology</p>
+    <div class="spacer"></div>
+    <div class="footmark anim3"><div class="rule"></div><span>MN Thought Leaders Summit · 2026</span></div>
+  </section>
+
+</deck-stage>
+
+<script type="application/json" id="speaker-notes">
+[
+  "Welcome, and thanks for spending the next hour with me. I'm from the technology department at Orono Public Schools, and I'm not going to teach you to code today. I'm going to show you something better — that the line between 'people who build software' and 'everybody else' basically just disappeared. Everything you'll see was built by our team using Google Apps Script, a Google Sheet, and an AI coding assistant. By the end I want you walking out thinking about the one spreadsheet in your building that should really be an app.",
+  "Here's the whole talk in one sentence. Anyone can make an interactive web app now — when they have AI beside them. I'm not saying anyone can suddenly learn to code. I'm saying you no longer have to. You describe what you need in plain language, the AI writes it, and you ship a working tool by Friday. That shift is the entire reason I'm up here.",
+  "Let's start with the thing every school already has too many of: spreadsheets. And look — a spreadsheet is a genuinely great place to STORE data. The problem is it's a terrible place to DO the work. You're protecting cells and ranges, sharing more data than people need, one stray click from deleting a column — and it was never designed for the person standing in a hallway with a phone. So at some point we just stopped asking people to work inside the sheet.",
+  "Here's the reframe that unlocked everything for us. A spreadsheet is already a database — it has tables, rows, and columns. The only thing it's missing is a front door: a real interface, designed for the humans using it, instead of a wall of cells. And that front door is a web app. Hold onto that idea, because it's the foundation for all twelve tools I'm about to show you.",
+  "So how do you actually build that front door? Only three pieces. The browser is what people see. Apps Script is the brains in the middle, where the logic lives. And the Google Sheet is your data. The browser talks to Apps Script, Apps Script talks to the Sheet. That's it. And three things make this special: it's free — no server, no hosting bill, it deploys as a link. It's persistent — every action writes to a real sheet you can open and audit. And it's native — Google login and sharing are built in, so security is handled for you.",
+  "Now, this stack has existed for years. So why are we all standing here in 2026 talking about it? Because the hard part was never the spreadsheet — it was building the app on top. That's the part that needed a developer. AI closes that gap. You describe the tool, and it writes it. Suddenly this is open to everyone in this room — and I'll show you twelve things we built that way.",
+  "Okay, enough theory. Let me show you what we actually built. Twelve tools, grouped by who they're for. Tools for teachers in the classroom. Tools for buildings and the teams that run them. And tools that scale across the entire district. Same recipe every time — a sheet, a web app, and AI. Let's walk through them.",
+  "First group: the classroom. Tools a teacher can build and run themselves — no IT ticket, no committee. Just a teacher who had a problem and a Friday afternoon.",
+  "Three of them. The Digital Microscope lets science students capture and label what they see, right in the browser on a Chromebook. Doc2LMS takes a finished Google Doc and turns it into a clean, LMS-ready lesson in one click. And the Gamified Ranking System is a mythology-themed XP layer that builds class culture. Three completely different jobs — same underlying recipe.",
+  "Let me actually show you one. This is the Digital Microscope. Watch a student capture a microscope view right in the browser — nothing to install. They label it, save it, and the image files itself straight back into Sheets and Drive. And notice the look and feel, because you'll see that exact same style in every tool today. [Run the live demo here.]",
+  "Second group: tools for whole buildings and the teams that run them — building leadership, administrators, technology. This is the daily logistics layer — the stuff that usually lives in email chains and paper forms.",
+  "Four of them. The Assessment Portal lets teachers securely share assessments, with accessibility tools built in for every student. Agenda Sync writes the daily agenda once and shows it everywhere it's needed. Flex Sign-In handles flex-period rosters and attendance. And the Spartan Cup — our gamified attendance system at the high school — does location-verified check-ins, points, and live leaderboards. Some flashy, some plumbing — all things a building runs on.",
+  "Let me demo Flex Sign-In, because it shows the multi-user side — and notice how it actually works. The students don't sign in on their own phones. A single staff member in the room scans each student's QR code. That's the whole trick: the kids need no device at all, just one staff device covers the entire space. Watch the roster update live as I scan, and the whole time there's just one quiet Google Sheet recording all of it. [Run the live demo here.]",
+  "Third group: the tools that go district-wide. Hundreds of users, real data ownership, and enough polish that you'd put them in front of everybody.",
+  "Four of them. Subbing for Teachers lets staff request and claim internal coverage across the district. The Peer Observation Portal runs structured peer observations with shared rubrics. The Digital Learning Hub is a single front door to district tools and resources. And Research and Annotations lets students collect, tag, and cite sources while teachers watch the whole class — it's replacing a paid product called Scrible.",
+  "I want to open one of these up, because people always ask 'sure, but does it really scale?' This is the Orono Observation Portal — our peer evaluation system, built on the Danielson framework. The web app is Apps Script serving a single-page rubric. The database is a set of Google Sheets — staff, role assignments, the rubric for each role, and an Observation_Data sheet that stores every observation. Recordings, tagged evidence, and the exported PDFs all live in Google Drive — private while it's a draft, then shared view-only with the teacher the moment it's finalized. Four roles — teacher, administrator, peer evaluator, full access — each see exactly their slice. The point: the same simple pattern — sheet, front door, Drive — running something a whole district trusts with sensitive evaluations.",
+  "Here's the part I'm proudest of, and it's the least technical. We wrote our design down once — colors, type, components — in a single DESIGN dot md file. The AI reads it before it builds anything. So a dozen tools, made at different times for totally different jobs by different people in our department, all feel like the same product. New tool, same familiar and trustworthy feel. That consistency is what turns a pile of scripts into something a district actually trusts and adopts. Write it once, the AI reads it first, and everything matches.",
+  "Alright — this is the make-and-take part. I want you to leave with something you can actually do, not just something that was fun to watch. So: the repeatable recipe, ten starter projects, and a few ways to take it further.",
+  "Here's the recipe, and it's the same four steps every time. One: start with the sheet — model your data as tabs and columns. Two: write a DESIGN dot md so everything matches your house style. Three: describe it to the AI — it writes the app that reads and writes your sheet. Four: deploy as a web app and share it like any Google link. That's the whole thing — and notice you never touch the code. The AI does.",
+  "If you want a place to start, here are fifteen — everything from a sign-in kiosk to a hall pass, a booking system, a help-desk queue. Honestly, though — the real prompt is simpler. Think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
+  "Once you're rolling, here are a few ways to take it further. You control access — you can lock it to just you, open it to your whole organization, or share it with anyone who has the link. You can add a Roles tab to your sheet so students, teachers, and admins each see only their slice of the app. You can build an admin panel right in the app that reshapes the spreadsheet, with edits flowing both ways. And it all stays in your own Workspace, under your district agreement — never a third party.",
+  "Everything I showed you today is open. All twelve repos are on GitHub at github dot com slash OPS-PIvers. If you want to start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and the repos will be on your phone before you leave the room.",
+  "Thank you. I would genuinely love to see what you build, so come find me, and the repos are all right there. And remember the one thing — you have the data, you have the tools, the spreadsheet is already sitting there. Go give it a front door, and make something meaningful."
+]
+</script>
+
+<script src="image-slot.js"></script>
+<script src="media-slot.js"></script>
+<script src="media-lightbox.js"></script>
+<script src="deck-stage.js"></script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+/* =============================================================
+   Orono Technology — Colors & Type
+   Source of truth for design tokens. Import once at the top of
+   any HTML file:  <link rel="stylesheet" href="colors_and_type.css">
+
+   Font: Lexend (Google Fonts). If you want to self-host, drop
+   the TTFs into fonts/ and swap the @font-face block below.
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* ---------- BRAND COLORS ---------- */
+  /* Blue — primary brand family */
+  --ot-blue:           #2d3f89;   /* Primary Blue */
+  --ot-blue-dark:      #1d2a5d;   /* Blue Dark */
+  --ot-blue-light:     #4356a0;   /* Blue Light */
+  --ot-blue-lighter:   #eaecf5;   /* Blue Lighter — backgrounds */
+
+  /* Red — accent family */
+  --ot-red:            #ad2122;   /* Primary Red */
+  --ot-red-dark:       #7a1718;   /* Red Dark */
+  --ot-red-light:      #dd5f60;   /* Red Light */
+  --ot-red-lighter:    #e5c7c7;   /* Red Lighter — backgrounds */
+
+  /* Gray — neutrals */
+  --ot-gray-darkest:   #1a1a1a;
+  --ot-gray-dark:      #333333;
+  --ot-gray:           #666666;
+  --ot-gray-light:     #999999;
+  --ot-gray-lighter:   #cccccc;
+  --ot-gray-lightest:  #f3f3f3;
+  --ot-white:          #ffffff;
+
+  /* ---------- SEMANTIC ALIASES ---------- */
+  /* Foreground */
+  --fg-1: var(--ot-gray-darkest);  /* Headings, max contrast */
+  --fg-2: var(--ot-gray-dark);     /* Body copy */
+  --fg-3: var(--ot-gray);          /* Secondary / meta */
+  --fg-4: var(--ot-gray-light);    /* Disabled, placeholder */
+  --fg-on-dark: var(--ot-white);
+
+  /* Background */
+  --bg-1: var(--ot-white);         /* Page */
+  --bg-2: var(--ot-gray-lightest); /* Section / muted surface */
+  --bg-3: var(--ot-blue-lighter);  /* Tinted surface */
+  --bg-dark: var(--ot-blue-dark);  /* Inverse surface */
+
+  /* Borders */
+  --border-1: #e5e7eb;             /* Hairline on white */
+  --border-2: var(--ot-gray-lighter);
+  --border-strong: var(--ot-gray-dark);
+
+  /* Interactive */
+  --accent:         var(--ot-blue);
+  --accent-hover:   var(--ot-blue-light);
+  --accent-active:  var(--ot-blue-dark);
+  --danger:         var(--ot-red);
+  --danger-hover:   var(--ot-red-light);
+  --danger-active:  var(--ot-red-dark);
+
+  /* Status */
+  --info-fg:    var(--ot-blue);
+  --info-bg:    var(--ot-blue-lighter);
+  --warn-fg:    var(--ot-red);
+  --warn-bg:    var(--ot-red-lighter);
+  --success-fg: #0f6b3a;
+  --success-bg: #d8efe0;
+
+  /* ---------- TYPE ---------- */
+  --font-display: 'Lexend', 'Segoe UI', system-ui, sans-serif;
+  --font-body:    'Lexend', 'Segoe UI', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale — base 16 for web, derived from print pts in stylesheet */
+  --fs-title:   2.00rem;   /* ~32px — deck titles / hero      (print 26pt) */
+  --fs-h1:      1.625rem;  /* 26px                             (print 22pt) */
+  --fs-h2:      1.375rem;  /* 22px                             (print 18pt) */
+  --fs-h3:      1.125rem;  /* 18px                             (print 14pt) */
+  --fs-h4:      1rem;      /* 16px                             (print 12pt) */
+  --fs-body:    1rem;      /* 16px */
+  --fs-small:   0.875rem;  /* 14px — meta, captions */
+  --fs-micro:   0.75rem;   /* 12px — eyebrow, labels */
+
+  /* Weights */
+  --fw-light:   300;
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold:600;
+  --fw-bold:    700;
+  --fw-black:   800;
+
+  /* Line-heights */
+  --lh-tight: 1.15;
+  --lh-snug:  1.3;
+  --lh-body:  1.55;
+  --lh-loose: 1.7;
+
+  /* Tracking */
+  --tr-eyebrow: 0.14em;
+  --tr-caps:    0.06em;
+
+  /* ---------- SPACING ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* ---------- RADII ---------- */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+  --r-xl: 16px;
+  --r-pill: 999px;
+
+  /* ---------- SHADOWS ---------- */
+  --shadow-0: 0 0 0 1px rgba(29, 42, 93, 0.06);                       /* hairline */
+  --shadow-1: 0 1px 2px rgba(29, 42, 93, 0.08);                        /* card resting */
+  --shadow-2: 0 4px 14px rgba(29, 42, 93, 0.10);                       /* card raised */
+  --shadow-3: 0 12px 32px rgba(29, 42, 93, 0.16);                      /* popover */
+  --shadow-focus: 0 0 0 3px rgba(45, 63, 137, 0.25);                   /* focus ring */
+
+  /* ---------- MOTION ---------- */
+  --ease-out:    cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-inout:  cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:    120ms;
+  --dur-base:    200ms;
+  --dur-slow:    320ms;
+}
+
+/* =========================================================
+   Semantic element styles
+   Use these directly on <h1>, <p>, etc OR via .ot-h1 etc.
+   ========================================================= */
+
+html {
+  font-family: var(--font-body);
+  color: var(--fg-2);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-1);
+  line-height: var(--lh-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--fg-1);
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--sp-4);
+  text-wrap: balance;
+}
+
+h1, .ot-h1 {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  color: var(--ot-gray-darkest);
+  letter-spacing: -0.01em;
+}
+h2, .ot-h2 {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  color: var(--ot-blue);
+  letter-spacing: -0.005em;
+}
+h3, .ot-h3 {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+  color: var(--fg-1);
+}
+h4, .ot-h4 {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  color: var(--fg-2);
+}
+
+.ot-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  color: var(--ot-blue-dark);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.015em;
+}
+
+.ot-eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  color: var(--ot-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.ot-eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: currentColor;
+  display: inline-block;
+}
+.ot-eyebrow--red { color: var(--ot-red); }
+.ot-eyebrow--gray { color: var(--fg-3); }
+
+p { margin: 0 0 var(--sp-4); color: var(--fg-2); }
+.ot-lead { font-size: 1.125rem; color: var(--fg-2); line-height: var(--lh-loose); }
+.ot-small { font-size: var(--fs-small); color: var(--fg-3); }
+.ot-meta  { font-size: var(--fs-micro); color: var(--fg-3); letter-spacing: var(--tr-caps); text-transform: uppercase; }
+
+code, kbd, samp, pre, .ot-mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+code {
+  background: var(--bg-2);
+  padding: 0.1em 0.35em;
+  border-radius: var(--r-sm);
+  color: var(--ot-blue-dark);
+}
+
+a { color: var(--ot-blue); text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+a:hover { color: var(--ot-blue-light); }
+
+hr { border: 0; border-top: 1px solid var(--border-1); margin: var(--sp-6) 0; }
+
+::selection { background: var(--ot-blue-lighter); color: var(--ot-blue-dark); }
+
+/* =========================================================
+   DARK MODE
+   Opt-in via [data-theme="dark"] on <html> or <body>.
+   Rooted directly in the OPS brand: surfaces are graded deeper
+   shades of brand navy #1D2A5D; text is the same warm paper
+   off-white used in light mode; accents are the brand blue and
+   brand red, scaled for contrast on the dark surface.
+   ========================================================= */
+[data-theme="dark"] {
+  /* Surfaces — page is deep, but surfaces above it lift clearly so
+     cards and panels read as elevated, not camouflaged. */
+  --bg-dark: #060A1A;         /* deepest */
+  --bg-1:    #0C1230;         /* page */
+  --bg-2:    #1F2A58;         /* surface / sections (clearly lifted) */
+  --bg-3:    #2D3A72;         /* tinted surface (lighter again) */
+
+  /* Text — lifted for comfortable reading on navy. All steps clear WCAG AA.
+     fg-1 is near-white, fg-4 is still muted but no longer disappears. */
+  --fg-1: #F7F5EF;
+  --fg-2: #DCDEE8;
+  --fg-3: #ABB0C6;
+  --fg-4: #7B81A0;
+  --fg-on-dark: #F7F5EF;
+
+  /* Hairlines */
+  --border-1: rgba(247, 245, 239, 0.10);
+  --border-2: rgba(247, 245, 239, 0.18);
+  --border-strong: rgba(247, 245, 239, 0.32);
+
+  /* Interactive — LITERAL brand scales.
+     Primary = brand blue lightened for contrast on the dark surface.
+     Alert   = brand red, same range. */
+  --accent:         #A6B5E0;        /* brand blue @ dark — light fill */
+  --accent-hover:   #BEC9E8;
+  --accent-active:  #6E83C7;
+  --danger:         #D14848;        /* brand red @ dark */
+  --danger-hover:   #DC6A6A;
+  --danger-active:  var(--ot-red);
+
+  /* Status tints — same hues, transparent over the navy */
+  --info-fg:    #8A9DD8;
+  --info-bg:    rgba(110, 131, 199, 0.14);
+  --warn-fg:    #DC6A6A;
+  --warn-bg:    rgba(209, 72, 72, 0.14);
+  --success-fg: #8FBF8F;
+  --success-bg: rgba(143, 191, 143, 0.12);
+
+  /* Shadows — punched up for the dark surface */
+  --shadow-0: 0 0 0 1px rgba(245, 244, 240, 0.06);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.55);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.50);
+  --shadow-3: 0 20px 56px rgba(0, 0, 0, 0.60);
+  --shadow-focus: 0 0 0 3px rgba(110, 131, 199, 0.35);
+}
+
+[data-theme="dark"] ::selection { background: rgba(110, 131, 199, 0.40); color: #F5F4F0; }
+
+/* Element-level adjustments in dark mode */
+[data-theme="dark"] h1, [data-theme="dark"] .ot-h1 { color: var(--fg-1); }
+[data-theme="dark"] h2, [data-theme="dark"] .ot-h2 { color: var(--fg-1); }
+[data-theme="dark"] .ot-title { color: var(--fg-1); }
+[data-theme="dark"] .ot-eyebrow { color: var(--accent-hover); }
+[data-theme="dark"] .ot-eyebrow--red { color: var(--danger-hover); }
+[data-theme="dark"] code { background: rgba(245, 244, 240, 0.06); color: var(--accent-hover); }
+[data-theme="dark"] a { color: var(--accent-hover); }
+[data-theme="dark"] a:hover { color: #B8C4E6; }
