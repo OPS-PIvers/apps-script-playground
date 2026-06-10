@@ -188,16 +188,17 @@
   .cohesion { flex-direction: row; gap: 64px; align-items: stretch; }
   .cohesion .coh-left { width: 44%; display: flex; flex-direction: column; justify-content: center; }
   .cohesion .coh-left .whys { grid-template-columns: 1fr; gap: 24px; margin-top: 40px; }
+  /* Both rows share the same 2-column grid so edges align, but the rows
+     keep a clear hierarchy: the DESIGN.md / style-guide media are the
+     focal point (tall hero row), the QR codes a smaller supporting row. */
   .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
-  .cohesion .coh-bottom { display: flex; gap: 28px; align-items: flex-start; justify-content: space-evenly; }
+  .cohesion .coh-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
   .mediafig { display: flex; flex-direction: column; }
   .mediacap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
   .cohesion .coh-right media-slot { width: 100%; box-shadow: var(--shadow-2); display: block; }
-  .cohesion .coh-shots { display: flex; gap: 28px; align-items: stretch; }
-  .cohesion .fig-page { flex: 1; }
-  .cohesion .fig-page media-slot { height: 460px; }
-  .cohesion .fig-qr { flex: none; width: 410px; align-items: center; text-align: center; }
-  .cohesion .fig-qr .qrbox2 { width: 410px; height: 410px; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 18px; box-sizing: border-box; }
+  .cohesion .coh-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .cohesion .fig-page media-slot { height: 540px; }
+  .cohesion .fig-qr .qrbox2 { width: 300px; aspect-ratio: 1 / 1; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 16px; box-sizing: border-box; }
   .cohesion .fig-qr .qrbox2 image-slot { width: 100%; height: 100%; }
 
   /* recipe — four inline cards */
