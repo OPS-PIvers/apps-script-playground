@@ -882,11 +882,18 @@
         </button>
         <span class="divider"></span>
         <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
+        <span class="divider rail-toggle-div" style="display:none"></span>
+        <button class="btn rail-toggle" type="button" style="display:none" aria-label="Toggle thumbnail rail" aria-pressed="true" title="Hide thumbnails (T)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><path d="M6.5 3.5v9"/></svg>
+        </button>
       `;
 
       overlay.querySelector('.prev').addEventListener('click', () => this._advance(-1, 'click'));
       overlay.querySelector('.next').addEventListener('click', () => this._advance(1, 'click'));
       overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
+      this._railToggleBtn = overlay.querySelector('.rail-toggle');
+      this._railToggleDiv = overlay.querySelector('.rail-toggle-div');
+      this._railToggleBtn.addEventListener('click', () => this.setRailVisible(!this._railVisible));
 
       // Thumbnail rail + context menu. Thumbnails are populated in
       // _renderRail() after _collectSlides().
@@ -1260,20 +1267,28 @@
       // whether the Tweaks panel itself is open — closing the panel
       // doesn't change rail visibility. Persists alongside rail width.
       if (d && d.type === '__deck_rail_visible' && typeof d.on === 'boolean') {
-        if (d.on === this._railVisible) return;
-        this._railVisible = d.on;
-        try { localStorage.setItem('deck-stage.railVisible', d.on ? '1' : '0'); } catch (e) {}
-        // Arm the transition, commit it, then flip state — otherwise the
-        // browser coalesces both writes and nothing animates on show.
-        this.setAttribute('data-rail-anim', '');
-        void (this._rail && this._rail.offsetHeight);
-        this._syncRailHidden();
-        this._fit();
-        this._scaleThumbs();
-        clearTimeout(this._railAnimTimer);
-        this._railAnimTimer = setTimeout(() => this.removeAttribute('data-rail-anim'), 220);
+        this.setRailVisible(d.on);
       }
       if (d && d.type === '__omelette_rail_enabled') this._enableRail();
+    }
+
+    /** Show/hide the thumbnail rail (animated slide). Public API — driven
+     *  by the T key, the overlay's thumbnails button, and the host's
+     *  TweaksPanel message. The preference persists alongside rail width. */
+    setRailVisible(on) {
+      on = !!on;
+      if (!this._railEnabled || on === this._railVisible) return;
+      this._railVisible = on;
+      try { localStorage.setItem('deck-stage.railVisible', on ? '1' : '0'); } catch (e) {}
+      // Arm the transition, commit it, then flip state — otherwise the
+      // browser coalesces both writes and nothing animates on show.
+      this.setAttribute('data-rail-anim', '');
+      void (this._rail && this._rail.offsetHeight);
+      this._syncRailHidden();
+      this._fit();
+      this._scaleThumbs();
+      clearTimeout(this._railAnimTimer);
+      this._railAnimTimer = setTimeout(() => this.removeAttribute('data-rail-anim'), 220);
     }
 
     _syncRailHidden() {
@@ -1291,6 +1306,16 @@
       // translateX hide leaves thumbs (tabIndex=0) in the tab order —
       // inert keeps them unfocusable while the rail is off-screen.
       this._rail.inert = hard || !this._railVisible;
+      // The overlay's thumbnails toggle mirrors rail state; it stays hidden
+      // entirely while the rail feature is off (no-rail / noscale /
+      // presenter-popup iframes).
+      if (this._railToggleBtn) {
+        const show = this._railEnabled ? '' : 'none';
+        this._railToggleBtn.style.display = show;
+        if (this._railToggleDiv) this._railToggleDiv.style.display = show;
+        this._railToggleBtn.setAttribute('aria-pressed', this._railVisible ? 'true' : 'false');
+        this._railToggleBtn.title = this._railVisible ? 'Hide thumbnails (T)' : 'Show thumbnails (T)';
+      }
     }
 
     _onTap(e) {
@@ -1346,6 +1371,8 @@
         this._go(this._slides.length - 1, 'keyboard');
       } else if (key === 'r' || key === 'R') {
         this._go(0, 'keyboard');
+      } else if ((key === 't' || key === 'T') && this._railEnabled) {
+        this.setRailVisible(!this._railVisible);
       } else if (/^[0-9]$/.test(key)) {
         // 1..9 jump to that slide; 0 jumps to 10.
         const n = key === '0' ? 9 : parseInt(key, 10) - 1;

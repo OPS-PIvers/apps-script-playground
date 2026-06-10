@@ -269,9 +269,13 @@
       opacity: 1; transform: none;
       transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
     }
-    .s:not([data-deck-active]) .anim,
-    .s:not([data-deck-active]) .anim2,
-    .s:not([data-deck-active]) .anim3 {
+    /* Scoped to light-DOM slides (direct children of deck-stage): the rail
+       thumbnails are clones inside shadow roots that adopt this stylesheet,
+       and they must render the resting (visible) state — an unscoped
+       :not([data-deck-active]) would blank every thumbnail. */
+    deck-stage > .s:not([data-deck-active]) .anim,
+    deck-stage > .s:not([data-deck-active]) .anim2,
+    deck-stage > .s:not([data-deck-active]) .anim3 {
       opacity: 0; transform: translateY(14px);
     }
     [data-deck-active] .anim2 { transition-delay: .12s; }
