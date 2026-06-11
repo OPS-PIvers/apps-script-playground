@@ -47,6 +47,15 @@
     '  max-width:100%;display:flex;flex-direction:column;gap:12px}' +
     '.mlb-frame img,.mlb-frame video{display:block;max-width:84vw;max-height:76vh;' +
     '  width:auto;height:auto;border-radius:6px;background:#000}' +
+    // skeleton placeholder shown while the next carousel item loads, so the
+    // frame holds its footprint and shimmers instead of collapsing to nothing
+    '.mlb-skel{border-radius:6px;width:min(62vw,900px);aspect-ratio:16/9;' +
+    '  max-width:84vw;max-height:76vh;' +
+    '  background:#e7eaf3 linear-gradient(100deg,transparent 25%,' +
+    '    rgba(255,255,255,.9) 50%,transparent 75%) no-repeat;' +
+    '  background-size:200% 100%;animation:mlb-shimmer 1.15s ease-in-out infinite}' +
+    '.mlb-loading{display:none}' +
+    '@keyframes mlb-shimmer{0%{background-position:120% 0}100%{background-position:-120% 0}}' +
     '.mlb-cap{display:flex;align-items:center;gap:12px;margin:0;padding:2px 4px 0;' +
     '  color:#555;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}' +
     '.mlb-cap::before{content:"";width:28px;height:3px;background:' + RED + ';flex:none}' +
@@ -67,7 +76,8 @@
     '.mlb-nav:active{transform:translateY(-50%) translateY(1px)}' +
     '.mlb-prev{left:26px}.mlb-next{right:26px}' +
     '.mlb-scrim[data-single] .mlb-nav,.mlb-scrim[data-single] .mlb-count{display:none}' +
-    '@media (prefers-reduced-motion:reduce){.mlb-scrim,.mlb-stage{transition:none}}';
+    '@media (prefers-reduced-motion:reduce){.mlb-scrim,.mlb-stage{transition:none}' +
+    '  .mlb-skel{animation:none}}';
   document.head.appendChild(style);
 
   const scrim = document.createElement('div');
@@ -153,13 +163,44 @@
   function show(i) {
     if (!items.length) return;
     idx = ((i % items.length) + items.length) % items.length; // wrap both ways
-    const old = frame.querySelector('img,video');
-    if (old) {
-      if (old.tagName === 'VIDEO') { try { old.pause(); } catch (e) {} }
-      old.remove();
-    }
-    frame.insertBefore(elFor(items[idx]), cap);
     count.textContent = (idx + 1) + ' / ' + items.length;
+
+    // Footprint of the media currently on screen (ignore a still-loading,
+    // hidden one) so the skeleton can hold the frame's size during the swap.
+    let holdW = 0, holdH = 0;
+    const shown = [].slice.call(frame.querySelectorAll('img,video'))
+      .find((n) => !n.classList.contains('mlb-loading'));
+    if (shown) { const r = shown.getBoundingClientRect(); holdW = r.width; holdH = r.height; }
+
+    // Tear down whatever's in the frame (media + any stale skeleton).
+    frame.querySelectorAll('img,video,.mlb-skel').forEach((n) => {
+      if (n.tagName === 'VIDEO') { try { n.pause(); } catch (e) {} }
+      n.remove();
+    });
+
+    // Skeleton placeholder: holds the space and shimmers until the new media
+    // is actually decodable, so the frame never collapses to a loading blip.
+    const skel = document.createElement('div');
+    skel.className = 'mlb-skel';
+    if (holdW && holdH) { skel.style.width = holdW + 'px'; skel.style.height = holdH + 'px'; }
+    frame.insertBefore(skel, cap);
+
+    const el = elFor(items[idx]);
+    el.classList.add('mlb-loading'); // hidden (display:none) until ready
+    frame.insertBefore(el, skel);
+    const reveal = () => {
+      if (skel.parentNode) skel.remove();
+      el.classList.remove('mlb-loading');
+    };
+    el.addEventListener('error', reveal, { once: true });
+    if (items[idx].video) {
+      el.addEventListener('loadeddata', reveal, { once: true });
+    } else if (el.complete && el.naturalWidth) {
+      reveal(); // already cached/decoded
+    } else {
+      el.addEventListener('load', reveal, { once: true });
+    }
+
     // Warm the next image so arrowing feels instant (videos stream anyway).
     const nxt = items[(idx + 1) % items.length];
     if (nxt && !nxt.video) { const pre = new Image(); pre.src = nxt.url; }
@@ -192,8 +233,7 @@
     if (v) { try { v.pause(); } catch (e) {} }
     setTimeout(() => {
       if (scrim.classList.contains('mlb-on')) return;
-      const m = frame.querySelector('img,video');
-      if (m) m.remove();
+      frame.querySelectorAll('img,video,.mlb-skel').forEach((m) => m.remove());
     }, 240);
   }
 
