@@ -45,16 +45,19 @@
     '  padding:14px;box-sizing:border-box;' +
     '  box-shadow:0 12px 28px rgba(29,42,93,.42),0 2px 8px rgba(29,42,93,.3);' +
     '  max-width:100%;display:flex;flex-direction:column;gap:12px}' +
-    '.mlb-frame img,.mlb-frame video{display:block;max-width:84vw;max-height:76vh;' +
+    // media sits in a relatively-positioned wrapper so the skeleton can lie
+    // directly on top of it (not stacked below) while the next item loads
+    '.mlb-media{position:relative;align-self:center;max-width:84vw;max-height:76vh;line-height:0}' +
+    '.mlb-media[data-loading]{width:min(62vw,900px);aspect-ratio:16/9}' +
+    '.mlb-media img,.mlb-media video{display:block;max-width:84vw;max-height:76vh;' +
     '  width:auto;height:auto;border-radius:6px;background:#000}' +
-    // skeleton placeholder shown while the next carousel item loads, so the
-    // frame holds its footprint and shimmers instead of collapsing to nothing
-    '.mlb-skel{border-radius:6px;width:min(62vw,900px);aspect-ratio:16/9;' +
-    '  max-width:84vw;max-height:76vh;' +
+    // skeleton overlay shown while the next carousel item loads — absolutely
+    // positioned over the media so it covers it and shimmers, holding the
+    // frame's footprint instead of collapsing or stacking a second box below
+    '.mlb-skel{position:absolute;inset:0;z-index:2;border-radius:6px;' +
     '  background:#e7eaf3 linear-gradient(100deg,transparent 25%,' +
     '    rgba(255,255,255,.9) 50%,transparent 75%) no-repeat;' +
     '  background-size:200% 100%;animation:mlb-shimmer 1.15s ease-in-out infinite}' +
-    '.mlb-loading{display:none}' +
     '@keyframes mlb-shimmer{0%{background-position:120% 0}100%{background-position:-120% 0}}' +
     '.mlb-cap{display:flex;align-items:center;gap:12px;margin:0;padding:2px 4px 0;' +
     '  color:#555;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}' +
@@ -93,10 +96,12 @@
     '  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
     '   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg></button>' +
     '<div class="mlb-stage">' +
-    '  <div class="mlb-frame"><p class="mlb-cap"><span class="mlb-cap-text"></span>' +
+    '  <div class="mlb-frame"><div class="mlb-media"></div>' +
+    '    <p class="mlb-cap"><span class="mlb-cap-text"></span>' +
     '    <span class="mlb-count"></span></p></div>' +
     '</div>';
   const frame = scrim.querySelector('.mlb-frame');
+  const media = scrim.querySelector('.mlb-media');
   const cap = scrim.querySelector('.mlb-cap');
   const capText = scrim.querySelector('.mlb-cap-text');
   const count = scrim.querySelector('.mlb-count');
@@ -172,32 +177,37 @@
     idx = ((i % items.length) + items.length) % items.length; // wrap both ways
     count.textContent = (idx + 1) + ' / ' + items.length;
 
-    // Footprint of the media currently on screen (ignore a still-loading,
-    // hidden one) so the skeleton can hold the frame's size during the swap.
+    // Footprint of the media currently on screen so the wrapper can hold the
+    // frame's size during the swap instead of collapsing to a loading blip.
     let holdW = 0, holdH = 0;
-    const shown = [].slice.call(frame.querySelectorAll('img,video'))
-      .find((n) => !n.classList.contains('mlb-loading'));
+    const shown = media.querySelector('img,video');
     if (shown) { const r = shown.getBoundingClientRect(); holdW = r.width; holdH = r.height; }
 
-    // Tear down whatever's in the frame (media + any stale skeleton).
-    frame.querySelectorAll('img,video,.mlb-skel').forEach((n) => {
+    // Tear down whatever's in the wrapper (media + any stale skeleton).
+    media.querySelectorAll('img,video,.mlb-skel').forEach((n) => {
       if (n.tagName === 'VIDEO') killVideo(n);
       n.remove();
     });
 
-    // Skeleton placeholder: holds the space and shimmers until the new media
-    // is actually decodable, so the frame never collapses to a loading blip.
+    // New media loads in place; the skeleton lies on top of it (absolute
+    // overlay) so it covers the loading frame and shimmers, holding the
+    // footprint until the media is actually decodable.
+    const el = elFor(items[idx]);
+    media.appendChild(el);
+
     const skel = document.createElement('div');
     skel.className = 'mlb-skel';
-    if (holdW && holdH) { skel.style.width = holdW + 'px'; skel.style.height = holdH + 'px'; }
-    frame.insertBefore(skel, cap);
+    if (holdW && holdH) { media.style.width = holdW + 'px'; media.style.height = holdH + 'px'; }
+    else media.setAttribute('data-loading', ''); // default 16/9 footprint
+    media.appendChild(skel);
 
-    const el = elFor(items[idx]);
-    el.classList.add('mlb-loading'); // hidden (display:none) until ready
-    frame.insertBefore(el, skel);
     const reveal = () => {
+      // A late load/error from a torn-down item (rapid navigation) must not
+      // clear the live item's loading footprint — only act if el is still it.
+      if (el.parentNode !== media) return;
       if (skel.parentNode) skel.remove();
-      el.classList.remove('mlb-loading');
+      media.style.width = ''; media.style.height = '';
+      media.removeAttribute('data-loading');
     };
     el.addEventListener('error', reveal, { once: true });
     if (items[idx].video) {
@@ -236,14 +246,16 @@
     scrim.classList.remove('mlb-on');
     openEl = null;
     document.removeEventListener('keydown', onKey, true);
-    const v = frame.querySelector('video');
+    const v = media.querySelector('video');
     if (v) { try { v.pause(); } catch (e) {} }
     setTimeout(() => {
       if (scrim.classList.contains('mlb-on')) return;
-      frame.querySelectorAll('img,video,.mlb-skel').forEach((m) => {
+      media.querySelectorAll('img,video,.mlb-skel').forEach((m) => {
         if (m.tagName === 'VIDEO') killVideo(m);
         m.remove();
       });
+      media.style.width = ''; media.style.height = '';
+      media.removeAttribute('data-loading');
     }, 240);
   }
 
