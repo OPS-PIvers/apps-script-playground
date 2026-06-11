@@ -25,7 +25,7 @@ python -m http.server 8000
 
 | File | Role |
 |---|---|
-| `The Apps Script Playground.html` | The deck — 23 slides authored at 1920×1080 |
+| `The Apps Script Playground.html` | The deck — 24 slides authored at 1920×1080 |
 | `colors_and_type.css` | Orono Technology design tokens (colors, type, spacing) |
 | `deck-stage.js` | `<deck-stage>` web component — navigation, rail, presenter view |
 | `media-slot.js` / `image-slot.js` | Drop-in media placeholders; `src` attributes point at `media/` so the deck travels with its demos |
