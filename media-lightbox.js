@@ -202,6 +202,9 @@
     media.appendChild(skel);
 
     const reveal = () => {
+      // A late load/error from a torn-down item (rapid navigation) must not
+      // clear the live item's loading footprint — only act if el is still it.
+      if (el.parentNode !== media) return;
       if (skel.parentNode) skel.remove();
       media.style.width = ''; media.style.height = '';
       media.removeAttribute('data-loading');
