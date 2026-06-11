@@ -289,10 +289,26 @@
      rest of the line slides over. */
   .thanks .morph-out { display: inline-block; white-space: pre; overflow: hidden;
     max-width: var(--mw, 12ch); vertical-align: bottom; }
+  /* word spinner — the final word cycles through a stacked list before landing
+     on "meaningful." Resting state shows the LAST item (print / reduced-motion /
+     rail thumbnails read "Let's make something meaningful."). */
+  .thanks .spin { display: inline-block; overflow: hidden; height: 1lh;
+    vertical-align: bottom; color: #e57e7f; }
+  .thanks .spin-item { display: block; height: 1lh; }
+  .thanks .spin-track { display: block; transform: translateY(-5lh); }
   @media (prefers-reduced-motion: no-preference) {
+    [data-deck-active] .thanks .spin-track { animation: thanksSpin 3.6s var(--ease-inout) 1s both; }
+    @keyframes thanksSpin {
+      0%, 11.5%      { transform: translateY(0); }
+      16.7%, 28.2%   { transform: translateY(-1lh); }
+      33.3%, 44.8%   { transform: translateY(-2lh); }
+      50%, 61.5%     { transform: translateY(-3lh); }
+      66.7%, 78.2%   { transform: translateY(-4lh); }
+      83.3%, 100%    { transform: translateY(-5lh); }
+    }
     [data-deck-active] .thanks .morph-out { animation: thanksMorph 1.1s var(--ease-inout) forwards; }
-    [data-deck-active] .thanks .morph-out.m1 { animation-delay: 2.4s; }
-    [data-deck-active] .thanks .morph-out.m2 { animation-delay: 2.8s; }
+    [data-deck-active] .thanks .morph-out.m1 { animation-delay: 5.2s; }
+    [data-deck-active] .thanks .morph-out.m2 { animation-delay: 5.6s; }
     @keyframes thanksMorph {
       0%   { opacity: 1; max-width: var(--mw, 12ch); transform: translateX(0); }
       55%  { opacity: 0; transform: translateX(-0.35em); }
@@ -707,7 +723,7 @@ Something not right? Describe it again and let AI fix it.</p>
   <!-- 23 · THANK YOU -->
   <section data-label="Thank you" class="s navy close">
     <p class="kicker anim">Thank you</p>
-    <p class="thanks anim2" style="white-space:nowrap;font-size:88px;">Let's make <span class="morph-out m1" style="--mw:500px">something </span>meaning<span class="morph-out m2" style="--mw:125px">ful</span>.</p>
+    <p class="thanks anim2" style="white-space:nowrap;font-size:88px;">Let's make <span class="morph-out m1" style="--mw:500px">something </span><span class="spin"><span class="spin-track"><span class="spin-item">new.</span><span class="spin-item">helpful.</span><span class="spin-item">exciting.</span><span class="spin-item">different.</span><span class="spin-item">collaborative.</span><span class="spin-item">meaning<span class="morph-out m2" style="--mw:125px">ful</span>.</span></span></span></p>
     <p class="contact anim3" style="font-family: Lexend">github.com/OPS-PIvers · Orono Public Schools Technology</p>
     <div class="spacer"></div>
     <div class="footmark anim3"><div class="rule"></div><span>MN Thought Leaders Summit · 2026</span></div>
