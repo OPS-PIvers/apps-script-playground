@@ -160,6 +160,13 @@
     return i;
   }
 
+  // Fully release a <video> before it leaves the DOM: pause(), drop the src,
+  // and load() so the browser stops buffering and frees decoder/network
+  // resources. Pausing alone leaves background loading running, esp. on mobile.
+  function killVideo(v) {
+    try { v.pause(); v.removeAttribute('src'); v.load(); } catch (e) {}
+  }
+
   function show(i) {
     if (!items.length) return;
     idx = ((i % items.length) + items.length) % items.length; // wrap both ways
@@ -174,7 +181,7 @@
 
     // Tear down whatever's in the frame (media + any stale skeleton).
     frame.querySelectorAll('img,video,.mlb-skel').forEach((n) => {
-      if (n.tagName === 'VIDEO') { try { n.pause(); } catch (e) {} }
+      if (n.tagName === 'VIDEO') killVideo(n);
       n.remove();
     });
 
@@ -233,7 +240,10 @@
     if (v) { try { v.pause(); } catch (e) {} }
     setTimeout(() => {
       if (scrim.classList.contains('mlb-on')) return;
-      frame.querySelectorAll('img,video,.mlb-skel').forEach((m) => m.remove());
+      frame.querySelectorAll('img,video,.mlb-skel').forEach((m) => {
+        if (m.tagName === 'VIDEO') killVideo(m);
+        m.remove();
+      });
     }, 240);
   }
 
