@@ -213,10 +213,11 @@
   .rcard .rqr .qbox image-slot { width: 100%; height: 100%; }
   .rcard .rqr .qcap { font-size: 24px; font-weight: 600; color: var(--ot-blue); line-height: 1.15; }
 
-  /* spartan architecture */
+  /* spartan architecture — the portrait tablet sets the right column's
+     width; the text column takes everything left over so it can breathe */
   .arch { flex-direction: row; gap: 72px; align-items: stretch; }
-  .arch .arch-left { width: 40%; display: flex; flex-direction: column; justify-content: center; }
-  .arch .arch-right { flex: 1; display: flex; align-items: center; }
+  .arch .arch-left { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .arch .arch-right { flex: none; display: flex; align-items: center; }
   .stacklist { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
   .stackrow { background: var(--ot-gray-lightest); border-radius: var(--r-md); padding: 16px 28px; }
   .stackrow .sr-h { font-size: 28px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 6px; }
