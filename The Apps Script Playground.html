@@ -283,6 +283,55 @@
     [data-deck-active] .anim3 { transition-delay: .24s; }
   }
 
+  /* per-item cascade — same invariant as .anim: the RESTING state is visible,
+     so print / reduced-motion / export / rail thumbnails always show content.
+     Put .cascade on a container and its direct children fade up one-by-one
+     when the slide is active. Tune per slide with inline --cascade-start /
+     --cascade-step on the container (the custom properties are inert on their
+     own — only the [data-deck-active] rule consumes them, so deactivation
+     still reverses with no delay, same contract as .anim2/.anim3 above). */
+  @media (prefers-reduced-motion: no-preference) {
+    .cascade > * {
+      opacity: 1; transform: none;
+      transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+      /* fallback index for children past the nth-child ladder below — the
+         ladder out-specifies this, so children 16+ arrive at the cascade's
+         tail instead of alongside the first item */
+      --i: 15;
+    }
+    deck-stage > .s:not([data-deck-active]) .cascade > * {
+      opacity: 0; transform: translateY(14px);
+    }
+    /* flow arrows arrive along the flow direction, after their node */
+    deck-stage > .s:not([data-deck-active]) .cascade > .flowarrow {
+      transform: translateX(-16px);
+    }
+    [data-deck-active] .cascade > * {
+      transition-delay: calc(var(--cascade-start, .25s) + var(--i, 0) * var(--cascade-step, 90ms));
+    }
+    .cascade > :nth-child(1)  { --i: 0; }  .cascade > :nth-child(2)  { --i: 1; }
+    .cascade > :nth-child(3)  { --i: 2; }  .cascade > :nth-child(4)  { --i: 3; }
+    .cascade > :nth-child(5)  { --i: 4; }  .cascade > :nth-child(6)  { --i: 5; }
+    .cascade > :nth-child(7)  { --i: 6; }  .cascade > :nth-child(8)  { --i: 7; }
+    .cascade > :nth-child(9)  { --i: 8; }  .cascade > :nth-child(10) { --i: 9; }
+    .cascade > :nth-child(11) { --i: 10; } .cascade > :nth-child(12) { --i: 11; }
+    .cascade > :nth-child(13) { --i: 12; } .cascade > :nth-child(14) { --i: 13; }
+    .cascade > :nth-child(15) { --i: 14; }
+
+    /* divider underline grows from the left (resting = full width) */
+    .grow-x {
+      transform: none; transform-origin: left center;
+      transition: transform .7s var(--ease-out);
+    }
+    deck-stage > .s:not([data-deck-active]) .grow-x { transform: scaleX(0); }
+    [data-deck-active] .grow-x { transition-delay: .35s; }
+  }
+  /* deck-stage's beforeprint freeze zeroes transition-duration but not
+     transition-delay — kill both so nothing prints mid-delay. */
+  @media print {
+    .anim, .anim2, .anim3, .cascade > *, .grow-x { transition: none !important; }
+  }
+
   /* thank-you morph — "Let's make something meaningful." → "Let's make meaning."
      Resting state is the full phrase (print / reduced-motion / export show it);
      on the live slide the marked spans fade out leftward and collapse so the
@@ -335,11 +384,9 @@
   <section data-label="Premise" class="s navy statement">
     <p class="kicker anim">The premise</p>
     <p class="big anim2" style="font-size: 92px">You can make an interactive web app today.</p>
-    <p class="sub2 anim3">It's not that "anybody can learn to code," but that they can describe what they need, in plain language, and build a working tool in minutes or hours, not days.
+    <p class="sub2 anim3">Not because everyone suddenly learned to code. Because you can now describe the tool you need, in plain language, and have it working the same afternoon.
 
-We aren't building the car. We are steering, accelerating, slowing down, and stopping.
-
-And, importantly, we are learning the rules of the road — to keep ourselves and others safe.</p>
+We aren't building the car anymore. We're driving it. And like any driver, we still have to learn the rules of the road.</p>
   </section>
 
   <!-- 3 · PROBLEM -->
@@ -347,11 +394,11 @@ And, importantly, we are learning the rules of the road — to keep ourselves an
     <div class="head-block">
       <p class="kicker anim">The spreadsheet problem</p>
       <h2 class="title anim">Our systems are already built on many disconnected spreadsheets</h2>
-      <p class="lead anim2">Every school runs on them — rosters, points, sign-ins, observations, forms, forms, and more forms. A spreadsheet is a fine place to store data, but we all agree it's a miserable place to do the actual work.</p>
+      <p class="lead anim2">Every school runs on them. Rosters, points, sign-ins, observations, and more forms than anyone can count. A spreadsheet is a fine place to keep data. It's a miserable place to ask people to work.</p>
     </div>
-    <div class="pains anim3">
+    <div class="pains cascade" style="--cascade-start:.35s; --cascade-step:110ms">
       <div class="pain"><h3>No guardrails</h3><p>Nothing stops a bad entry or the wrong format.</p></div>
-      <div class="pain"><h3>No roles</h3><p>Everyone sees everything — or you play whack-a-mole protecting ranges.</p></div>
+      <div class="pain"><h3>No roles</h3><p>Everyone sees everything, unless you play whack-a-mole with protected ranges.</p></div>
       <div class="pain"><h3>One click from chaos</h3><p>A stray paste or delete can wipe a whole column.</p></div>
       <div class="pain"><h3>Wrong device</h3><p>Never built for the person on a phone in a hallway.</p></div>
     </div>
@@ -363,7 +410,7 @@ And, importantly, we are learning the rules of the road — to keep ourselves an
   <section data-label="Sheet is a database" class="s navy statement">
     <p class="kicker anim">The reframe</p>
     <p class="big anim2">A spreadsheet is your storage, not your app.</p>
-    <p class="sub2 anim3">It has tables, rows, and columns. It just needs a front door: a real interface, intuitively designed for the humans using it — not a wall of cells.
+    <p class="sub2 anim3">It already has tables, rows, and columns. What it's missing is a front door: an interface designed for the people using it, not a wall of cells.
 
 That front door is a web app.</p>
   </section>
@@ -374,7 +421,7 @@ That front door is a web app.</p>
       <p class="kicker anim">The stack</p>
       <h2 class="title anim">A full web app, free, inside Google Workspace</h2>
     </div>
-    <div class="flow anim2">
+    <div class="flow cascade" style="--cascade-step:110ms">
       <div class="node">
         <div class="nlabel">Front door</div>
         <div class="nname">The browser</div>
@@ -393,10 +440,10 @@ That front door is a web app.</p>
         <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
       </div>
     </div>
-    <div class="whys anim3">
-      <div class="why"><h3>Free</h3><p>No server, no hosting bill, no procurement. It runs on Google's infrastructure and deploys as a link.</p></div>
-      <div class="why"><h3>Persistent</h3><p>Every action reads and writes to a real Google Sheet you can open, audit, and edit at any time.</p></div>
-      <div class="why"><h3>Native</h3><p>Google login, Drive sharing, and your Workspace data — authentication built in.</p></div>
+    <div class="whys cascade" style="--cascade-start:.85s">
+      <div class="why"><h3>Free</h3><p>No server to rent, nothing to procure. It runs on Google's infrastructure and deploys as a link.</p></div>
+      <div class="why"><h3>Persistent</h3><p>Every click lands in a real Google Sheet. Open it, audit it, fix a typo by hand if you want.</p></div>
+      <div class="why"><h3>Native</h3><p>Sign-in is just Google login, so access control is a conversation your district has already had.</p></div>
     </div>
   </section>
 
@@ -404,11 +451,9 @@ That front door is a web app.</p>
   <section data-label="The unlock" class="s navy statement">
     <p class="kicker anim">Why now</p>
     <p class="big anim2">Describe it. Let AI build it. Iterate.</p>
-    <p class="sub2 anim3">The hard part was never entering data into a spreadsheet. It was making the spreadsheet data accessible and intuitive. 
+    <p class="sub2 anim3">The hard part was never the spreadsheet. It was building the app on top, and that used to take a developer.
 
-Now you describe what you want. Use screenshots, explain your sheet layout, and let AI build your vision.
-
-Something not right? Describe it again and let AI fix it.</p>
+Now you explain what you need, in plain language, with a screenshot of your sheet. If the first version isn't right, you say so, and it gets fixed.</p>
   </section>
 
   <!-- 7 · PLAYGROUND MAP -->
@@ -417,10 +462,10 @@ Something not right? Describe it again and let AI fix it.</p>
       <p class="kicker anim">Keep your spreadsheets out of sight</p>
       <h2 class="title anim">Ten tools. One recipe. Zero software engineers.</h2>
     </div>
-    <div class="map anim2">
+    <div class="map cascade" style="--cascade-step:150ms">
       <div class="mapcol">
         <h3>For teachers</h3>
-        <ul>
+        <ul class="cascade" style="--cascade-start:.45s; --cascade-step:80ms">
           <li>Digital Microscope<span>Upload screenshots &amp; label zones directly in the browser</span></li>
           <li>Research &amp; Annotations<span>Highlight, tag, and cite sources across any website or PDF</span></li>
           <li>Gamified Ranking<span>Earn XP, ranks, and badges through class activities</span></li>
@@ -428,7 +473,7 @@ Something not right? Describe it again and let AI fix it.</p>
       </div>
       <div class="mapcol">
         <h3>For buildings &amp; teams</h3>
-        <ul>
+        <ul class="cascade" style="--cascade-start:.6s; --cascade-step:80ms">
           <li>Assessment Portal<span>Secure assessment sharing with accessibility built in</span></li>
           <li>OMS Agenda Sync<span>50+ teacher agendas synced to one web app</span></li>
           <li>Flex Sign-In<span>Flex attendance with customizable approve/deny flags</span></li>
@@ -437,7 +482,7 @@ Something not right? Describe it again and let AI fix it.</p>
       </div>
       <div class="mapcol">
         <h3>For districts</h3>
-        <ul>
+        <ul class="cascade" style="--cascade-start:.75s; --cascade-step:80ms">
           <li>Subbing for Teachers<span>Request and claim coverage, with hours logged</span></li>
           <li>Peer Observation Portal<span>Interactive rubrics, recording, transcription, and evidence tagging</span></li>
           <li>Digital Learning Hub<span>Custom Google Sites linked to staff digital guides</span></li>
@@ -448,22 +493,22 @@ Something not right? Describe it again and let AI fix it.</p>
 
   <!-- 8 · DIVIDER 01 -->
   <section data-label="For teachers" class="s navy divider">
-    <div class="bignum">01</div>
+    <div class="bignum anim">01</div>
     <p class="kicker anim">For teachers</p>
     <h2 class="anim2">In the classroom</h2>
-    <div class="ubar anim2"></div>
-    <p class="desc anim3">Classroom tools a teacher can build and run themselves — interactive labs, research and citations, and a little friendly competition.</p>
+    <div class="ubar grow-x"></div>
+    <p class="desc anim3">Tools a teacher can build and run without waiting on anyone: interactive labs, student research, and some classroom rivalry.</p>
   </section>
 
   <!-- 9 · TEACHERS GRID -->
   <section data-label="Teacher tools" class="s light">
     <div class="head-block">
       <p class="kicker anim">For teachers</p>
-      <h2 class="title anim">Three tools actively used in classrooms</h2>
+      <h2 class="title anim">In daily use across our classrooms</h2>
     </div>
-    <div class="grid3 anim2">
-      <div class="toolcard"><div class="tag">Science</div><h3>OHS Digital Microscope</h3><p>Capture, label, and save microscope views on any device right from a web browser.</p></div>
-      <div class="toolcard"><div class="tag">Research</div><h3>Research &amp; Annotations</h3><p>Students highlight, tag, and cite sources across any website or PDF, and a bibliography builds itself as they work — replacing a paid subscription.</p></div>
+    <div class="grid3 cascade" style="--cascade-start:.3s; --cascade-step:120ms">
+      <div class="toolcard"><div class="tag">Science</div><h3>OHS Digital Microscope</h3><p>Students capture and label microscope views from any device, nothing installed.</p></div>
+      <div class="toolcard"><div class="tag">Research</div><h3>Research &amp; Annotations</h3><p>Students highlight, tag, and cite sources on any website or PDF while the bibliography assembles itself. It replaced a paid subscription.</p></div>
       <div class="toolcard"><div class="tag">Engagement</div><h3>Gamified Ranking System</h3><p>A mythology-themed XP and ranking layer that builds class culture.</p></div>
     </div>
   </section>
@@ -471,11 +516,11 @@ Something not right? Describe it again and let AI fix it.</p>
   <!-- 10 · DEMO: ASSESSMENT -->
   <section data-label="Demo: Digital Microscope" class="s light demo">
     <div class="demo-left">
-      <span class="demo-badge">DEMO</span>
-      <h2 class="title">OHS Digital Microscope</h2>
-      <div class="watch">
+      <span class="demo-badge anim">DEMO</span>
+      <h2 class="title anim">OHS Digital Microscope</h2>
+      <div class="watch anim2">
         <div class="wl">Watch for</div>
-        <ul>
+        <ul class="cascade" style="--cascade-start:.45s; --cascade-step:120ms">
           <li>Upload images in a teacher-only web page</li>
           <li>Create click zones with labels and banners</li>
           <li>Everything saved to a Sheet and Drive folder automatically</li>
@@ -490,11 +535,11 @@ Something not right? Describe it again and let AI fix it.</p>
   <!-- 11 · DEMO: RESEARCH & ANNOTATIONS -->
   <section data-label="Demo: Research &amp; Annotations" class="s light demo">
     <div class="demo-left">
-      <span class="demo-badge">DEMO</span>
-      <h2 class="title">Research &amp; Annotations</h2>
-      <div class="watch">
+      <span class="demo-badge anim">DEMO</span>
+      <h2 class="title anim">Research &amp; Annotations</h2>
+      <div class="watch anim2">
         <div class="wl">Watch for</div>
-        <ul>
+        <ul class="cascade" style="--cascade-start:.45s; --cascade-step:120ms">
           <li>Highlight, tag, and cite sources across any website or PDF</li>
           <li>Bibliographies that build themselves as students work</li>
           <li>Teachers see the whole class's research in one place</li>
@@ -508,11 +553,11 @@ Something not right? Describe it again and let AI fix it.</p>
 
   <!-- 12 · DIVIDER 02 -->
   <section data-label="For buildings & teams" class="s navy divider">
-    <div class="bignum">02</div>
+    <div class="bignum anim">02</div>
     <p class="kicker anim">For buildings &amp; teams</p>
     <h2 class="anim2">Across the building</h2>
-    <div class="ubar anim2"></div>
-    <p class="desc anim3">Tools for building leadership, administrators, and technology teams — the logistics a building runs on, minus the email chains and paper forms.</p>
+    <div class="ubar grow-x"></div>
+    <p class="desc anim3">Tools for principals, office staff, and technology teams: the logistics a building runs on, minus the email chains and paper forms.</p>
   </section>
 
   <!-- 13 · TEAMS GRID -->
@@ -521,7 +566,7 @@ Something not right? Describe it again and let AI fix it.</p>
       <p class="kicker anim">For buildings &amp; teams</p>
       <h2 class="title anim">The daily logistics layer</h2>
     </div>
-    <div class="grid4 anim2">
+    <div class="grid4 cascade" style="--cascade-start:.3s; --cascade-step:120ms">
       <div class="toolcard"><div class="tag">Assessment</div><h3>Orono Assessment Portal</h3><p>Teachers securely share assessments, with accessibility tools built in for every student.</p></div>
       <div class="toolcard"><div class="tag">Communication</div><h3>OMS Agenda Sync</h3><p>Write the daily agenda once; it appears on every screen and page that needs it.</p></div>
       <div class="toolcard"><div class="tag">Attendance</div><h3>OPS Flex Sign-In</h3><p>Flex-period sign-in, live rosters, and attendance at a glance.</p></div>
@@ -532,13 +577,13 @@ Something not right? Describe it again and let AI fix it.</p>
   <!-- 14 · DEMO: FLEX -->
   <section data-label="Demo: Flex Sign-In" class="s light demo">
     <div class="demo-left">
-      <span class="demo-badge">DEMO</span>
-      <h2 class="title">OPS Flex Sign-In</h2>
-      <div class="watch">
+      <span class="demo-badge anim">DEMO</span>
+      <h2 class="title anim">OPS Flex Sign-In</h2>
+      <div class="watch anim2">
         <div class="wl">Watch for</div>
-        <ul>
+        <ul class="cascade" style="--cascade-start:.45s; --cascade-step:120ms">
           <li>A staff member scanning a student's QR code</li>
-          <li>No student devices needed — one staff device runs the room</li>
+          <li>No student devices needed; one staff device runs the room</li>
           <li>The roster updating live, recorded to one sheet</li>
         </ul>
       </div>
@@ -559,21 +604,21 @@ Something not right? Describe it again and let AI fix it.</p>
 
   <!-- 15 · DIVIDER 03 -->
   <section data-label="For districts" class="s navy divider">
-    <div class="bignum">03</div>
+    <div class="bignum anim">03</div>
     <p class="kicker anim">For districts</p>
     <h2 class="anim2">At scale</h2>
-    <div class="ubar anim2"></div>
-    <p class="desc anim3">Tools that go district-wide — hundreds of users, real data ownership, and the polish to put in front of everyone.</p>
+    <div class="ubar grow-x"></div>
+    <p class="desc anim3">Tools that serve the whole district: hundreds of users, data we own, and enough polish to put in front of anyone.</p>
   </section>
 
   <!-- 16 · DISTRICT GRID -->
   <section data-label="District tools" class="s light">
     <div class="head-block">
       <p class="kicker anim">For districts</p>
-      <h2 class="title anim">Three tools that scale district-wide</h2>
+      <h2 class="title anim">Proven across the whole district</h2>
     </div>
-    <div class="grid3 anim2">
-      <div class="toolcard"><div class="tag">Coverage</div><h3>Subbing for Teachers</h3><p>Request and claim internal coverage across the district — no reply-all chain.</p></div>
+    <div class="grid3 cascade" style="--cascade-start:.3s; --cascade-step:120ms">
+      <div class="toolcard"><div class="tag">Coverage</div><h3>Subbing for Teachers</h3><p>Request and claim internal coverage across the district, without the reply-all chain.</p></div>
       <div class="toolcard"><div class="tag">Growth</div><h3>Peer Observation Portal</h3><p>Structured peer observations with shared rubrics, district-wide.</p></div>
       <div class="toolcard"><div class="tag">Resources</div><h3>Digital Learning Hub</h3><p>One front door to the district's tools, guides, and resources.</p></div>
     </div>
@@ -584,8 +629,8 @@ Something not right? Describe it again and let AI fix it.</p>
     <div class="arch-left">
       <p class="kicker anim">Proof it scales</p>
       <h2 class="title anim" style="font-size:54px;">Inside the Observation Portal</h2>
-      <p class="body anim2" style="margin-top:16px; color:var(--ot-gray-dark);">A multi-role Danielson rubric for peer observations across Orono — and proof the pattern scales.</p>
-      <div class="stacklist anim3">
+      <p class="body anim2" style="margin-top:16px; color:var(--ot-gray-dark);">A multi-role Danielson rubric for peer observations across Orono, and proof the pattern scales.</p>
+      <div class="stacklist cascade" style="--cascade-start:.4s; --cascade-step:100ms">
         <div class="stackrow"><p class="sr-h">Web app</p><p class="sr-p">Apps Script serves a single-page rubric</p></div>
         <div class="stackrow"><p class="sr-h">Google Sheets — the database</p><p class="sr-p">Staff · Settings · Role rubrics · Observation_Data</p></div>
         <div class="stackrow"><p class="sr-h">Google Drive</p><p class="sr-p">Recordings, tagged evidence &amp; exported PDFs — private until finalized</p></div>
@@ -607,11 +652,11 @@ Something not right? Describe it again and let AI fix it.</p>
     <div class="coh-left">
       <p class="kicker anim">The cohesion story</p>
       <h2 class="title anim" style="font-size:60px;">One DESIGN.md, one product family</h2>
-      <p class="lead anim2" style="font-family: Lexend">We wrote our design down once — a single DESIGN.md the AI reads before it builds. So a dozen different tools, from different team members, all feel like the same product.</p>
-      <div class="whys anim3">
-        <div class="why"><h3>Write it once</h3><p>Tokens, type scale, and component rules in one structured Markdown file.</p></div>
-        <div class="why"><h3>AI reads it first</h3><p>Every build starts from the same house style.</p></div>
-        <div class="why"><h3>Everything matches</h3><p>Users learn one interface, recognize it everywhere.</p></div>
+      <p class="lead anim2" style="font-family: Lexend">We wrote our design rules down once, in a single DESIGN.md the AI reads before it builds anything. A dozen tools from different hands all come out feeling like one product.</p>
+      <div class="whys cascade" style="--cascade-start:.4s">
+        <div class="why"><h3>One file</h3><p>Colors, type scale, and component rules, written down in plain Markdown.</p></div>
+        <div class="why"><h3>Read before every build</h3><p>The AI starts from the house style instead of inventing one.</p></div>
+        <div class="why"><h3>Familiar everywhere</h3><p>People learn one interface and recognize it in the next tool.</p></div>
       </div>
     </div>
     <div class="coh-right anim2">
@@ -640,11 +685,11 @@ Something not right? Describe it again and let AI fix it.</p>
 
   <!-- 19 · DIVIDER 04 -->
   <section data-label="Make & take" class="s navy divider">
-    <div class="bignum">04</div>
+    <div class="bignum anim">04</div>
     <p class="kicker anim">Make &amp; take</p>
     <h2 class="anim2">Get started</h2>
-    <div class="ubar anim2"></div>
-    <p class="desc anim3">Four steps to get started, fifteen project ideas, and a few ways to take it further.</p>
+    <div class="ubar grow-x"></div>
+    <p class="desc anim3">The four-step recipe, a dozen starter projects, and what makes it ready for a district.</p>
   </section>
 
   <!-- 20 · THE RECIPE -->
@@ -653,16 +698,16 @@ Something not right? Describe it again and let AI fix it.</p>
       <p class="kicker anim">The repeatable recipe</p>
       <h2 class="title anim">Get started in 4 steps</h2>
     </div>
-    <div class="recipe4 anim2">
+    <div class="recipe4 cascade" style="--cascade-start:.3s; --cascade-step:120ms">
       <div class="rcard">
         <div class="rnum">1</div>
         <h3 class="rh">Start with the sheet</h3>
-        <p class="rp">Model your data as tabs and columns — that's your database.</p>
+        <p class="rp">Tabs and columns are your database. Set them up first.</p>
       </div>
       <div class="rcard">
         <div class="rnum">2</div>
         <h3 class="rh">Write a DESIGN.md</h3>
-        <p class="rp">Your colors, fonts, and components — the house style.</p>
+        <p class="rp">Colors, fonts, and components: the house style in one file.</p>
         <div class="rqr"><div class="qbox"><image-slot id="qr-design" shape="rect" src="media/19-qr-brand-skill.png" placeholder="QR"></image-slot></div><span class="qcap">OPS Tech Brand SKILL &amp; DESIGN.md</span></div>
       </div>
       <div class="rcard">
@@ -677,31 +722,28 @@ Something not right? Describe it again and let AI fix it.</p>
         <p class="rp">Share it like any Google link. Done.</p>
       </div>
     </div>
-    <div class="footmark anim3" style="margin-top:56px;"><div class="rule"></div><span>Everything lives in your Workspace — the sheet, the script, and the app survive staff turnover.</span></div>
+    <div class="footmark anim3" style="margin-top:56px;"><div class="rule"></div><span>The sheet, the script, and the app all live in your Workspace, so the tool survives staff turnover.</span></div>
   </section>
 
   <!-- 21 · STARTER IDEAS -->
-  <section data-label="Fifteen ideas" class="s light">
+  <section data-label="Twelve ideas" class="s light">
     <div class="head-block">
       <p class="kicker anim">Steal these</p>
-      <h2 class="title anim">15 ideas to get you started</h2>
+      <h2 class="title anim">A dozen ideas to get you started</h2>
     </div>
-    <div class="ideas anim2">
+    <div class="ideas cascade" style="--cascade-step:70ms">
       <div class="idea"><div class="ic"></div><div class="it"><b>A sign-in kiosk</b> <span>Tap a name, stamp the time.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A form-to-dashboard</b> <span>Responses become a live summary.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A points &amp; leaderboard</b> <span>Award, total, rank — automatically.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A request-and-approve queue</b> <span>Subs, passes, tickets in one tap.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A form-to-dashboard</b> <span>Responses roll into a live summary.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A points &amp; leaderboard</b> <span>Award points; the ranking keeps itself.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A request-and-approve queue</b> <span>Subs, passes, field-trip requests.</span></div></div>
       <div class="idea"><div class="ic"></div><div class="it"><b>A directory or resource hub</b> <span>One searchable front door.</span></div></div>
       <div class="idea"><div class="ic"></div><div class="it"><b>A paperless forms portal</b> <span>Reimbursements, travel, expenses.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>An inventory tracker</b> <span>Devices and equipment, in and out.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>An inventory tracker</b> <span>Who has which device, and since when.</span></div></div>
       <div class="idea"><div class="ic"></div><div class="it"><b>An event check-in</b> <span>RSVPs, attendance, name tags.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A reading log</b> <span>Track progress over time.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A survey &amp; feedback collector</b> <span>Quick pulse checks, live results.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A digital hall pass</b> <span>Issue, time, and log every pass.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A room &amp; resource booking</b> <span>Claim a slot, no clashes.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A student portfolio</b> <span>Work collected over time.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A digital hall pass</b> <span>Issued, timed, logged.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A room &amp; resource booking</b> <span>Claim a slot without the double-booking.</span></div></div>
       <div class="idea"><div class="ic"></div><div class="it"><b>A volunteer &amp; chaperone signup</b> <span>Slots fill themselves.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A help-desk ticket queue</b> <span>Report, assign, resolve.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A help-desk ticket queue</b> <span>Report it, claim it, close it.</span></div></div>
     </div>
   </section>
 
@@ -711,12 +753,12 @@ Something not right? Describe it again and let AI fix it.</p>
       <p class="kicker anim">Once you're rolling</p>
       <h2 class="title anim">Built for district trust</h2>
     </div>
-    <div class="ftable anim2">
-      <div class="frow"><div class="ft-term">Pick your access level</div><div class="ft-def">Just you, your whole organization, or anyone with the link — Google login decides who gets in.</div></div>
+    <div class="ftable cascade" style="--cascade-start:.3s; --cascade-step:100ms">
+      <div class="frow"><div class="ft-term">Pick your access level</div><div class="ft-def">Just you, your whole organization, or anyone with the link. Google login decides who gets in.</div></div>
       <div class="frow"><div class="ft-term">Role-based views</div><div class="ft-def">Add a Roles tab to your sheet so students, teachers, and admins each see only their part of the app.</div></div>
-      <div class="frow"><div class="ft-term">Two-way configuration</div><div class="ft-def">Build an admin panel that reshapes the sheet — edits flow both ways, sheet to app and app to sheet.</div></div>
-      <div class="frow"><div class="ft-term">Your data stays with you</div><div class="ft-def">Data lives in your own Google Sheets under your existing district agreement — no new vendor contract, no new data-privacy agreement, no student data leaving Workspace.</div></div>
-      <div class="frow"><div class="ft-term">Review before rollout</div><div class="ft-def">Anything touching student data goes through the same district review as any other tool — builder-made doesn't mean unreviewed.</div></div>
+      <div class="frow"><div class="ft-term">Two-way configuration</div><div class="ft-def">An admin panel can reshape the sheet itself; edits flow both directions.</div></div>
+      <div class="frow"><div class="ft-term">Your data stays with you</div><div class="ft-def">Everything lives in your own Google Sheets under your existing district agreement. No new vendor, and no student data leaves Workspace.</div></div>
+      <div class="frow"><div class="ft-term">Review before rollout</div><div class="ft-def">Anything touching student data goes through the same district review as any other tool. Builder-made doesn't mean unreviewed.</div></div>
     </div>
   </section>
 
@@ -750,30 +792,30 @@ Something not right? Describe it again and let AI fix it.</p>
 
 <script type="application/json" id="speaker-notes">
 [
-  "Welcome, and thanks for spending the next hour with me. I'm from the technology department at Orono Public Schools, and I'm not going to teach you to code today. I'm going to show you something better — that the line between 'people who build software' and 'everybody else' basically just disappeared. Everything you'll see was built by our team using Google Apps Script, a Google Sheet, and an AI coding assistant. By the end I want you walking out thinking about the one spreadsheet in your building that should really be an app.",
-  "Here's the whole talk in one sentence. Anyone can make an interactive web app now — when they have AI beside them. I'm not saying anyone can suddenly learn to code. I'm saying you no longer have to. You describe what you need in plain language, the AI writes it, and you ship a working tool by Friday. That shift is the entire reason I'm up here.",
-  "Let's start with the thing every school already has too many of: spreadsheets. And look — a spreadsheet is a genuinely great place to STORE data. The problem is it's a terrible place to DO the work. You're protecting cells and ranges, sharing more data than people need, one stray click from deleting a column — and it was never designed for the person standing in a hallway with a phone. So at some point we just stopped asking people to work inside the sheet.",
-  "Here's the reframe that unlocked everything for us. A spreadsheet is already a database — it has tables, rows, and columns. The only thing it's missing is a front door: a real interface, designed for the humans using it, instead of a wall of cells. And that front door is a web app. Hold onto that idea, because it's the foundation for all ten tools I'm about to show you.",
-  "So how do you actually build that front door? Only three pieces. The browser is what people see. Apps Script is the brains in the middle, where the logic lives. And the Google Sheet is your data. The browser talks to Apps Script, Apps Script talks to the Sheet. That's it. And three things make this special: it's free — no server, no hosting bill, it deploys as a link. It's persistent — every action writes to a real sheet you can open and audit. And it's native — Google login and sharing are built in, so security is handled for you.",
-  "Now, this stack has existed for years. So why are we all standing here in 2026 talking about it? Because the hard part was never the spreadsheet — it was building the app on top. That's the part that needed a developer. AI closes that gap. You describe the tool, and it writes it. Suddenly this is open to everyone in this room — and I'll show you ten things we built that way.",
-  "Okay, enough theory. Let me show you what we actually built. Ten tools, grouped by who they're for. Tools for teachers in the classroom. Tools for buildings and the teams that run them. And tools that scale across the entire district. Same recipe every time — a sheet, a web app, and AI. Let's walk through them.",
-  "First group: the classroom. Tools a teacher can build and run themselves — no IT ticket, no committee. Just a teacher who had a problem and a Friday afternoon.",
-  "Three of them. The Digital Microscope lets science students capture and label what they see, right in the browser on a Chromebook. Research and Annotations lets students highlight, tag, and cite sources across any website or PDF, building a bibliography as they go — and it's replacing a paid subscription. And the Gamified Ranking System is a mythology-themed XP layer that builds class culture. Three completely different jobs — same underlying recipe.",
-  "Let me actually show you one. This is the Digital Microscope. Watch a student capture a microscope view right in the browser — nothing to install. They label it, save it, and the image files itself straight back into Sheets and Drive. And notice the look and feel, because you'll see that exact same style in every tool today. [Run the live demo here.]",
-  "Here's another classroom one, and I want to actually show you this one — Research and Annotations. Watch a student highlight, tag, and cite sources right across any website or PDF, and the bibliography builds itself as they go. The teacher sees the whole class's research in one place — quietly doing the job of a paid subscription we used to buy. Same recipe, same look and feel. [Play the promo.]",
-  "Second group: tools for whole buildings and the teams that run them — building leadership, administrators, technology. This is the daily logistics layer — the stuff that usually lives in email chains and paper forms.",
-  "Four of them. The Assessment Portal lets teachers securely share assessments, with accessibility tools built in for every student. Agenda Sync writes the daily agenda once and shows it everywhere it's needed. Flex Sign-In handles flex-period rosters and attendance. And the Spartan Cup — our gamified attendance system at the high school — does location-verified check-ins, points, and live leaderboards. Some flashy, some plumbing — all things a building runs on.",
-  "Let me demo Flex Sign-In, because it shows the multi-user side — and notice how it actually works. The students don't sign in on their own phones. A single staff member in the room scans each student's QR code. That's the whole trick: the kids need no device at all, just one staff device covers the entire space. Watch the roster update live as I scan, and the whole time there's just one quiet Google Sheet recording all of it. [Run the live demo here.]",
-  "Third group: the tools that go district-wide. Hundreds of users, real data ownership, and enough polish that you'd put them in front of everybody.",
-  "Three of them. Subbing for Teachers lets staff request and claim internal coverage across the district. The Peer Observation Portal runs structured peer observations with shared rubrics. And the Digital Learning Hub is a single front door to district tools and resources.",
-  "I want to open one of these up, because people always ask 'sure, but does it really scale?' This is the Orono Observation Portal — our peer evaluation system, built on the Danielson framework. The web app is Apps Script serving a single-page rubric. The database is a set of Google Sheets — staff, role assignments, the rubric for each role, and an Observation_Data sheet that stores every observation. Recordings, tagged evidence, and the exported PDFs all live in Google Drive — private while it's a draft, then shared view-only with the teacher the moment it's finalized. Four roles — teacher, administrator, peer evaluator, full access — each see exactly their slice. The point: the same simple pattern — sheet, front door, Drive — running something a whole district trusts with sensitive evaluations.",
-  "Here's the part I'm proudest of, and it's the least technical. We wrote our design down once — colors, type, components — in a single DESIGN dot md file. The AI reads it before it builds anything. So a dozen tools, made at different times for totally different jobs by different people in our department, all feel like the same product. New tool, same familiar and trustworthy feel. That consistency is what turns a pile of scripts into something a district actually trusts and adopts. Write it once, the AI reads it first, and everything matches.",
-  "Alright — this is the make-and-take part. I want you to leave with something you can actually do, not just something that was fun to watch. So: the repeatable recipe, fifteen starter projects, and a few ways to take it further.",
-  "Here's the recipe, and it's the same four steps every time. One: start with the sheet — model your data as tabs and columns. Two: write a DESIGN dot md so everything matches your house style. Three: describe it to the AI — it writes the app that reads and writes your sheet. Four: deploy as a web app and share it like any Google link. That's the whole thing — and notice you never touch the code. The AI does.",
-  "If you want a place to start, here are fifteen — everything from a sign-in kiosk to a hall pass, a booking system, a help-desk queue. Honestly, though — the real prompt is simpler. Think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
-  "Once you're rolling, here are a few ways to take it further. You control access — you can lock it to just you, open it to your whole organization, or share it with anyone who has the link. You can add a Roles tab to your sheet so students, teachers, and admins each see only their slice of the app. You can build an admin panel right in the app that reshapes the spreadsheet, with edits flowing both ways. And it all stays in your own Workspace, under your district agreement — never a third party.",
-  "Everything I showed you today is open. All the repos are on GitHub at github dot com slash OPS-PIvers. If you want to start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and the repos will be on your phone before you leave the room.",
-  "Thank you. I would genuinely love to see what you build, so come find me, and the repos are all right there. And remember the one thing — you have the data, you have the tools, the spreadsheet is already sitting there. Go give it a front door, and make something meaningful."
+  "Welcome, and thanks for spending the hour with me. I work in the technology department at Orono Public Schools, and I want to be upfront: I am not here to teach anyone to code. Everything you'll see today was built by our team with Google Apps Script, a Google Sheet, and an AI assistant. My goal is that you walk out thinking about the one spreadsheet in your building that really should be an app.",
+  "Here's the whole talk in one sentence: you can make an interactive web app today. Not because you learned to code over the summer. Because you can describe what you need in plain language and have AI write it. We aren't building the car anymore, we're driving it. And part of driving is learning the rules of the road, which we'll get to.",
+  "Start with the thing every school has too many of. A spreadsheet is genuinely great at storing data. It's terrible as a place to make people work. You protect cells and ranges, you overshare, one stray click wipes a column, and none of it was designed for someone standing in a hallway with a phone. At some point we simply stopped asking people to work inside the sheet.",
+  "This is the reframe that unlocked everything for us. A spreadsheet already is a database. Tables, rows, columns. What it's missing is a front door, an interface built for the people using it instead of a wall of cells. That front door is a web app. Hold onto that, because every tool I'm about to show you is the same idea repeated.",
+  "So how do you build the front door? Three pieces. The browser is what people see. Apps Script holds the logic. The Sheet holds the data. What makes it practical for a school: it costs nothing and deploys as a link, every action lands in a real sheet you can open and audit, and sign-in is just Google login, so access control is a conversation your district has already had.",
+  "This stack has existed for years, so why now? Because the hard part was never the spreadsheet. It was building the app on top, and that part needed a developer. AI closes the gap. You describe the tool and it writes the code. That puts this within reach of everyone in this room, and I can prove it, because we built ten of these.",
+  "Enough theory. Ten tools, grouped by who they serve: teachers in the classroom, buildings and the teams that run them, and the whole district. Same recipe every time. A sheet, a web app, AI in the middle.",
+  "First group: the classroom. These are tools a teacher built and runs without waiting on anyone.",
+  "The Digital Microscope lets science students capture and label what they're seeing, in the browser on a Chromebook. Research and Annotations has students highlighting, tagging, and citing sources while the bibliography assembles itself, and it replaced a paid subscription. The Gamified Ranking System is a mythology-themed XP layer that's become part of the class culture. Different jobs, same recipe underneath.",
+  "Let me show you one. Watch a student capture a microscope view right in the browser, nothing installed. They label it, save it, and the image files itself into Sheets and Drive. Pay attention to the look and feel, too, because you'll see this same style in every tool today. [Run the live demo here.]",
+  "One more from the classroom. Watch a student highlight, tag, and cite right on a website or PDF, with the bibliography assembling itself as they go. The teacher sees the whole class's research in one place. It quietly does the job of a subscription we used to pay for. [Play the promo.]",
+  "Second group: whole buildings and the teams that run them. This is the daily logistics that otherwise lives in email chains and paper forms.",
+  "The Assessment Portal lets teachers share assessments securely, with accessibility tools built in for every student. Agenda Sync writes the daily agenda once and shows it everywhere it's needed. Flex Sign-In handles flex-period rosters and attendance. And the Spartan Cup runs location-verified check-ins, points, and live leaderboards at the high school. All of it is the plumbing a building actually runs on.",
+  "Flex Sign-In shows the multi-user side, and notice how it works: students don't sign in on their own phones. One staff member scans each student's QR code, so the kids need no device at all. Watch the roster update live as I scan, while a single Google Sheet quietly records everything. [Run the live demo here.]",
+  "Third group: district-wide. Hundreds of users, our own data, and enough polish to put in front of anybody.",
+  "Subbing for Teachers lets staff request and claim internal coverage without the reply-all chain. The Peer Observation Portal runs structured observations on shared rubrics. The Digital Learning Hub is one front door to the district's tools and guides.",
+  "People always ask whether this really scales, so let me open one up. The Observation Portal is our peer evaluation system, built on the Danielson framework. Apps Script serves a single-page rubric. Google Sheets hold the staff list, role assignments, the rubric for each role, and every observation record. Recordings, tagged evidence, and exported PDFs live in Drive, private while in draft, then shared view-only with the teacher once finalized. Four roles each see exactly their slice. A whole district trusts this pattern with sensitive evaluations.",
+  "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts.",
+  "Now the make-and-take. I want you to leave with something you can do, not just something that was fun to watch: the recipe, a dozen starter ideas, and what makes this district-ready.",
+  "The recipe is the same four steps every time. Start with the sheet: tabs and columns are your database. Write a DESIGN dot md so everything matches your house style. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
+  "If you want somewhere to start, steal one of these. A sign-in kiosk, a hall pass, a booking system, a help-desk queue. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
+  "Before you roll anything out, a few things that make this district-safe. You pick the access level, from just you to anyone with the link. A Roles tab lets students, teachers, and admins each see only their part of the app. The data never leaves your own Workspace or your existing district agreement. And anything touching student data still goes through your normal review. Builder-made doesn't mean unreviewed.",
+  "Everything I showed you today is open. The repos are at github dot com slash OPS-PIvers. To start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and it's all on your phone before you leave the room.",
+  "Thank you. I would genuinely love to see what you build, so come find me. You have the data, you have the tools, and the spreadsheet is already sitting there. Give it a front door, and make something meaningful."
 ]
 </script>
 
