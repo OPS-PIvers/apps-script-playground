@@ -188,17 +188,18 @@
   .cohesion { flex-direction: row; gap: 64px; align-items: stretch; }
   .cohesion .coh-left { width: 44%; display: flex; flex-direction: column; justify-content: center; }
   .cohesion .coh-left .whys { grid-template-columns: 1fr; gap: 24px; margin-top: 40px; }
-  /* Both rows share the same 2-column grid so edges align, but the rows
-     keep a clear hierarchy: the DESIGN.md / style-guide media are the
-     focal point (tall hero row), the QR codes a smaller supporting row. */
+  /* One hero figure (DESIGN.md, with the style guide behind it in the
+     lightbox carousel) over a slim QR strip: the QRs bookend the hero's
+     width so the column reads as one figure plus a footer of links. */
   .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
-  .cohesion .coh-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .cohesion .coh-bottom { display: flex; justify-content: space-between; gap: 48px; }
   .mediafig { display: flex; flex-direction: column; }
   .mediacap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
   .cohesion .coh-right media-slot { width: 100%; box-shadow: var(--shadow-2); display: block; }
-  .cohesion .coh-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-  .cohesion .fig-page media-slot { height: 540px; }
-  .cohesion .fig-qr .qrbox2 { width: 300px; aspect-ratio: 1 / 1; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 16px; box-sizing: border-box; }
+  .cohesion .fig-page media-slot { height: 560px; }
+  .cohesion .fig-qr { flex-direction: row; align-items: center; gap: 24px; }
+  .cohesion .fig-qr .mediacap { margin: 0; max-width: 240px; line-height: 1.3; }
+  .cohesion .fig-qr .qrbox2 { width: 250px; aspect-ratio: 1 / 1; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 16px; box-sizing: border-box; flex: none; }
   .cohesion .fig-qr .qrbox2 image-slot { width: 100%; height: 100%; }
 
   /* recipe — four inline cards */
@@ -212,10 +213,11 @@
   .rcard .rqr .qbox image-slot { width: 100%; height: 100%; }
   .rcard .rqr .qcap { font-size: 24px; font-weight: 600; color: var(--ot-blue); line-height: 1.15; }
 
-  /* spartan architecture */
+  /* spartan architecture — the portrait tablet sets the right column's
+     width; the text column takes everything left over so it can breathe */
   .arch { flex-direction: row; gap: 72px; align-items: stretch; }
-  .arch .arch-left { width: 40%; display: flex; flex-direction: column; justify-content: center; }
-  .arch .arch-right { flex: 1; display: flex; align-items: center; }
+  .arch .arch-left { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .arch .arch-right { flex: none; display: flex; align-items: center; }
   .stacklist { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
   .stackrow { background: var(--ot-gray-lightest); border-radius: var(--r-md); padding: 16px 28px; }
   .stackrow .sr-h { font-size: 28px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 6px; }
@@ -639,8 +641,8 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     </div>
     <div class="arch-right">
       <div class="devicepair">
-        <div class="device" style="width:100%;">
-          <div class="tablet" style="width:100%;"><div class="screen" style="aspect-ratio:16/10;"><media-slot id="demo-observation" shape="rect" fit="cover" src="media/16-observation-portal.mp4" gallery="media/16-observation-portal.mp4" placeholder="Drop a desktop / laptop GIF or MP4 of the rubric view"></media-slot></div></div>
+        <div class="device">
+          <div class="tablet" style="width:640px;"><div class="screen" style="aspect-ratio:3/4;"><media-slot id="demo-observation" shape="rect" fit="cover" src="media/16-observation-portal.mp4" gallery="media/16-observation-portal.mp4" placeholder="Drop a portrait (tall) GIF or MP4 of the rubric view"></media-slot></div></div>
           <span class="devcap">Rubric &amp; evidence</span>
         </div>
       </div>
@@ -660,24 +662,18 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       </div>
     </div>
     <div class="coh-right anim2">
-      <div class="coh-shots">
-        <div class="mediafig fig-page">
-          <p class="mediacap">Our DESIGN.md</p>
-          <media-slot id="coh-designmd" shape="rounded" radius="14" src="media/17-design-md.mp4" gallery="media/17-design-md.mp4" placeholder="Drop a DESIGN.md screenshot"></media-slot>
-        </div>
-        <div class="mediafig fig-page">
-          <p class="mediacap">OPS Tech Style Guide</p>
-          <media-slot id="coh-styleguide" shape="rounded" radius="14" src="media/17-style-guide.png" gallery="media/17-style-guide.png" placeholder="Drop an OPS Style Guide screenshot"></media-slot>
-        </div>
+      <div class="mediafig fig-page">
+        <p class="mediacap">Our DESIGN.md &amp; the style guide it builds</p>
+        <media-slot id="coh-designmd" shape="rounded" radius="14" src="media/17-design-md.mp4" gallery="media/17-design-md.mp4 | media/17-style-guide.png" placeholder="Drop a DESIGN.md screenshot"></media-slot>
       </div>
       <div class="coh-bottom">
         <div class="mediafig fig-qr">
-          <p class="mediacap">See our DESIGN.md</p>
           <div class="qrbox2"><image-slot id="qr-seeours-17" shape="rect" src="media/17-qr-see-ours.png" placeholder="QR"></image-slot></div>
+          <p class="mediacap">See our DESIGN.md</p>
         </div>
         <div class="mediafig fig-qr">
-          <p class="mediacap">Build yours</p>
           <div class="qrbox2"><image-slot id="qr-buildyours-17" shape="rect" src="media/17-qr-build-yours.png" placeholder="QR"></image-slot></div>
+          <p class="mediacap">Build yours</p>
         </div>
       </div>
     </div>
@@ -809,7 +805,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   "Third group: district-wide. Hundreds of users, our own data, and enough polish to put in front of anybody.",
   "Subbing for Teachers lets staff request and claim internal coverage without the reply-all chain. The Peer Observation Portal runs structured observations on shared rubrics. The Digital Learning Hub is one front door to the district's tools and guides.",
   "People always ask whether this really scales, so let me open one up. The Observation Portal is our peer evaluation system, built on the Danielson framework. Apps Script serves a single-page rubric. Google Sheets hold the staff list, role assignments, the rubric for each role, and every observation record. Recordings, tagged evidence, and exported PDFs live in Drive, private while in draft, then shared view-only with the teacher once finalized. Four roles each see exactly their slice. A whole district trusts this pattern with sensitive evaluations.",
-  "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts.",
+  "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts. [Tap the media, then arrow to the style guide the DESIGN.md produced.]",
   "Now the make-and-take. I want you to leave with something you can do, not just something that was fun to watch: the recipe, a dozen starter ideas, and what makes this district-ready.",
   "The recipe is the same four steps every time. Start with the sheet: tabs and columns are your database. Write a DESIGN dot md so everything matches your house style. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
   "If you want somewhere to start, steal one of these. A sign-in kiosk, a hall pass, a booking system, a help-desk queue. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
