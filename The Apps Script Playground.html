@@ -294,6 +294,10 @@
     .cascade > * {
       opacity: 1; transform: none;
       transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+      /* fallback index for children past the nth-child ladder below — the
+         ladder out-specifies this, so children 16+ arrive at the cascade's
+         tail instead of alongside the first item */
+      --i: 15;
     }
     deck-stage > .s:not([data-deck-active]) .cascade > * {
       opacity: 0; transform: translateY(14px);
