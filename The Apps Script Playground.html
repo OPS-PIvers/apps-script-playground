@@ -168,7 +168,15 @@
   .devicepair .phone .screen { border-radius: 28px; }
 
   /* spreadsheet problem — pain points */
-  .pains { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; margin-top: 12px; }
+  /* Problem slide: unify the head copy and the four columns on one width so the
+     lead paragraph reaches the same right edge as the grid. Vertical rhythm is
+     handled by balanced .spacer flex around the column band (see markup), which
+     centres the columns between the top-anchored head and bottom-anchored note —
+     no lopsided void, clear separation from the text. Scoped to .problem so the
+     other head-block slides are untouched. */
+  .problem .head-block { max-width: none; }
+  .problem .lead { max-width: none; }
+  .pains { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; }
   .pain { border-top: 4px solid var(--ot-red); padding-top: 22px; }
   .pain h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 10px; }
   .pain p { font-size: 25px; line-height: 1.4; color: var(--ot-gray-dark); margin: 0; }
@@ -469,19 +477,20 @@ We aren't building the car anymore. We're driving it. And like any driver, we st
   </section>
 
   <!-- 3 · PROBLEM -->
-  <section data-label="Spreadsheet problem" class="s light" style="--punch:19s">
+  <section data-label="Spreadsheet problem" class="s light problem" style="--punch:19s">
     <div class="head-block">
       <p class="kicker anim">The spreadsheet problem</p>
       <h2 class="title anim">Our systems are already built on many disconnected spreadsheets</h2>
       <p class="lead anim2">Every school runs on them. Rosters, points, sign-ins, observations, and more forms than anyone can count. A spreadsheet is a fine place to keep data. It's a miserable place to ask people to work.</p>
     </div>
+    <div class="spacer"></div>
     <div class="pains cascade" style="--cascade-start:5s; --cascade-step:4s">
       <div class="pain"><h3>No guardrails</h3><p>Nothing stops a bad entry or the wrong format.</p></div>
       <div class="pain"><h3>No roles</h3><p>Everyone sees everything, unless you play whack-a-mole with protected ranges.</p></div>
       <div class="pain"><h3>One click from chaos</h3><p>A stray paste or delete can wipe a whole column.</p></div>
       <div class="pain"><h3>Wrong device</h3><p>Never built for the person on a phone in a hallway.</p></div>
     </div>
-    <div class="spacer" style="height: 200px"></div>
+    <div class="spacer"></div>
     <div class="footmark anim3"><div class="rule"></div><span>Sick of protecting cells and ranges, or sharing more data than people need? <span style="color: #ad2122">Stop asking them to work in the sheet.</span></span></div>
   </section>
 
