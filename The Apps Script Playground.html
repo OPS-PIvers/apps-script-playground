@@ -289,12 +289,17 @@
     deck-stage > .s:not([data-deck-active]) .anim3 {
       opacity: 0; transform: translateY(28px);
     }
+    /* the divider's bignum positions itself with translateY(-50%) — keep
+       that in its pre-hide state so it rises 28px, not from off-center */
+    deck-stage > .s.divider:not([data-deck-active]) .bignum.anim {
+      transform: translateY(-50%) translateY(28px);
+    }
     /* Delays live under [data-deck-active] only, so deactivation reverses
        immediately. The first reveal waits out the stage's 260ms slide swap
        so the two transitions never compete for the same frames. */
-    [data-deck-active] .anim  { transition-delay: .25s; }
+    [data-deck-active] .anim  { transition-delay: .3s; }
     [data-deck-active] .title.anim,
-    [data-deck-active].cover h1.anim { transition-delay: .5s; }
+    [data-deck-active].cover h1.anim { transition-delay: .55s; }
     [data-deck-active] .anim2 { transition-delay: .9s; }
     [data-deck-active] .anim3 { transition-delay: 1.7s; }
     /* Footmarks echo the slide's spoken closing line — they arrive after
