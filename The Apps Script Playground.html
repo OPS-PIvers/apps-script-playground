@@ -298,7 +298,7 @@
        timeline used for unattended/kiosk playback (deck-stage sets
        data-reveal-mode="auto" from ?autoplay / ?kiosk / reveal="auto"). In the
        default MANUAL mode the speaker is the clock — reveals fire with no delay
-       the moment deck-stage marks a beat [data-shown] (see the manual block
+       the moment deck-stage marks a beat [data-deck-shown] (see the manual block
        below), so none of these rules apply. Delays live under [data-deck-active]
        only, so deactivation reverses immediately; the first reveal waits out the
        stage's 260ms slide swap so the two transitions never compete.
@@ -367,36 +367,38 @@
     /* ── speaker-controlled builds (MANUAL mode, the default) ──────────────
        The presenter is the clock. On the live active slide, every gated
        element stays in its hidden resting state until deck-stage marks it
-       [data-shown] on each → / Space (the build engine in deck-stage.js).
+       [data-deck-shown] on each → / Space (the build engine in deck-stage.js).
        There is deliberately NO transition-delay here — reveals fire the
        instant a beat is shown — so the slide builds at exactly the speaker's
        pace. Scoped to deck-stage's direct light-DOM children (> .s) so the
        rule never touches rail-thumb clones, which live in shadow roots and are
        never [data-deck-active]; they keep rendering the full resting slide,
        same invariant as everything above. Print is handled in JS (beforeprint
-       marks every beat shown) and reduced-motion never enters this media query,
-       so both still show the whole slide. The cascade rules match OUTERMOST
-       cascades only (.cascade:not(.cascade .cascade)) to mirror the build
+       marks every beat shown), reduced-motion never enters this media query,
+       and the :not([noscale]) guard drops gating for the PPTX/html-to-image
+       exporter (which renders at 1:1 with [noscale] and activates each slide to
+       capture it) — so print, export, and reduced-motion all show the whole
+       slide. The cascade rules match OUTERMOST cascades only (.cascade:not(.cascade .cascade)) to mirror the build
        engine, which gates only outermost-cascade children — a nested cascade's
        items ride along with the parent beat and must stay ungated, or they'd
-       never receive [data-shown] and would be stuck hidden. */
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim:not([data-shown]),
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim2:not([data-shown]),
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim3:not([data-shown]),
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] [data-build="step"]:not([data-shown]),
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] [data-build-group]:not([data-shown]) {
+       never receive [data-deck-shown] and would be stuck hidden. */
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] .anim:not([data-deck-shown]),
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] .anim2:not([data-deck-shown]),
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] .anim3:not([data-deck-shown]),
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] [data-build="step"]:not([data-deck-shown]),
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] [data-build-group]:not([data-deck-shown]) {
       opacity: 0; transform: translateY(28px);
     }
-    deck-stage[data-reveal-mode="manual"] > .s.divider[data-deck-active] .bignum.anim:not([data-shown]) {
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s.divider[data-deck-active] .bignum.anim:not([data-deck-shown]) {
       transform: translateY(-50%) translateY(28px);
     }
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade:not(.cascade .cascade) > :not([data-shown]) {
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] .cascade:not(.cascade .cascade) > :not([data-deck-shown]) {
       opacity: 0; transform: translateY(20px);
     }
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade:not(.cascade .cascade) > .flowarrow:not([data-shown]) {
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] .cascade:not(.cascade .cascade) > .flowarrow:not([data-deck-shown]) {
       transform: translateX(-20px);
     }
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .grow-x:not([data-shown]) {
+    deck-stage[data-reveal-mode="manual"]:not([noscale]) > .s[data-deck-active] .grow-x:not([data-deck-shown]) {
       transform: scaleX(0);
     }
   }

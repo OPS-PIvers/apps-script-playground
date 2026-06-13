@@ -655,7 +655,7 @@
         // half-built slide. afterprint's _applyIndex reseats the live build.
         this._slides.forEach((s) => {
           s.setAttribute('data-deck-active', '');
-          this._beats(s).gated.forEach((el) => el.setAttribute('data-shown', ''));
+          this._beats(s).gated.forEach((el) => el.setAttribute('data-deck-shown', ''));
         });
       };
       this._onAfterPrint = () => {
@@ -713,7 +713,20 @@
         if (this._liveDirty.size && !this._liveTimer) {
           this._liveTimer = setTimeout(() => {
             this._liveTimer = null;
-            this._liveDirty.forEach((s) => this._refreshThumb(s));
+            this._liveDirty.forEach((s) => {
+              // A live content edit can add/remove beat elements, so the
+              // memoized build geometry is stale — drop it. Re-seat the active
+              // slide (preserving its current step) so newly added beats gate
+              // and removed ones stop consuming presses.
+              this._buildCache.delete(s);
+              if (s === this._slides[this._index]) {
+                const beats = this._beats(s);
+                const step = Math.min(parseInt(s.dataset.deckStep || '0', 10), beats.steps.length);
+                if (this._buildsGated()) { s.dataset.deckStep = String(step); this._renderBuild(s, beats, step); }
+                else this._initBuild(s, false);
+              }
+              this._refreshThumb(s);
+            });
             this._liveDirty.clear();
           }, 200);
         }
@@ -1466,7 +1479,7 @@
     // already drive the entrance animation (.anim/.anim2/.anim3/.grow-x and the
     // children of the outermost .cascade) are the gated universe; the page CSS
     // hides any gated element on the active slide until JS marks it
-    // [data-shown]. Resting state stays visible, so rail thumbnails, print,
+    // [data-deck-shown]. Resting state stays visible, so rail thumbnails, print,
     // export, and reduced-motion are untouched — only the live active slide in
     // [data-reveal-mode="manual"] gates.
     //
@@ -1502,7 +1515,7 @@
       // and any element carrying an explicit build marker. Including the
       // markers is what lets data-build="step" / data-build-group work on an
       // otherwise-unanimated element: the manual-mode CSS hides every gated
-      // element until [data-shown], and opacity:0 on a container hides its
+      // element until [data-deck-shown], and opacity:0 on a container hides its
       // whole subtree, so revealing the marker reveals the group as one beat.
       const gated = new Set(slide.querySelectorAll(REVEAL));
       slide.querySelectorAll('.cascade').forEach((c) => {
@@ -1554,7 +1567,7 @@
       return { gated: Array.from(gated), steps };
     }
 
-    /** Reflect step `step` of `slide`'s build onto the DOM (data-shown). */
+    /** Reflect step `step` of `slide`'s build onto the DOM (data-deck-shown). */
     _renderBuild(slide, beats, step) {
       const shown = new Set();
       const stepGated = new Set();
@@ -1564,16 +1577,25 @@
       }));
       beats.gated.forEach((el) => {
         // Arrival = any gated element not claimed by a later beat.
-        if (!stepGated.has(el) || shown.has(el)) el.setAttribute('data-shown', '');
-        else el.removeAttribute('data-shown');
+        if (!stepGated.has(el) || shown.has(el)) el.setAttribute('data-deck-shown', '');
+        else el.removeAttribute('data-deck-shown');
       });
+    }
+
+    /** Manual builds are a motion effect: under prefers-reduced-motion the CSS
+     *  shows the whole slide, so the engine must stand down too or the presenter
+     *  would press →/Space N times with nothing changing before the slide moves. */
+    _buildsGated() {
+      if (this._revealMode !== 'manual') return false;
+      try { return !window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return true; }
     }
 
     /** Seed a slide's build when it becomes active (no-op outside manual mode). */
     _initBuild(slide, enterFull) {
       if (!slide || this._revealMode !== 'manual') return;
       const beats = this._beats(slide);
-      const step = enterFull ? beats.steps.length : 0;
+      // Reduced-motion shows everything; seat fully built so nav doesn't stall.
+      const step = (enterFull || !this._buildsGated()) ? beats.steps.length : 0;
       slide.dataset.deckStep = String(step);
       this._renderBuild(slide, beats, step);
     }
@@ -1581,7 +1603,7 @@
     /** Advance/retreat one build beat on the current slide. Returns true when
      *  the press was consumed (stayed on the slide), false to let nav proceed. */
     _stepBuild(dir) {
-      if (this._revealMode !== 'manual') return false;
+      if (!this._buildsGated()) return false;
       const slide = this._slides[this._index];
       if (!slide) return false;
       const beats = this._beats(slide);
@@ -1604,7 +1626,11 @@
       const dwell = Math.max(6, words / 2.3 + 3) * 1000;
       this._dwellTimer = setTimeout(() => {
         this._dwellTimer = null;
-        if (this._index >= this._slides.length - 1) this._go(0, 'auto');
+        const atEnd = this._index >= this._slides.length - 1;
+        // Looping to slide 0 when already there (single-slide deck) would hit
+        // _go's clamped===index early-return and never re-arm — reschedule here.
+        if (atEnd && this._index === 0) this._scheduleAutoAdvance(0);
+        else if (atEnd) this._go(0, 'auto');
         else this._advance(1, 'auto');
       }, dwell);
     }
