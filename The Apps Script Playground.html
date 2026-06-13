@@ -375,7 +375,11 @@
        never [data-deck-active]; they keep rendering the full resting slide,
        same invariant as everything above. Print is handled in JS (beforeprint
        marks every beat shown) and reduced-motion never enters this media query,
-       so both still show the whole slide. */
+       so both still show the whole slide. The cascade rules match OUTERMOST
+       cascades only (.cascade:not(.cascade .cascade)) to mirror the build
+       engine, which gates only outermost-cascade children — a nested cascade's
+       items ride along with the parent beat and must stay ungated, or they'd
+       never receive [data-shown] and would be stuck hidden. */
     deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim:not([data-shown]),
     deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim2:not([data-shown]),
     deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim3:not([data-shown]),
@@ -386,10 +390,10 @@
     deck-stage[data-reveal-mode="manual"] > .s.divider[data-deck-active] .bignum.anim:not([data-shown]) {
       transform: translateY(-50%) translateY(28px);
     }
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade > :not([data-shown]) {
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade:not(.cascade .cascade) > :not([data-shown]) {
       opacity: 0; transform: translateY(20px);
     }
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade > .flowarrow:not([data-shown]) {
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade:not(.cascade .cascade) > .flowarrow:not([data-shown]) {
       transform: translateX(-20px);
     }
     deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .grow-x:not([data-shown]) {
