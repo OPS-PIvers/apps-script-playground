@@ -1497,16 +1497,24 @@
       };
       const isOuterCascade = (c) => !closestIn(c.parentElement, '.cascade');
 
-      // Gated universe: the tier classes plus the direct children of every
-      // outermost cascade (nested cascades ride along with their parent child).
+      // Gated universe: the tier classes, the direct children of every
+      // outermost cascade (nested cascades ride along with their parent child),
+      // and any element carrying an explicit build marker. Including the
+      // markers is what lets data-build="step" / data-build-group work on an
+      // otherwise-unanimated element: the manual-mode CSS hides every gated
+      // element until [data-shown], and opacity:0 on a container hides its
+      // whole subtree, so revealing the marker reveals the group as one beat.
       const gated = new Set(slide.querySelectorAll(REVEAL));
       slide.querySelectorAll('.cascade').forEach((c) => {
         if (isOuterCascade(c)) Array.from(c.children).forEach((ch) => gated.add(ch));
       });
+      slide.querySelectorAll('[data-build="step"], [data-build-group]').forEach((el) => gated.add(el));
 
-      // Collect the beat elements, then order them by document position.
+      // Collect the beat elements, then order them by document position. Only
+      // gated elements become beats — a non-gated element would toggle nothing
+      // in _renderBuild and surface as a dead click ("ghost beat").
       const stepEls = [];
-      const add = (el) => { if (el && !stepEls.includes(el)) stepEls.push(el); };
+      const add = (el) => { if (el && gated.has(el) && !stepEls.includes(el)) stepEls.push(el); };
       // explicit groups (outermost only) — one beat each
       Array.from(slide.querySelectorAll('[data-build-group]'))
         .filter((g) => !closestIn(g.parentElement, '[data-build-group]'))
@@ -1522,16 +1530,10 @@
         add(el);
       });
 
-      const toggleSet = (el) => {
-        if (!el.hasAttribute('data-build-group')) return [el];
-        // A group reveals every gated element in its subtree at once.
-        const sub = [];
-        if (gated.has(el)) sub.push(el);
-        el.querySelectorAll(REVEAL).forEach((d) => { if (gated.has(d)) sub.push(d); });
-        el.querySelectorAll('.cascade > *').forEach((d) => { if (gated.has(d)) sub.push(d); });
-        return sub.length ? sub : [el];
-      };
-
+      // Every step element is gated (guaranteed by `add` above), and gating an
+      // element hides its whole subtree via opacity — so a beat reveals exactly
+      // its own element, with no descendant bookkeeping. A group container thus
+      // fades its subtree in as one unit.
       const steps = [];
       stepEls
         .filter((el) => {
@@ -1543,9 +1545,9 @@
           // Flow connectors arrive with the node they follow, not on their own
           // click — fold them into the previous beat.
           if (el.classList.contains('flowarrow') && steps.length) {
-            steps[steps.length - 1].push(...toggleSet(el));
+            steps[steps.length - 1].push(el);
           } else {
-            steps.push(toggleSet(el));
+            steps.push([el]);
           }
         });
 

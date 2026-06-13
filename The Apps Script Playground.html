@@ -378,7 +378,9 @@
        so both still show the whole slide. */
     deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim:not([data-shown]),
     deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim2:not([data-shown]),
-    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim3:not([data-shown]) {
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim3:not([data-shown]),
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] [data-build="step"]:not([data-shown]),
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] [data-build-group]:not([data-shown]) {
       opacity: 0; transform: translateY(28px);
     }
     deck-stage[data-reveal-mode="manual"] > .s.divider[data-deck-active] .bignum.anim:not([data-shown]) {
