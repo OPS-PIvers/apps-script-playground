@@ -509,12 +509,13 @@ That front door is a web app.</p>
       <p class="kicker anim">The stack</p>
       <h2 class="title anim">A full web app, free, inside Google Workspace</h2>
     </div>
-    <!-- nodes pace the spoken "browser → Apps Script → Sheet" enumeration -->
+    <!-- nodes pace the spoken "Google Sheet → Apps Script → browser" enumeration:
+         start from the data the school already has and build out to the front door -->
     <div class="flow cascade" style="--cascade-start:2s; --cascade-step:2.5s">
-      <div class="node">
-        <div class="nlabel">Front door</div>
-        <div class="nname">The browser</div>
-        <div class="nmeta" style="font-family: Lexend">What people see</div>
+      <div class="node sheet">
+        <div class="nlabel">The data</div>
+        <div class="nname">Google Sheet</div>
+        <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
       </div>
       <div class="flowarrow"><div class="glyph">→</div></div>
       <div class="node">
@@ -523,10 +524,10 @@ That front door is a web app.</p>
         <div class="nmeta" style="font-family: Lexend">Your logic</div>
       </div>
       <div class="flowarrow"><div class="glyph">→</div></div>
-      <div class="node sheet">
-        <div class="nlabel">The data</div>
-        <div class="nname">Google Sheet</div>
-        <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
+      <div class="node">
+        <div class="nlabel">Front door</div>
+        <div class="nname">The browser</div>
+        <div class="nmeta" style="font-family: Lexend">What people see</div>
       </div>
     </div>
     <div class="whys cascade" style="--cascade-start:13s; --cascade-step:4s">
