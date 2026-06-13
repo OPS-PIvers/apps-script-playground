@@ -787,14 +787,14 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <div class="recipe4 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="rcard">
         <div class="rnum">1</div>
-        <h3 class="rh">Start with the sheet</h3>
-        <p class="rp">Tabs and columns are your database. Set them up first.</p>
-      </div>
-      <div class="rcard">
-        <div class="rnum">2</div>
         <h3 class="rh">Write a DESIGN.md</h3>
         <p class="rp">Colors, fonts, and components: the house style in one file.</p>
         <div class="rqr"><div class="qbox"><image-slot id="qr-design" shape="rect" src="media/19-qr-brand-skill.png" placeholder="QR"></image-slot></div><span class="qcap">OPS Tech Brand SKILL &amp; DESIGN.md</span></div>
+      </div>
+      <div class="rcard">
+        <div class="rnum">2</div>
+        <h3 class="rh">Start with the sheet</h3>
+        <p class="rp">Tabs and columns are your database. Set them up before you build.</p>
       </div>
       <div class="rcard">
         <div class="rnum">3</div>
@@ -898,7 +898,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   "People always ask whether this really scales, so let me open one up. The Observation Portal is our peer evaluation system, built on the Danielson framework. Apps Script serves a single-page rubric. Google Sheets hold the staff list, role assignments, the rubric for each role, and every observation record. Recordings, tagged evidence, and exported PDFs live in Drive, private while in draft, then shared view-only with the teacher once finalized. Four roles each see exactly their slice. A whole district trusts this pattern with sensitive evaluations.",
   "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts. [Tap the media, then arrow to the style guide the DESIGN.md produced.]",
   "Now the make-and-take. I want you to leave with something you can do, not just something that was fun to watch: the recipe, a dozen starter ideas, and what makes this district-ready.",
-  "The recipe is the same four steps every time. Start with the sheet: tabs and columns are your database. Write a DESIGN dot md so everything matches your house style. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
+  "The recipe is the same four steps every time. Write a DESIGN dot md once so everything matches your house style. Then start with the sheet: tabs and columns are your database. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
   "If you want somewhere to start, steal one of these. A sign-in kiosk, a hall pass, a booking system, a help-desk queue. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
   "Before you roll anything out, a few things that make this district-safe. You pick the access level, from just you to anyone with the link. A Roles tab lets students, teachers, and admins each see only their part of the app. The data never leaves your own Workspace or your existing district agreement. And anything touching student data still goes through your normal review. Builder-made doesn't mean unreviewed.",
   "Everything I showed you today is open. The repos are at github dot com slash OPS-PIvers. To start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and it's all on your phone before you leave the room.",
