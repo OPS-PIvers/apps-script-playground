@@ -294,31 +294,39 @@
     deck-stage > .s.divider:not([data-deck-active]) .bignum.anim {
       transform: translateY(-50%) translateY(28px);
     }
-    /* Delays live under [data-deck-active] only, so deactivation reverses
-       immediately. The first reveal waits out the stage's 260ms slide swap
-       so the two transitions never compete for the same frames. */
-    [data-deck-active] .anim  { transition-delay: .3s; }
-    [data-deck-active] .title.anim,
-    [data-deck-active].cover h1.anim { transition-delay: .55s; }
-    [data-deck-active] .anim2 { transition-delay: .9s; }
-    [data-deck-active] .anim3 { transition-delay: 1.7s; }
+    /* AUTO MODE ONLY. These timed delays drive the self-running, speech-paced
+       timeline used for unattended/kiosk playback (deck-stage sets
+       data-reveal-mode="auto" from ?autoplay / ?kiosk / reveal="auto"). In the
+       default MANUAL mode the speaker is the clock — reveals fire with no delay
+       the moment deck-stage marks a beat [data-shown] (see the manual block
+       below), so none of these rules apply. Delays live under [data-deck-active]
+       only, so deactivation reverses immediately; the first reveal waits out the
+       stage's 260ms slide swap so the two transitions never compete.
+       Pace ≈ 140 wpm: items land seconds apart, not in a page-load burst. */
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .anim  { transition-delay: .3s; }
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .title.anim,
+    deck-stage[data-reveal-mode="auto"] [data-deck-active].cover h1.anim { transition-delay: .55s; }
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .anim2 { transition-delay: 1.2s; }
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .anim3 { transition-delay: 2.6s; }
     /* Footmarks echo the slide's spoken closing line — they arrive after
        the body has settled, not alongside it. */
-    [data-deck-active] .footmark.anim3 { transition-delay: var(--punch, 4.2s); }
-    /* the divider's giant number materializes slowly behind the heading */
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .footmark.anim3 { transition-delay: var(--punch, 5.5s); }
+    /* the divider's giant number materializes slowly behind the heading
+       (a duration, not a delay — fine in both modes) */
     .divider .bignum { transition-duration: 1.8s; }
   }
 
   /* per-item cascade — same invariant as .anim: the RESTING state is visible,
      so print / reduced-motion / export / rail thumbnails always show content.
      Put .cascade on a container and its direct children fade up one-by-one
-     when the slide is active. Defaults: items start at 1.2s (after the
-     header beat above has landed) and step .4s apart — a spoken-list pace,
-     not a page-load stagger. Tune per slide with inline --cascade-start /
-     --cascade-step so items land roughly when the speaker notes reach them
-     (the custom properties are inert on their own — only the
-     [data-deck-active] rule consumes them, so deactivation still reverses
-     with no delay, same contract as .anim2/.anim3 above). */
+     when the slide is active. In MANUAL mode each child is its own build beat
+     (revealed on → / Space, no auto delay). In AUTO mode they self-run on a
+     speech-paced clock: defaults start at 3s (after the header beat) and step
+     5s apart — roughly one spoken point every couple of seconds, not a
+     page-load burst. Tune per slide with inline --cascade-start / --cascade-step
+     so items land when the speaker notes reach them (the custom properties are
+     inert on their own — only the auto-mode [data-deck-active] rule consumes
+     them, so deactivation still reverses with no delay). */
   @media (prefers-reduced-motion: no-preference) {
     .cascade > * {
       opacity: 1; transform: none;
@@ -335,8 +343,8 @@
     deck-stage > .s:not([data-deck-active]) .cascade > .flowarrow {
       transform: translateX(-20px);
     }
-    [data-deck-active] .cascade > * {
-      transition-delay: calc(var(--cascade-start, 1.2s) + var(--i, 0) * var(--cascade-step, .4s));
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .cascade > * {
+      transition-delay: calc(var(--cascade-start, 3s) + var(--i, 0) * var(--cascade-step, 5s));
     }
     .cascade > :nth-child(1)  { --i: 0; }  .cascade > :nth-child(2)  { --i: 1; }
     .cascade > :nth-child(3)  { --i: 2; }  .cascade > :nth-child(4)  { --i: 3; }
@@ -354,7 +362,37 @@
       transition: transform .9s var(--reveal-ease);
     }
     deck-stage > .s:not([data-deck-active]) .grow-x { transform: scaleX(0); }
-    [data-deck-active] .grow-x { transition-delay: 1.15s; }
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .grow-x { transition-delay: 1.15s; }
+
+    /* ── speaker-controlled builds (MANUAL mode, the default) ──────────────
+       The presenter is the clock. On the live active slide, every gated
+       element stays in its hidden resting state until deck-stage marks it
+       [data-shown] on each → / Space (the build engine in deck-stage.js).
+       There is deliberately NO transition-delay here — reveals fire the
+       instant a beat is shown — so the slide builds at exactly the speaker's
+       pace. Scoped to deck-stage's direct light-DOM children (> .s) so the
+       rule never touches rail-thumb clones, which live in shadow roots and are
+       never [data-deck-active]; they keep rendering the full resting slide,
+       same invariant as everything above. Print is handled in JS (beforeprint
+       marks every beat shown) and reduced-motion never enters this media query,
+       so both still show the whole slide. */
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim:not([data-shown]),
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim2:not([data-shown]),
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .anim3:not([data-shown]) {
+      opacity: 0; transform: translateY(28px);
+    }
+    deck-stage[data-reveal-mode="manual"] > .s.divider[data-deck-active] .bignum.anim:not([data-shown]) {
+      transform: translateY(-50%) translateY(28px);
+    }
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade > :not([data-shown]) {
+      opacity: 0; transform: translateY(20px);
+    }
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .cascade > .flowarrow:not([data-shown]) {
+      transform: translateX(-20px);
+    }
+    deck-stage[data-reveal-mode="manual"] > .s[data-deck-active] .grow-x:not([data-shown]) {
+      transform: scaleX(0);
+    }
   }
   /* deck-stage's beforeprint freeze zeroes transition-duration but not
      transition-delay — kill both so nothing prints mid-delay. */
@@ -403,7 +441,7 @@
 
   <!-- 1 · COVER -->
   <!-- the footmark introduces the speaker — arrives as the notes get there -->
-  <section data-label="Cover" class="s navy cover" style="--punch:2.6s">
+  <section data-label="Cover" class="s navy cover" style="--punch:8s">
     <img class="torch-bg" src="assets/orono-torch-white-outlined.png" alt="">
     <img class="wordmark anim" src="assets/orono-technology-logo-white.png" alt="Orono Technology">
     <p class="kicker anim">MN Thought Leaders Summit · 2026</p>
@@ -423,13 +461,13 @@ We aren't building the car anymore. We're driving it. And like any driver, we st
   </section>
 
   <!-- 3 · PROBLEM -->
-  <section data-label="Spreadsheet problem" class="s light">
+  <section data-label="Spreadsheet problem" class="s light" style="--punch:19s">
     <div class="head-block">
       <p class="kicker anim">The spreadsheet problem</p>
       <h2 class="title anim">Our systems are already built on many disconnected spreadsheets</h2>
       <p class="lead anim2">Every school runs on them. Rosters, points, sign-ins, observations, and more forms than anyone can count. A spreadsheet is a fine place to keep data. It's a miserable place to ask people to work.</p>
     </div>
-    <div class="pains cascade" style="--cascade-start:1.3s; --cascade-step:.5s">
+    <div class="pains cascade" style="--cascade-start:5s; --cascade-step:4s">
       <div class="pain"><h3>No guardrails</h3><p>Nothing stops a bad entry or the wrong format.</p></div>
       <div class="pain"><h3>No roles</h3><p>Everyone sees everything, unless you play whack-a-mole with protected ranges.</p></div>
       <div class="pain"><h3>One click from chaos</h3><p>A stray paste or delete can wipe a whole column.</p></div>
@@ -455,7 +493,7 @@ That front door is a web app.</p>
       <h2 class="title anim">A full web app, free, inside Google Workspace</h2>
     </div>
     <!-- nodes pace the spoken "browser → Apps Script → Sheet" enumeration -->
-    <div class="flow cascade" style="--cascade-step:.55s">
+    <div class="flow cascade" style="--cascade-start:2s; --cascade-step:2.5s">
       <div class="node">
         <div class="nlabel">Front door</div>
         <div class="nname">The browser</div>
@@ -474,7 +512,7 @@ That front door is a web app.</p>
         <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
       </div>
     </div>
-    <div class="whys cascade" style="--cascade-start:4s; --cascade-step:.35s">
+    <div class="whys cascade" style="--cascade-start:13s; --cascade-step:4s">
       <div class="why"><h3>Free</h3><p>No server to rent, nothing to procure. It runs on Google's infrastructure and deploys as a link.</p></div>
       <div class="why"><h3>Persistent</h3><p>Every click lands in a real Google Sheet. Open it, audit it, fix a typo by hand if you want.</p></div>
       <div class="why"><h3>Native</h3><p>Sign-in is just Google login, so access control is a conversation your district has already had.</p></div>
@@ -497,10 +535,10 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <h2 class="title anim">Ten tools. One recipe. Zero software engineers.</h2>
     </div>
     <!-- columns land left-to-right; each list starts after its column -->
-    <div class="map cascade" style="--cascade-step:.3s">
+    <div class="map cascade" style="--cascade-start:3s; --cascade-step:5s">
       <div class="mapcol">
         <h3>For teachers</h3>
-        <ul class="cascade" style="--cascade-start:1.8s; --cascade-step:.3s">
+        <ul class="cascade" style="--cascade-start:3.5s; --cascade-step:1.2s">
           <li>Digital Microscope<span>Upload screenshots &amp; label zones directly in the browser</span></li>
           <li>Research &amp; Annotations<span>Highlight, tag, and cite sources across any website or PDF</span></li>
           <li>Gamified Ranking<span>Earn XP, ranks, and badges through class activities</span></li>
@@ -508,7 +546,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       </div>
       <div class="mapcol">
         <h3>For buildings &amp; teams</h3>
-        <ul class="cascade" style="--cascade-start:2.1s; --cascade-step:.3s">
+        <ul class="cascade" style="--cascade-start:8.5s; --cascade-step:1.2s">
           <li>Assessment Portal<span>Secure assessment sharing with accessibility built in</span></li>
           <li>OMS Agenda Sync<span>50+ teacher agendas synced to one web app</span></li>
           <li>Flex Sign-In<span>Flex attendance with customizable approve/deny flags</span></li>
@@ -517,7 +555,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       </div>
       <div class="mapcol">
         <h3>For districts</h3>
-        <ul class="cascade" style="--cascade-start:2.4s; --cascade-step:.3s">
+        <ul class="cascade" style="--cascade-start:13.5s; --cascade-step:1.2s">
           <li>Subbing for Teachers<span>Request and claim coverage, with hours logged</span></li>
           <li>Peer Observation Portal<span>Interactive rubrics, recording, transcription, and evidence tagging</span></li>
           <li>Digital Learning Hub<span>Custom Google Sites linked to staff digital guides</span></li>
@@ -541,7 +579,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">For teachers</p>
       <h2 class="title anim">In daily use across our classrooms</h2>
     </div>
-    <div class="grid3 cascade" style="--cascade-start:1.3s; --cascade-step:.7s">
+    <div class="grid3 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="toolcard"><div class="tag">Science</div><h3>OHS Digital Microscope</h3><p>Students capture and label microscope views from any device, nothing installed.</p></div>
       <div class="toolcard"><div class="tag">Research</div><h3>Research &amp; Annotations</h3><p>Students highlight, tag, and cite sources on any website or PDF while the bibliography assembles itself. It replaced a paid subscription.</p></div>
       <div class="toolcard"><div class="tag">Engagement</div><h3>Gamified Ranking System</h3><p>A mythology-themed XP and ranking layer that builds class culture.</p></div>
@@ -555,7 +593,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <h2 class="title anim">OHS Digital Microscope</h2>
       <div class="watch anim2">
         <div class="wl">Watch for</div>
-        <ul class="cascade" style="--cascade-start:1.6s; --cascade-step:.5s">
+        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>Upload images in a teacher-only web page</li>
           <li>Create click zones with labels and banners</li>
           <li>Everything saved to a Sheet and Drive folder automatically</li>
@@ -574,7 +612,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <h2 class="title anim">Research &amp; Annotations</h2>
       <div class="watch anim2">
         <div class="wl">Watch for</div>
-        <ul class="cascade" style="--cascade-start:1.6s; --cascade-step:.5s">
+        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>Highlight, tag, and cite sources across any website or PDF</li>
           <li>Bibliographies that build themselves as students work</li>
           <li>Teachers see the whole class's research in one place</li>
@@ -601,7 +639,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">For buildings &amp; teams</p>
       <h2 class="title anim">The daily logistics layer</h2>
     </div>
-    <div class="grid4 cascade" style="--cascade-start:1.3s; --cascade-step:.7s">
+    <div class="grid4 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="toolcard"><div class="tag">Assessment</div><h3>Orono Assessment Portal</h3><p>Teachers securely share assessments, with accessibility tools built in for every student.</p></div>
       <div class="toolcard"><div class="tag">Communication</div><h3>OMS Agenda Sync</h3><p>Write the daily agenda once; it appears on every screen and page that needs it.</p></div>
       <div class="toolcard"><div class="tag">Attendance</div><h3>OPS Flex Sign-In</h3><p>Flex-period sign-in, live rosters, and attendance at a glance.</p></div>
@@ -616,7 +654,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <h2 class="title anim">OPS Flex Sign-In</h2>
       <div class="watch anim2">
         <div class="wl">Watch for</div>
-        <ul class="cascade" style="--cascade-start:1.6s; --cascade-step:.5s">
+        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>A staff member scanning a student's QR code</li>
           <li>No student devices needed; one staff device runs the room</li>
           <li>The roster updating live, recorded to one sheet</li>
@@ -652,7 +690,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">For districts</p>
       <h2 class="title anim">Proven across the whole district</h2>
     </div>
-    <div class="grid3 cascade" style="--cascade-start:1.3s; --cascade-step:.7s">
+    <div class="grid3 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="toolcard"><div class="tag">Coverage</div><h3>Subbing for Teachers</h3><p>Request and claim internal coverage across the district, without the reply-all chain.</p></div>
       <div class="toolcard"><div class="tag">Growth</div><h3>Peer Observation Portal</h3><p>Structured peer observations with shared rubrics, district-wide.</p></div>
       <div class="toolcard"><div class="tag">Resources</div><h3>Digital Learning Hub</h3><p>One front door to the district's tools, guides, and resources.</p></div>
@@ -665,7 +703,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">Proof it scales</p>
       <h2 class="title anim" style="font-size:54px;">Inside the Observation Portal</h2>
       <p class="body anim2" style="margin-top:16px; color:var(--ot-gray-dark);">A multi-role Danielson rubric for peer observations across Orono, and proof the pattern scales.</p>
-      <div class="stacklist cascade" style="--cascade-start:1.5s; --cascade-step:.45s">
+      <div class="stacklist cascade" style="--cascade-start:3s; --cascade-step:3.5s">
         <div class="stackrow"><p class="sr-h">Web app</p><p class="sr-p">Apps Script serves a single-page rubric</p></div>
         <div class="stackrow"><p class="sr-h">Google Sheets — the database</p><p class="sr-p">Staff · Settings · Role rubrics · Observation_Data</p></div>
         <div class="stackrow"><p class="sr-h">Google Drive</p><p class="sr-p">Recordings, tagged evidence &amp; exported PDFs — private until finalized</p></div>
@@ -688,7 +726,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">The cohesion story</p>
       <h2 class="title anim" style="font-size:60px;">One DESIGN.md, one product family</h2>
       <p class="lead anim2" style="font-family: Lexend">We wrote our design rules down once, in a single DESIGN.md the AI reads before it builds anything. A dozen tools from different hands all come out feeling like one product.</p>
-      <div class="whys cascade" style="--cascade-start:1.5s; --cascade-step:.5s">
+      <div class="whys cascade" style="--cascade-start:3s; --cascade-step:4s">
         <div class="why"><h3>One file</h3><p>Colors, type scale, and component rules, written down in plain Markdown.</p></div>
         <div class="why"><h3>Read before every build</h3><p>The AI starts from the house style instead of inventing one.</p></div>
         <div class="why"><h3>Familiar everywhere</h3><p>People learn one interface and recognize it in the next tool.</p></div>
@@ -722,13 +760,13 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   </section>
 
   <!-- 20 · THE RECIPE -->
-  <section data-label="The recipe" class="s light" style="justify-content:center;">
+  <section data-label="The recipe" class="s light" style="justify-content:center; --punch:17s">
     <div class="head-block">
       <p class="kicker anim">The repeatable recipe</p>
       <h2 class="title anim">Get started in 4 steps</h2>
     </div>
     <!-- the four steps land as the notes walk through them, one per beat -->
-    <div class="recipe4 cascade" style="--cascade-start:1.3s; --cascade-step:.7s">
+    <div class="recipe4 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="rcard">
         <div class="rnum">1</div>
         <h3 class="rh">Start with the sheet</h3>
@@ -762,7 +800,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <h2 class="title anim">A dozen ideas to get you started</h2>
     </div>
     <!-- a dozen ideas rolling in steadily while the examples are spoken -->
-    <div class="ideas cascade" style="--cascade-step:.28s">
+    <div class="ideas cascade" style="--cascade-start:2.5s; --cascade-step:1.5s">
       <div class="idea"><div class="ic"></div><div class="it"><b>A sign-in kiosk</b> <span>Tap a name, stamp the time.</span></div></div>
       <div class="idea"><div class="ic"></div><div class="it"><b>A form-to-dashboard</b> <span>Responses roll into a live summary.</span></div></div>
       <div class="idea"><div class="ic"></div><div class="it"><b>A points &amp; leaderboard</b> <span>Award points; the ranking keeps itself.</span></div></div>
@@ -784,7 +822,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">Once you're rolling</p>
       <h2 class="title anim">Built for district trust</h2>
     </div>
-    <div class="ftable cascade" style="--cascade-start:1.3s; --cascade-step:.55s">
+    <div class="ftable cascade" style="--cascade-start:3s; --cascade-step:5s">
       <div class="frow"><div class="ft-term">Pick your access level</div><div class="ft-def">Just you, your whole organization, or anyone with the link. Google login decides who gets in.</div></div>
       <div class="frow"><div class="ft-term">Role-based views</div><div class="ft-def">Add a Roles tab to your sheet so students, teachers, and admins each see only their part of the app.</div></div>
       <div class="frow"><div class="ft-term">Two-way configuration</div><div class="ft-def">An admin panel can reshape the sheet itself; edits flow both directions.</div></div>
@@ -798,7 +836,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <div class="res-left">
       <p class="kicker anim">Take the playground home</p>
       <h2 class="title anim" style="color:#fff;">Everything's open</h2>
-      <div class="reslist cascade" style="--cascade-start:1.1s; --cascade-step:.5s">
+      <div class="reslist cascade" style="--cascade-start:2s; --cascade-step:4s">
         <div class="resrow"><p class="rr-h">All the repos</p><p class="rr-p" style="font-family: Lexend">github.com/OPS-PIvers</p></div>
         <div class="resrow"><p class="rr-h">Start here</p><p class="rr-p" style="font-family: Lexend">Copy a DESIGN.md · open a sheet · describe it</p></div>
         <div class="resrow"><p class="rr-h">Questions later?</p><p class="rr-p" style="font-family: Lexend">Orono Public Schools · Technology</p></div>
