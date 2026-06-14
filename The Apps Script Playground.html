@@ -107,6 +107,8 @@
   .node .nmeta { font-size: 25px; color: var(--ot-gray); font-family: var(--font-mono); }
   .node.sheet { background: var(--success-bg); border-color: var(--success-fg); }
   .node.sheet .nlabel, .node.sheet .nname { color: var(--success-fg); }
+  /* front door sits one step deeper in the blue family, so the three nodes read as a sequence */
+  .node.browser { background: #ced4ee; border-color: var(--ot-blue-dark); }
   .flowarrow { flex: none; width: 156px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
   .flowarrow .glyph { font-size: 56px; color: var(--ot-red); line-height: 1; }
   .flowarrow .alabel { font-size: 24px; font-family: var(--font-mono); color: var(--ot-gray); text-align: center; line-height: 1.2; word-break: break-word; }
@@ -518,7 +520,7 @@ That front door is a web app.</p>
         <div class="nmeta" style="font-family: Lexend">Your logic</div>
       </div>
       <div class="flowarrow"><div class="glyph">→</div></div>
-      <div class="node">
+      <div class="node browser">
         <div class="nlabel">Front door</div>
         <div class="nname">The browser</div>
         <div class="nmeta" style="font-family: Lexend">What people see</div>
