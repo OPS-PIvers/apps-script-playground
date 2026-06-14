@@ -110,6 +110,13 @@
     '  transition:background .15s,transform .15s}' +
     '.cdots button[aria-current="true"]::before{background:#fff;transform:scale(1.25)}' +
     '.cdots button:hover::before{background:rgba(255,255,255,.85)}' +
+    // ── manual prev/next arrows flanking the dots ───────────────────────────
+    '.crow{display:flex;align-items:center;gap:6px;pointer-events:none}' +
+    '.carrow{appearance:none;border:0;background:transparent;color:rgba(255,255,255,.8);' +
+    '  cursor:pointer;pointer-events:auto;width:24px;height:24px;display:flex;' +
+    '  align-items:center;justify-content:center;padding:0;' +
+    '  -webkit-tap-highlight-color:transparent;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}' +
+    '.carrow:hover{color:#fff}.carrow svg{display:block}' +
     '@media (prefers-reduced-motion:reduce){.cdots button::before{transition:none}}';
 
   const icon =
@@ -131,7 +138,11 @@
         '    <div class="cap"></div><div class="sub">or <u>browse files</u></div></div>' +
         '  <div class="ring"></div>' +
         '  <div class="carousel" part="carousel"><div class="cprog"><i></i></div>' +
-        '    <div class="cdots"></div></div>' +
+        '    <div class="crow">' +
+        '      <button class="carrow cprev" type="button" aria-label="Previous media"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5 7.5 12l7 7"/></svg></button>' +
+        '      <div class="cdots"></div>' +
+        '      <button class="carrow cnext" type="button" aria-label="Next media"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 5 7 7-7 7"/></svg></button>' +
+        '    </div></div>' +
         '</div>' +
         '<div class="ctl"><button data-act="replace">Replace</button>' +
         '  <button data-act="clear">Remove</button></div>' +
@@ -145,6 +156,8 @@
       this._input = root.querySelector('input');
       this._dots = root.querySelector('.cdots');
       this._prog = root.querySelector('.cprog i');
+      this._cprev = root.querySelector('.cprev');
+      this._cnext = root.querySelector('.cnext');
       this._url = null; this._err = null; this._depth = 0;
 
       // ── in-slide carousel state ──────────────────────────────────────────
@@ -169,6 +182,10 @@
         if (act === 'replace') this._input.click();
         if (act === 'clear') this._clear();
       });
+      // In-slide carousel arrows: skip to the prev/next item and reset its
+      // timer. Stop the click so it neither opens the lightbox nor pages slides.
+      if (this._cprev) this._cprev.addEventListener('click', (e) => { e.stopPropagation(); this._prev(); });
+      if (this._cnext) this._cnext.addEventListener('click', (e) => { e.stopPropagation(); this._next(); });
       this._input.addEventListener('change', () => {
         const f = this._input.files && this._input.files[0];
         if (f) this._ingest(f);
@@ -416,6 +433,7 @@
     }
 
     _next() { this._pause(); this._go(this._idx + 1); }
+    _prev() { this._pause(); this._go(this._idx - 1); }
 
     _jump(i) {
       if (i === this._idx) return;

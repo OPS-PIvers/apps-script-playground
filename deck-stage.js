@@ -1412,25 +1412,34 @@
     }
 
     _onTap(e) {
-      // Touch-only — keyboard + the overlay toolbar cover nav on desktop.
-      if (FINE_POINTER_MQ.matches) return;
       // Only taps that land on the stage (slide content or letterbox); the
       // overlay / rail / menus are siblings with their own click handlers.
       const path = e.composedPath();
       if (!this._stage || !path.includes(this._stage)) return;
-      // Let interactive slide content keep the tap. composedPath (not
-      // e.target.closest) so we see through open shadow roots — a <button>
-      // inside a slide-authored custom element retargets e.target to the
-      // host but still appears in the composed path.
       if (e.defaultPrevented) return;
+      // Let interactive slide content — and any media slot, which opens the
+      // lightbox on click — keep the tap. composedPath (not e.target.closest)
+      // so we see through open shadow roots: a <button> inside a slide-authored
+      // custom element retargets e.target to the host but is still in the path.
       for (const n of path) {
         if (n === this._stage) break;
-        if (n.matches && n.matches(INTERACTIVE_SEL)) return;
+        if (n.matches && (n.matches(INTERACTIVE_SEL) || n.matches('media-slot, image-slot'))) return;
       }
-      e.preventDefault();
       const rw = this._railWidth();
-      const mid = rw + (window.innerWidth - rw) / 2;
-      this._advance(e.clientX < mid ? -1 : 1, 'tap');
+      const stageW = window.innerWidth - rw;
+      const x = e.clientX - rw;
+      if (FINE_POINTER_MQ.matches) {
+        // Desktop mouse: navigate from the left/right edge bands only, so a
+        // click on centered content (text, media) is left alone. Keyboard and
+        // the overlay toolbar still cover full navigation.
+        const edge = Math.max(120, stageW * 0.12);
+        if (x < edge) { e.preventDefault(); this._advance(-1, 'click'); }
+        else if (x > stageW - edge) { e.preventDefault(); this._advance(1, 'click'); }
+        return;
+      }
+      // Touch: tap the left or right half.
+      e.preventDefault();
+      this._advance(x < stageW / 2 ? -1 : 1, 'tap');
     }
 
     _onKey(e) {
