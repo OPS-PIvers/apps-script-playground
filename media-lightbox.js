@@ -28,6 +28,7 @@
   const SLOT_SEL = 'media-slot,image-slot';
   const MIN_W = 140; // ignore tiny thumbnail clones in the deck rail
   const VIDEO_RE = /\.(mp4|webm|mov|m4v)([?#]|$)/i;
+  const abs = (u) => { try { return new URL(u, location.href).href; } catch (e) { return u; } };
 
   // ── overlay (built once) ──────────────────────────────────────────────────
   const style = document.createElement('style');
@@ -144,10 +145,7 @@
     const list = attr.split('|').map((s) => s.trim()).filter(Boolean)
       .map((url) => ({ url, video: VIDEO_RE.test(url) }));
     if (!list.length) return live ? [live] : [];
-    if (live) {
-      const abs = (u) => { try { return new URL(u, location.href).href; } catch (e) { return u; } };
-      if (!list.some((it) => abs(it.url) === abs(live.url))) list.unshift(live);
-    }
+    if (live && !list.some((it) => abs(it.url) === abs(live.url))) list.unshift(live);
     return list;
   }
 
@@ -227,12 +225,19 @@
     items = itemsFor(slot);
     if (!items.length) return;
     openEl = slot;
+    // Freeze the slot's in-slide autorotation while the modal owns the gallery.
+    if (typeof slot.setModalOpen === 'function') slot.setModalOpen(true);
     const text = captionFor(slot);
     capText.textContent = text;
     if (items.length > 1) scrim.removeAttribute('data-single');
     else scrim.setAttribute('data-single', '');
     cap.style.display = (text || items.length > 1) ? '' : 'none';
-    show(0);
+    // Open on whatever the slot is showing right now so a rotating carousel
+    // hands off to the modal seamlessly instead of jumping back to item 1.
+    const live = liveItem(slot);
+    let start = 0;
+    if (live) { const i = items.findIndex((it) => abs(it.url) === abs(live.url)); if (i >= 0) start = i; }
+    show(start);
     if (!mounted) { document.body.appendChild(scrim); mounted = true; }
     // force reflow so the opacity transition runs (timer, not rAF — rAF can
     // be suspended in hidden/offscreen frames and the modal would stay invisible)
@@ -244,6 +249,7 @@
   function close() {
     if (!mounted) return;
     scrim.classList.remove('mlb-on');
+    if (openEl && typeof openEl.setModalOpen === 'function') openEl.setModalOpen(false);
     openEl = null;
     document.removeEventListener('keydown', onKey, true);
     const v = media.querySelector('video');

@@ -86,7 +86,31 @@
     '  background:rgba(0,0,0,.65);color:#fff;font:11px/1 system-ui,sans-serif}' +
     '.ctl button:hover{background:rgba(0,0,0,.82)}' +
     '.err{position:absolute;left:8px;bottom:8px;right:8px;color:#b3261e;font-size:11px;' +
-    '  background:rgba(255,255,255,.9);padding:4px 6px;border-radius:5px;pointer-events:none}';
+    '  background:rgba(255,255,255,.9);padding:4px 6px;border-radius:5px;pointer-events:none}' +
+    // ── in-slide autorotating carousel UI (dots + progress) ──────────────────
+    // Shown only when the host carries data-carousel (a gallery with >1 item and
+    // no presenter drop overriding it). Sits over the bottom of the media; a
+    // gentle scrim keeps dots legible over light or dark frames.
+    '.carousel{position:absolute;left:0;right:0;bottom:0;z-index:3;display:none;' +
+    '  flex-direction:column;align-items:center;gap:7px;padding:14px 8px 9px;' +
+    '  background:linear-gradient(to top,rgba(0,0,0,.42),rgba(0,0,0,0));pointer-events:none}' +
+    ':host([data-carousel]) .carousel{display:flex}' +
+    '.cprog{width:min(60%,260px);height:3px;border-radius:3px;' +
+    '  background:rgba(255,255,255,.32);overflow:hidden}' +
+    '.cprog i{display:block;height:100%;width:0;background:#fff;border-radius:3px;' +
+    '  box-shadow:0 0 0 1px rgba(0,0,0,.08)}' +
+    '.cdots{display:flex;gap:2px;pointer-events:auto}' +
+    // 22px buttons give an accessible tap target; the visible 8px dot is drawn
+    // by ::before, so the clickable area is far larger than the dot itself.
+    '.cdots button{appearance:none;border:0;margin:0;padding:0;width:22px;height:22px;' +
+    '  display:flex;align-items:center;justify-content:center;background:transparent;' +
+    '  cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.cdots button::before{content:"";width:8px;height:8px;border-radius:50%;' +
+    '  background:rgba(255,255,255,.5);box-shadow:0 1px 2px rgba(0,0,0,.35);' +
+    '  transition:background .15s,transform .15s}' +
+    '.cdots button[aria-current="true"]::before{background:#fff;transform:scale(1.25)}' +
+    '.cdots button:hover::before{background:rgba(255,255,255,.85)}' +
+    '@media (prefers-reduced-motion:reduce){.cdots button::before{transition:none}}';
 
   const icon =
     '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
@@ -106,6 +130,8 @@
         '  <div class="empty" part="empty">' + icon +
         '    <div class="cap"></div><div class="sub">or <u>browse files</u></div></div>' +
         '  <div class="ring"></div>' +
+        '  <div class="carousel" part="carousel"><div class="cprog"><i></i></div>' +
+        '    <div class="cdots"></div></div>' +
         '</div>' +
         '<div class="ctl"><button data-act="replace">Replace</button>' +
         '  <button data-act="clear">Remove</button></div>' +
@@ -117,7 +143,25 @@
       this._empty = root.querySelector('.empty');
       this._cap = root.querySelector('.cap');
       this._input = root.querySelector('input');
+      this._dots = root.querySelector('.cdots');
+      this._prog = root.querySelector('.cprog i');
       this._url = null; this._err = null; this._depth = 0;
+
+      // ── in-slide carousel state ──────────────────────────────────────────
+      // items: parsed gallery; idx: current; running: rAF ticking; the four
+      // gates below decide whether rotation is allowed at any moment.
+      this._items = []; this._idx = 0; this._elapsed = 0;
+      this._running = false; this._raf = null; this._lastTs = 0;
+      this._active = true;       // slide carries data-deck-active (or no deck)
+      this._visible = false;     // big enough + on screen (IntersectionObserver)
+      this._hover = false;       // presenter hovering → freeze on this frame
+      this._dropActive = false;  // a presenter drop is overriding the gallery
+      this._modalOpen = false;   // the lightbox is showing this slot
+      this._tickBound = this._tick.bind(this);
+      // A carousel video reaching its end — or erroring out — hands off to the
+      // next item, but only while a gallery is actually rotating, so a stray
+      // media error during a drop or teardown can't advance it underneath.
+      this._onEnded = () => { if (this.hasAttribute('data-carousel') && !this._dropActive) this._next(); };
 
       this._empty.addEventListener('click', () => this._input.click());
       root.addEventListener('click', (e) => {
@@ -130,6 +174,11 @@
         if (f) this._ingest(f);
         this._input.value = '';
       });
+
+      // Pause-on-hover so a presenter can dwell on one frame mid-demo. Only a
+      // rotating gallery reacts — a lone video keeps playing under the cursor.
+      this.addEventListener('mouseenter', () => { this._hover = true; if (this.hasAttribute('data-carousel')) this._evalRun(); });
+      this.addEventListener('mouseleave', () => { this._hover = false; if (this.hasAttribute('data-carousel')) this._evalRun(); });
     }
 
     connectedCallback() {
@@ -139,13 +188,20 @@
       }
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((t) => this.addEventListener(t, this));
       this._render();
+      this._items = this._gallery();
+      this._buildCarousel();
+      this._watchActive();
       this._load();
       // Play only when actually visible AND large enough (skip deck-stage
       // thumbnails, which are tiny clones — autoplaying dozens would thrash).
+      // For a rotating gallery the same signal also gates autorotation, so the
+      // carousel only ever advances on the slide the audience is looking at.
       this._io = new IntersectionObserver((ents) => {
         for (const en of ents) {
           const big = en.boundingClientRect.width > 80;
-          if (en.isIntersecting && big) this._video.play && this._video.play().catch(() => {});
+          this._visible = en.isIntersecting && big;
+          if (this.hasAttribute('data-carousel')) { this._evalRun(); }
+          else if (this._visible) this._video.play && this._video.play().catch(() => {});
           else this._video.pause && this._video.pause();
         }
       }, { threshold: 0.25 });
@@ -154,6 +210,8 @@
     disconnectedCallback() {
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((t) => this.removeEventListener(t, this));
       if (this._io) { this._io.disconnect(); this._io = null; }
+      if (this._mo) { this._mo.disconnect(); this._mo = null; }
+      this._pause();
       this._revoke();
     }
     attributeChangedCallback(name) {
@@ -181,8 +239,12 @@
 
     async _load() {
       const rec = this.id ? await idbGet(this.id) : null;
-      if (rec && rec.blob) { this._show(rec.blob, rec.type); return; }
-      this._showSrc();
+      // A presenter drop overrides the whole gallery: show it alone, no
+      // rotation. Clearing the drop (_clear) restores the rotating gallery.
+      if (rec && rec.blob) { this._dropActive = true; this.removeAttribute('data-carousel'); this._show(rec.blob, rec.type); return; }
+      this._dropActive = false;
+      if (this._items.length > 1) { this.setAttribute('data-carousel', ''); this._go(0); }
+      else this._showSrc();
     }
 
     // Author-supplied src attribute — the no-IndexedDB fallback that makes
@@ -200,6 +262,13 @@
       if (!file || !(isVid(file.type) || /^image\//i.test(file.type))) {
         this._setErr('Drop a video (MP4/WebM) or an image/GIF.'); return;
       }
+      // A drop replaces the gallery: stop rotating, detach the carousel's
+      // video handlers, and show the drop alone.
+      this._dropActive = true;
+      this.removeAttribute('data-carousel');
+      this._video.removeEventListener('ended', this._onEnded);
+      this._video.removeEventListener('error', this._onEnded);
+      this._pause();
       this._show(file, file.type);
       if (this.id) await idbPut(this.id, { blob: file, type: file.type });
     }
@@ -214,11 +283,17 @@
       const fit = this.getAttribute('fit') || 'cover';
       if (video) {
         this._video.style.objectFit = fit;
+        // Single videos loop forever; a carousel item turns this off in
+        // _showItem so its 'ended' event can hand off to the next item.
+        this._video.loop = true;
         this._video.src = url;
         this._video.style.display = 'block';
         this._img.style.display = 'none';
         this._img.removeAttribute('src');
-        this._video.play && this._video.play().catch(() => {});
+        // In carousel mode _resume() owns playback, so don't autoplay here —
+        // that would buffer items on inactive/offscreen slides only to be
+        // paused immediately. A lone (non-carousel) video still autoplays.
+        if (!this.hasAttribute('data-carousel')) this._video.play && this._video.play().catch(() => {});
       } else {
         this._img.style.objectFit = fit;
         this._img.src = url;
@@ -237,10 +312,181 @@
       this._empty.style.display = 'flex';
       this.removeAttribute('data-filled');
       if (this.id) await idbDel(this.id);
-      this._showSrc(); // clearing a drop reveals the author src again
+      // Clearing a drop reveals the author gallery (rotating again) or src.
+      this._dropActive = false;
+      if (this._items.length > 1) { this.setAttribute('data-carousel', ''); this._go(0); }
+      else this._showSrc();
     }
 
     _revoke() { if (this._url) { URL.revokeObjectURL(this._url); this._url = null; } }
+
+    // ── in-slide autorotating carousel ─────────────────────────────────────
+    // The pipe-separated `gallery` is parsed into {url, video} items. With more
+    // than one, the slot rotates through them in place: real videos
+    // (mp4/webm/mov/m4v) play to the end before advancing, while stills — GIFs
+    // included, since there's no reliable end-of-loop signal for them — hold
+    // for `dwell` seconds (default 5). Dots + a progress bar show position and
+    // timing. The lightbox modal is untouched — tapping the slot still opens
+    // the full-screen carousel.
+    _gallery() {
+      const attr = this.getAttribute('gallery') || '';
+      return attr.split('|').map((s) => s.trim()).filter(Boolean)
+        .map((url) => ({ url, video: /\.(mp4|webm|mov|m4v)([?#]|$)/i.test(url) }));
+    }
+
+    // Per-slot dwell for stills, overridable via `dwell` (seconds, or ms if
+    // ≥100). Defaults to 5s.
+    _dwellMs() {
+      const n = parseFloat(this.getAttribute('dwell'));
+      if (!Number.isFinite(n) || n <= 0) return 5000;
+      return n < 100 ? n * 1000 : n;
+    }
+
+    _buildCarousel() {
+      if (!this._dots) return;
+      this._dots.innerHTML = '';
+      if (this._items.length <= 1) return;
+      this._items.forEach((it, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Show media ' + (i + 1) + ' of ' + this._items.length);
+        if (i === 0) b.setAttribute('aria-current', 'true');
+        // A dot jumps straight to its item; stop the click here so it doesn't
+        // also bubble out to the lightbox's open-on-click handler.
+        b.addEventListener('click', (e) => { e.stopPropagation(); this._jump(i); });
+        this._dots.appendChild(b);
+      });
+    }
+
+    // The active slide is the only one allowed to rotate. Outside a deck (no
+    // data-deck-active ancestor) the slot is always considered active.
+    _watchActive() {
+      const slide = this._findSlide();
+      this._active = slide ? slide.hasAttribute('data-deck-active') : true;
+      // Only a multi-item gallery needs this; single slots and dropped videos
+      // keep their original "play whenever on screen" behaviour untouched.
+      if (!slide || this._items.length <= 1) return;
+      this._mo = new MutationObserver(() => {
+        const a = slide.hasAttribute('data-deck-active');
+        if (a === this._active) return;
+        this._active = a;
+        if (!this.hasAttribute('data-carousel')) return; // drop override active
+        // Each fresh visit to the slide restarts the gallery from the top so
+        // the audience always sees it from item 1.
+        if (a) this._go(0);
+        else { this._pause(); this._setProg(0); }
+      });
+      this._mo.observe(slide, { attributes: true, attributeFilter: ['data-deck-active'] });
+    }
+
+    // Nearest ancestor that is a direct child of <deck-stage> — i.e. the slide.
+    _findSlide() {
+      let el = this;
+      while (el && el.parentElement) {
+        if (el.parentElement.tagName === 'DECK-STAGE') return el;
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    _showItem(i) {
+      const it = this._items[i];
+      if (!it) return;
+      this._video.removeEventListener('ended', this._onEnded);
+      this._video.removeEventListener('error', this._onEnded);
+      this._display(it.url, it.video);
+      if (it.video) {
+        this._video.loop = false;
+        this._video.addEventListener('ended', this._onEnded);
+        // A broken/unplayable video never fires 'ended', so advance on 'error'
+        // too — otherwise the carousel would stall forever on it.
+        this._video.addEventListener('error', this._onEnded);
+      }
+    }
+
+    _go(i) {
+      const n = this._items.length;
+      if (!n) return;
+      this._idx = ((i % n) + n) % n;
+      this._elapsed = 0;
+      this._showItem(this._idx);
+      this._updateDots();
+      this._setProg(0);
+      this._evalRun();
+    }
+
+    _next() { this._pause(); this._go(this._idx + 1); }
+
+    _jump(i) {
+      if (i === this._idx) return;
+      this._pause();
+      this._go(i);
+    }
+
+    _updateDots() {
+      if (!this._dots) return;
+      Array.prototype.forEach.call(this._dots.children, (b, i) => {
+        if (i === this._idx) b.setAttribute('aria-current', 'true');
+        else b.removeAttribute('aria-current');
+      });
+    }
+
+    _setProg(f) {
+      if (this._prog) this._prog.style.width = Math.max(0, Math.min(1, f || 0)) * 100 + '%';
+    }
+
+    // Decide, from the four gates, whether rotation should be running right now
+    // and reconcile the rAF/video state to match.
+    _evalRun() {
+      const should = this.hasAttribute('data-carousel') && this._items.length > 1 &&
+        !this._dropActive && !this._modalOpen &&
+        this._active && this._visible && !this._hover;
+      if (should) { if (!this._running) this._resume(); }
+      else this._pause();
+    }
+
+    _resume() {
+      this._running = true;
+      this._lastTs = performance.now();
+      const it = this._items[this._idx];
+      if (it && it.video) this._video.play && this._video.play().catch(() => {});
+      this._raf = requestAnimationFrame(this._tickBound);
+    }
+
+    _pause() {
+      this._running = false;
+      if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+      // Pause unconditionally: on disconnect a single/dropped video has no
+      // carousel item backing it, but must still stop buffering.
+      if (this._video && this._video.pause) this._video.pause();
+    }
+
+    // rAF loop: videos drive the progress bar by playback position and advance
+    // on their 'ended' event; stills accumulate elapsed time and advance once
+    // they pass the dwell. Elapsed is preserved across pauses (hover, off-slide)
+    // so a still resumes where it left off rather than restarting.
+    _tick(ts) {
+      if (!this._running) return;
+      const dt = ts - this._lastTs; this._lastTs = ts;
+      const it = this._items[this._idx];
+      if (it && it.video) {
+        const v = this._video, d = v.duration || 0;
+        this._setProg(d ? v.currentTime / d : 0);
+      } else {
+        const dwell = this._dwellMs();
+        this._elapsed += dt;
+        this._setProg(this._elapsed / dwell);
+        if (this._elapsed >= dwell) { this._next(); return; }
+      }
+      this._raf = requestAnimationFrame(this._tickBound);
+    }
+
+    // Called by the lightbox so on-slide rotation freezes while the modal owns
+    // the gallery, then resumes on close.
+    setModalOpen(open) {
+      this._modalOpen = !!open;
+      if (this.hasAttribute('data-carousel')) this._evalRun();
+    }
 
     _setErr(msg) {
       if (this._err) { this._err.remove(); this._err = null; }
