@@ -126,9 +126,9 @@
   .mapcol li span { display: block; font-size: 24px; font-weight: 400; line-height: 1.35; color: var(--ot-gray); margin-top: 5px; }
 
   /* tool grids */
-  .grid4 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 32px; margin-top: 52px; flex: 1 1 auto; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 56px; }
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
-  .grid3 .toolcard { min-height: 380px; }
+  .grid3 .toolcard, .grid4 .toolcard { min-height: 380px; }
   .grid5 { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 1fr 1fr; gap: 32px; margin-top: 48px; flex: 1 1 auto; }
   .grid5 .toolcard:nth-child(-n+3) { grid-column: span 2; }
   .grid5 .toolcard:nth-child(n+4) { grid-column: span 3; }
