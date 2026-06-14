@@ -1485,11 +1485,13 @@
     //
     // Default grouping: the header block (.anim/.title/.grow-x/.bignum and any
     // standalone .anim2) reveals on arrival as step 0; then each outermost
-    // .cascade child and each standalone .anim3 is its own step, in document
-    // order. Per-slide overrides via markup: data-build="step" forces an
-    // element to be its own beat, data-build="arrival" pins it to step 0,
-    // data-build="skip" leaves it always visible, and data-build-group on a
-    // container reveals its whole subtree as a single beat.
+    // .cascade reveals as a single step (its whole list at once) and each
+    // standalone .anim3 is its own step, in document order — so the presenter
+    // advances in a few meaningful chunks, not once per list item. Per-slide
+    // overrides via markup: data-build="step" forces an element to be its own
+    // beat, data-build="arrival" pins it to step 0, data-build="skip" leaves it
+    // always visible, and data-build-group on a container reveals its whole
+    // subtree as a single beat.
 
     /** Memoized {gated, steps} geometry for a slide. steps[i] is the array of
      *  gated elements revealed at beat i+1 (step 0 = everything not in any
@@ -1547,7 +1549,21 @@
       // element hides its whole subtree via opacity — so a beat reveals exactly
       // its own element, with no descendant bookkeeping. A group container thus
       // fades its subtree in as one unit.
+      //
+      // Chunking: all gated children of a single outermost cascade reveal on ONE
+      // beat (the whole list as a chunk), so the presenter clicks once per
+      // cascade instead of once per item. (Auto/kiosk mode is unaffected — it
+      // still staggers items via the CSS --cascade-step ladder, not these steps.)
+      const outerCascadeOf = (el) => {
+        let p = el.parentElement, top = null;
+        while (p && p !== slide) {
+          if (p.matches && p.matches('.cascade')) top = p;
+          p = p.parentElement;
+        }
+        return top;
+      };
       const steps = [];
+      let lastKey = null;
       stepEls
         .filter((el) => {
           const m = el.getAttribute('data-build');
@@ -1555,13 +1571,15 @@
         })
         .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1))
         .forEach((el) => {
-          // Flow connectors arrive with the node they follow, not on their own
-          // click — fold them into the previous beat.
-          if (el.classList.contains('flowarrow') && steps.length) {
+          // Same outermost cascade → same chunk. Flow connectors arrive with the
+          // node they follow, not on their own click — fold them in too.
+          const key = outerCascadeOf(el) || el;
+          if (steps.length && (key === lastKey || el.classList.contains('flowarrow'))) {
             steps[steps.length - 1].push(el);
           } else {
             steps.push([el]);
           }
+          lastKey = key;
         });
 
       return { gated: Array.from(gated), steps };
