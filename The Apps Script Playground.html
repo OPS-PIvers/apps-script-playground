@@ -260,9 +260,13 @@
   .reslist { display: flex; flex-direction: column; gap: 30px; margin-top: 44px; }
   .resrow .rr-h { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #e57e7f; margin: 0 0 8px; }
   .resrow .rr-p { font-size: 34px; color: #fff; margin: 0; font-family: var(--font-mono); }
-  .qrwrap { width: 380px; height: 380px; background: #fff; border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
-  .qrwrap image-slot { width: 340px; height: 340px; }
+  .qrwrap { width: 460px; height: 460px; background: #fff; border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; padding: 22px; box-sizing: border-box; }
+  .qrwrap image-slot { width: 416px; height: 416px; }
   .qrcap { font-size: 24px; color: #9aa1c4; margin-top: 24px; font-family: var(--font-mono); }
+  /* combined close: animated sign-off above, repos + QR in a row below */
+  .closerow { display: flex; gap: 90px; align-items: center; margin-top: 52px; }
+  .closerow .res-text { flex: 1; }
+  .closerow .res-qr { flex: none; display: flex; flex-direction: column; align-items: center; }
 
   /* close */
   .close .wordmark { height: 44px; width: auto; align-self: flex-start; }
@@ -851,28 +855,24 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     </div>
   </section>
 
-  <!-- 24 · RESOURCES -->
-  <section data-label="Resources" class="s navy res">
-    <div class="res-left">
-      <p class="kicker anim">Take the playground home</p>
-      <h2 class="title anim" style="color:#fff;">Everything's open</h2>
-      <div class="reslist cascade" style="--cascade-start:2s; --cascade-step:4s">
-        <div class="resrow"><p class="rr-h">All the repos</p><p class="rr-p" style="font-family: Lexend">github.com/OPS-PIvers</p></div>
-        <div class="resrow"><p class="rr-h">Start here</p><p class="rr-p" style="font-family: Lexend">Copy a DESIGN.md · open a sheet · describe it</p></div>
-        <div class="resrow"><p class="rr-h">Questions later?</p><p class="rr-p" style="font-family: Lexend"><a href="mailto:paul.ivers@orono.k12.mn.us" style="color: inherit;">paul.ivers@orono.k12.mn.us</a></p></div>
-      </div>
-    </div>
-    <div class="res-right anim3">
-      <div class="qrwrap"><image-slot id="qr" shape="rect" src="media/22-qr-github.png" placeholder="Drop QR"></image-slot></div>
-      <p class="qrcap">scan for the repos</p>
-    </div>
-  </section>
-
-  <!-- 25 · THANK YOU -->
+  <!-- 24 · CLOSE — animated sign-off and the repos/QR, combined -->
   <section data-label="Thank you" class="s navy close">
+    <div class="spacer"></div>
     <p class="kicker anim">Thank you</p>
     <p class="thanks anim2" style="white-space:nowrap;font-size:88px;">Let's make <span class="morph-out m1" style="--mw:500px">something </span><span class="spin"><span class="spin-track"><span class="spin-item">new.</span><span class="spin-item">helpful.</span><span class="spin-item">exciting.</span><span class="spin-item">different.</span><span class="spin-item">collaborative.</span><span class="spin-item">meaning<span class="morph-out m2" style="--mw:125px">ful</span>.</span></span></span></p>
-    <p class="contact anim3" style="font-family: Lexend">github.com/OPS-PIvers · Orono Public Schools Technology</p>
+    <div class="closerow">
+      <div class="res-text">
+        <div class="reslist cascade" style="--cascade-start:2s; --cascade-step:4s">
+          <div class="resrow"><p class="rr-h">All the repos</p><p class="rr-p" style="font-family: Lexend">github.com/OPS-PIvers</p></div>
+          <div class="resrow"><p class="rr-h">Start here</p><p class="rr-p" style="font-family: Lexend">Copy a DESIGN.md · open a sheet · describe it</p></div>
+          <div class="resrow"><p class="rr-h">Questions?</p><p class="rr-p" style="font-family: Lexend"><a href="mailto:paul.ivers@orono.k12.mn.us" style="color: inherit;">paul.ivers@orono.k12.mn.us</a></p></div>
+        </div>
+      </div>
+      <div class="res-qr anim3">
+        <div class="qrwrap"><image-slot id="qr" shape="rect" src="media/22-qr-github.png" placeholder="Drop QR"></image-slot></div>
+        <p class="qrcap">scan for the repos</p>
+      </div>
+    </div>
     <div class="spacer"></div>
     <div class="footmark anim3"><div class="rule"></div><span>MN Thought Leaders Summit · 2026</span></div>
   </section>
@@ -904,8 +904,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   "The recipe is the same four steps every time. Write a DESIGN dot md once so everything matches your house style. Then start with the sheet: tabs and columns are your database. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
   "If you want somewhere to start, steal one of these. A sign-in kiosk, a hall pass, a booking system, a help-desk queue. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
   "Before you roll anything out, a few things that make this district-safe. You pick the access level, from just you to anyone with the link. A Roles tab lets students, teachers, and admins each see only their part of the app. The data never leaves your own Workspace or your existing district agreement.",
-  "Everything I showed you today is open. The repos are at github dot com slash OPS-PIvers. To start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and it's all on your phone before you leave the room.",
-  "Thank you. I would genuinely love to see what you build, so come find me. You have the data, you have the tools, and the spreadsheet is already sitting there. Give it a front door, and make something meaningful."
+  "Everything I showed you today is open. The repos are at github dot com slash OPS-PIvers. To start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and it's all on your phone before you leave the room. I would genuinely love to see what you build, so come find me. You have the data, you have the tools, and the spreadsheet is already sitting there. Give it a front door, and make something meaningful. Thank you."
 ]
 </script>
 
