@@ -99,13 +99,18 @@
     '  background:rgba(255,255,255,.32);overflow:hidden}' +
     '.cprog i{display:block;height:100%;width:0;background:#fff;border-radius:3px;' +
     '  box-shadow:0 0 0 1px rgba(0,0,0,.08)}' +
-    '.cdots{display:flex;gap:7px;pointer-events:auto}' +
-    '.cdots button{appearance:none;border:0;padding:0;width:8px;height:8px;border-radius:50%;' +
-    '  background:rgba(255,255,255,.5);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.35);' +
+    '.cdots{display:flex;gap:2px;pointer-events:auto}' +
+    // 22px buttons give an accessible tap target; the visible 8px dot is drawn
+    // by ::before, so the clickable area is far larger than the dot itself.
+    '.cdots button{appearance:none;border:0;margin:0;padding:0;width:22px;height:22px;' +
+    '  display:flex;align-items:center;justify-content:center;background:transparent;' +
+    '  cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.cdots button::before{content:"";width:8px;height:8px;border-radius:50%;' +
+    '  background:rgba(255,255,255,.5);box-shadow:0 1px 2px rgba(0,0,0,.35);' +
     '  transition:background .15s,transform .15s}' +
-    '.cdots button[aria-current="true"]{background:#fff;transform:scale(1.25)}' +
-    '.cdots button:hover{background:rgba(255,255,255,.85)}' +
-    '@media (prefers-reduced-motion:reduce){.cdots button{transition:none}}';
+    '.cdots button[aria-current="true"]::before{background:#fff;transform:scale(1.25)}' +
+    '.cdots button:hover::before{background:rgba(255,255,255,.85)}' +
+    '@media (prefers-reduced-motion:reduce){.cdots button::before{transition:none}}';
 
   const icon =
     '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
@@ -285,7 +290,10 @@
         this._video.style.display = 'block';
         this._img.style.display = 'none';
         this._img.removeAttribute('src');
-        this._video.play && this._video.play().catch(() => {});
+        // In carousel mode _resume() owns playback, so don't autoplay here —
+        // that would buffer items on inactive/offscreen slides only to be
+        // paused immediately. A lone (non-carousel) video still autoplays.
+        if (!this.hasAttribute('data-carousel')) this._video.play && this._video.play().catch(() => {});
       } else {
         this._img.style.objectFit = fit;
         this._img.src = url;
@@ -314,10 +322,12 @@
 
     // ── in-slide autorotating carousel ─────────────────────────────────────
     // The pipe-separated `gallery` is parsed into {url, video} items. With more
-    // than one, the slot rotates through them in place: videos/GIFs play to the
-    // end, stills hold for `dwell` seconds (default 5), and dots + a progress
-    // bar show position and timing. The lightbox modal is untouched — tapping
-    // the slot still opens the full-screen carousel.
+    // than one, the slot rotates through them in place: real videos
+    // (mp4/webm/mov/m4v) play to the end before advancing, while stills — GIFs
+    // included, since there's no reliable end-of-loop signal for them — hold
+    // for `dwell` seconds (default 5). Dots + a progress bar show position and
+    // timing. The lightbox modal is untouched — tapping the slot still opens
+    // the full-screen carousel.
     _gallery() {
       const attr = this.getAttribute('gallery') || '';
       return attr.split('|').map((s) => s.trim()).filter(Boolean)
