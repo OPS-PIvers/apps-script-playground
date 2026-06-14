@@ -929,6 +929,9 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
         </button>
         <span class="divider"></span>
+        <button class="btn mode-toggle" type="button" aria-pressed="false" aria-label="Auto-play" title="Auto-play (A)">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.5l7 4.5-7 4.5z"/></svg>
+        </button>
         <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
         <span class="divider rail-toggle-div" style="display:none"></span>
         <button class="btn rail-toggle" type="button" style="display:none" aria-label="Toggle thumbnail rail" aria-pressed="true" title="Hide thumbnails (T)">
@@ -942,6 +945,9 @@
       this._railToggleBtn = overlay.querySelector('.rail-toggle');
       this._railToggleDiv = overlay.querySelector('.rail-toggle-div');
       this._railToggleBtn.addEventListener('click', () => this.setRailVisible(!this._railVisible));
+      this._modeBtn = overlay.querySelector('.mode-toggle');
+      this._modeBtn.addEventListener('click', () => this.setRevealMode(this._revealMode === 'auto' ? 'manual' : 'auto'));
+      this._syncModeBtn();
 
       // Thumbnail rail + context menu. Thumbnails are populated in
       // _renderRail() after _collectSlides().
@@ -1331,6 +1337,37 @@
     /** Show/hide the thumbnail rail (animated slide). Public API — driven
      *  by the T key, the overlay's thumbnails button, and the host's
      *  TweaksPanel message. The preference persists alongside rail width. */
+    /** Flip between speaker-driven (manual) and self-running (auto) reveal at
+     *  runtime. Re-seats the current slide in place so the new mode takes hold
+     *  without losing what's on screen. Not persisted — a reload returns to the
+     *  file/URL default, so an accidental auto toggle can't outlive the session. */
+    setRevealMode(mode) {
+      mode = mode === 'auto' ? 'auto' : 'manual';
+      if (mode === this._revealMode) return;
+      this._revealMode = mode;
+      this.setAttribute('data-reveal-mode', mode);
+      this._syncModeBtn();
+      // enterFull keeps the current slide fully shown across the switch; the
+      // _initBuild / _scheduleAutoAdvance calls inside _applyIndex each no-op
+      // outside their own mode, so this both seeds manual builds and arms (or
+      // cancels, via the clearTimeout at the top of _applyIndex) the auto dwell.
+      this._applyIndex({ showOverlay: true, broadcast: false, enterFull: true });
+    }
+
+    /** Reflect the current reveal mode on the toolbar button (icon + a11y). */
+    _syncModeBtn() {
+      const btn = this._modeBtn;
+      if (!btn) return;
+      const auto = this._revealMode === 'auto';
+      const label = auto ? 'Stop auto-play' : 'Auto-play';
+      btn.setAttribute('aria-pressed', auto ? 'true' : 'false');
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label + ' (A)');
+      btn.innerHTML = auto
+        ? '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="4" y="3" width="3.2" height="10" rx="1"/><rect x="8.8" y="3" width="3.2" height="10" rx="1"/></svg>'
+        : '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.5l7 4.5-7 4.5z"/></svg>';
+    }
+
     setRailVisible(on) {
       on = !!on;
       if (!this._railEnabled || on === this._railVisible) return;
@@ -1429,6 +1466,8 @@
         this._go(0, 'keyboard');
       } else if ((key === 't' || key === 'T') && this._railEnabled) {
         this.setRailVisible(!this._railVisible);
+      } else if (key === 'a' || key === 'A') {
+        this.setRevealMode(this._revealMode === 'auto' ? 'manual' : 'auto');
       } else if (/^[0-9]$/.test(key)) {
         // 1..9 jump to that slide; 0 jumps to 10.
         const n = key === '0' ? 9 : parseInt(key, 10) - 1;
@@ -1485,11 +1524,13 @@
     //
     // Default grouping: the header block (.anim/.title/.grow-x/.bignum and any
     // standalone .anim2) reveals on arrival as step 0; then each outermost
-    // .cascade child and each standalone .anim3 is its own step, in document
-    // order. Per-slide overrides via markup: data-build="step" forces an
-    // element to be its own beat, data-build="arrival" pins it to step 0,
-    // data-build="skip" leaves it always visible, and data-build-group on a
-    // container reveals its whole subtree as a single beat.
+    // .cascade reveals as a single step (its whole list at once) and each
+    // standalone .anim3 is its own step, in document order — so the presenter
+    // advances in a few meaningful chunks, not once per list item. Per-slide
+    // overrides via markup: data-build="step" forces an element to be its own
+    // beat, data-build="arrival" pins it to step 0, data-build="skip" leaves it
+    // always visible, and data-build-group on a container reveals its whole
+    // subtree as a single beat.
 
     /** Memoized {gated, steps} geometry for a slide. steps[i] is the array of
      *  gated elements revealed at beat i+1 (step 0 = everything not in any
@@ -1547,7 +1588,21 @@
       // element hides its whole subtree via opacity — so a beat reveals exactly
       // its own element, with no descendant bookkeeping. A group container thus
       // fades its subtree in as one unit.
+      //
+      // Chunking: all gated children of a single outermost cascade reveal on ONE
+      // beat (the whole list as a chunk), so the presenter clicks once per
+      // cascade instead of once per item. (Auto/kiosk mode is unaffected — it
+      // still staggers items via the CSS --cascade-step ladder, not these steps.)
+      const outerCascadeOf = (el) => {
+        let p = el.parentElement, top = null;
+        while (p && p !== slide) {
+          if (p.matches && p.matches('.cascade')) top = p;
+          p = p.parentElement;
+        }
+        return top;
+      };
       const steps = [];
+      let lastKey = null;
       stepEls
         .filter((el) => {
           const m = el.getAttribute('data-build');
@@ -1555,13 +1610,15 @@
         })
         .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1))
         .forEach((el) => {
-          // Flow connectors arrive with the node they follow, not on their own
-          // click — fold them into the previous beat.
-          if (el.classList.contains('flowarrow') && steps.length) {
+          // Same outermost cascade → same chunk. Flow connectors arrive with the
+          // node they follow, not on their own click — fold them in too.
+          const key = outerCascadeOf(el) || el;
+          if (steps.length && (key === lastKey || el.classList.contains('flowarrow'))) {
             steps[steps.length - 1].push(el);
           } else {
             steps.push([el]);
           }
+          lastKey = key;
         });
 
       return { gated: Array.from(gated), steps };

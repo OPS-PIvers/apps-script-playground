@@ -168,7 +168,15 @@
   .devicepair .phone .screen { border-radius: 28px; }
 
   /* spreadsheet problem — pain points */
-  .pains { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; margin-top: 12px; }
+  /* Problem slide: unify the head copy and the four columns on one width so the
+     lead paragraph reaches the same right edge as the grid. Vertical rhythm is
+     handled by balanced .spacer flex around the column band (see markup), which
+     centres the columns between the top-anchored head and bottom-anchored note —
+     no lopsided void, clear separation from the text. Scoped to .problem so the
+     other head-block slides are untouched. */
+  .problem .head-block { max-width: none; }
+  .problem .lead { max-width: none; }
+  .pains { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; }
   .pain { border-top: 4px solid var(--ot-red); padding-top: 22px; }
   .pain h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 10px; }
   .pain p { font-size: 25px; line-height: 1.4; color: var(--ot-gray-dark); margin: 0; }
@@ -190,19 +198,13 @@
   .cohesion { flex-direction: row; gap: 64px; align-items: stretch; }
   .cohesion .coh-left { width: 44%; display: flex; flex-direction: column; justify-content: center; }
   .cohesion .coh-left .whys { grid-template-columns: 1fr; gap: 24px; margin-top: 40px; }
-  /* One hero figure (DESIGN.md, with the style guide behind it in the
-     lightbox carousel) over a slim QR strip: the QRs bookend the hero's
-     width so the column reads as one figure plus a footer of links. */
+  /* One hero figure: the DESIGN.md, with the style guide behind it in the
+     lightbox carousel, centered in the column. */
   .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
-  .cohesion .coh-bottom { display: flex; justify-content: space-between; gap: 48px; }
   .mediafig { display: flex; flex-direction: column; }
   .mediacap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
   .cohesion .coh-right media-slot { width: 100%; box-shadow: var(--shadow-2); display: block; }
   .cohesion .fig-page media-slot { height: 560px; }
-  .cohesion .fig-qr { flex-direction: row; align-items: center; gap: 24px; }
-  .cohesion .fig-qr .mediacap { margin: 0; max-width: 240px; line-height: 1.3; }
-  .cohesion .fig-qr .qrbox2 { width: 250px; aspect-ratio: 1 / 1; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 16px; box-sizing: border-box; flex: none; }
-  .cohesion .fig-qr .qrbox2 image-slot { width: 100%; height: 100%; }
 
   /* recipe — four inline cards */
   .recipe4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
@@ -469,19 +471,20 @@ We aren't building the car anymore. We're driving it. And like any driver, we st
   </section>
 
   <!-- 3 · PROBLEM -->
-  <section data-label="Spreadsheet problem" class="s light" style="--punch:19s">
+  <section data-label="Spreadsheet problem" class="s light problem" style="--punch:19s">
     <div class="head-block">
       <p class="kicker anim">The spreadsheet problem</p>
       <h2 class="title anim">Our systems are already built on many disconnected spreadsheets</h2>
       <p class="lead anim2">Every school runs on them. Rosters, points, sign-ins, observations, and more forms than anyone can count. A spreadsheet is a fine place to keep data. It's a miserable place to ask people to work.</p>
     </div>
+    <div class="spacer"></div>
     <div class="pains cascade" style="--cascade-start:5s; --cascade-step:4s">
       <div class="pain"><h3>No guardrails</h3><p>Nothing stops a bad entry or the wrong format.</p></div>
       <div class="pain"><h3>No roles</h3><p>Everyone sees everything, unless you play whack-a-mole with protected ranges.</p></div>
       <div class="pain"><h3>One click from chaos</h3><p>A stray paste or delete can wipe a whole column.</p></div>
       <div class="pain"><h3>Wrong device</h3><p>Never built for the person on a phone in a hallway.</p></div>
     </div>
-    <div class="spacer" style="height: 200px"></div>
+    <div class="spacer"></div>
     <div class="footmark anim3"><div class="rule"></div><span>Sick of protecting cells and ranges, or sharing more data than people need? <span style="color: #ad2122">Stop asking them to work in the sheet.</span></span></div>
   </section>
 
@@ -500,12 +503,13 @@ That front door is a web app.</p>
       <p class="kicker anim">The stack</p>
       <h2 class="title anim">A full web app, free, inside Google Workspace</h2>
     </div>
-    <!-- nodes pace the spoken "browser → Apps Script → Sheet" enumeration -->
+    <!-- nodes pace the spoken "Google Sheet → Apps Script → browser" enumeration:
+         start from the data the school already has and build out to the front door -->
     <div class="flow cascade" style="--cascade-start:2s; --cascade-step:2.5s">
-      <div class="node">
-        <div class="nlabel">Front door</div>
-        <div class="nname">The browser</div>
-        <div class="nmeta" style="font-family: Lexend">What people see</div>
+      <div class="node sheet">
+        <div class="nlabel">The data</div>
+        <div class="nname">Google Sheet</div>
+        <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
       </div>
       <div class="flowarrow"><div class="glyph">→</div></div>
       <div class="node">
@@ -514,10 +518,10 @@ That front door is a web app.</p>
         <div class="nmeta" style="font-family: Lexend">Your logic</div>
       </div>
       <div class="flowarrow"><div class="glyph">→</div></div>
-      <div class="node sheet">
-        <div class="nlabel">The data</div>
-        <div class="nname">Google Sheet</div>
-        <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
+      <div class="node">
+        <div class="nlabel">Front door</div>
+        <div class="nname">The browser</div>
+        <div class="nmeta" style="font-family: Lexend">What people see</div>
       </div>
     </div>
     <div class="whys cascade" style="--cascade-start:13s; --cascade-step:4s">
@@ -578,7 +582,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <p class="kicker anim">For teachers</p>
     <h2 class="anim2">In the classroom</h2>
     <div class="ubar grow-x"></div>
-    <p class="desc anim3">Tools a teacher can build and run without waiting on anyone: interactive labs, student research, and some classroom rivalry.</p>
+    <p class="desc anim3">Custom web apps, built for the classroom: interactive labs, student research, and some classroom rivalry.</p>
   </section>
 
   <!-- 9 · TEACHERS GRID -->
@@ -728,7 +732,14 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     </div>
   </section>
 
-  <!-- 18 · DESIGN COHESION -->
+  <!-- 18 · COHESION SETUP -->
+  <section data-label="One feel" class="s navy statement">
+    <p class="kicker anim">The thread</p>
+    <p class="big anim2">A dozen tools. Different hands. One feel.</p>
+    <p class="sub2 anim3">How? They all read from the same playbook before a single line is built.</p>
+  </section>
+
+  <!-- 19 · DESIGN COHESION -->
   <section data-label="One DESIGN.md" class="s light cohesion">
     <div class="coh-left">
       <p class="kicker anim">The cohesion story</p>
@@ -745,20 +756,10 @@ Now you explain what you need, in plain language, with a screenshot of your shee
         <p class="mediacap">Our DESIGN.md &amp; the style guide it builds</p>
         <media-slot id="coh-designmd" shape="rounded" radius="14" src="media/17-design-md.mp4" gallery="media/17-design-md.mp4 | media/17-style-guide.png" placeholder="Drop a DESIGN.md screenshot"></media-slot>
       </div>
-      <div class="coh-bottom">
-        <div class="mediafig fig-qr">
-          <div class="qrbox2"><image-slot id="qr-seeours-17" shape="rect" src="media/17-qr-see-ours.png" placeholder="QR"></image-slot></div>
-          <p class="mediacap">See our DESIGN.md</p>
-        </div>
-        <div class="mediafig fig-qr">
-          <div class="qrbox2"><image-slot id="qr-buildyours-17" shape="rect" src="media/17-qr-build-yours.png" placeholder="QR"></image-slot></div>
-          <p class="mediacap">Build yours</p>
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- 19 · DIVIDER 04 -->
+  <!-- 20 · DIVIDER 04 -->
   <section data-label="Make & take" class="s navy divider">
     <div class="bignum anim">04</div>
     <p class="kicker anim">Make &amp; take</p>
@@ -767,7 +768,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <p class="desc anim3">The four-step recipe, a dozen starter projects, and what makes it ready for a district.</p>
   </section>
 
-  <!-- 20 · THE RECIPE -->
+  <!-- 21 · THE RECIPE -->
   <section data-label="The recipe" class="s light" style="justify-content:center; --punch:17s">
     <div class="head-block">
       <p class="kicker anim">The repeatable recipe</p>
@@ -777,14 +778,14 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <div class="recipe4 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="rcard">
         <div class="rnum">1</div>
-        <h3 class="rh">Start with the sheet</h3>
-        <p class="rp">Tabs and columns are your database. Set them up first.</p>
-      </div>
-      <div class="rcard">
-        <div class="rnum">2</div>
         <h3 class="rh">Write a DESIGN.md</h3>
         <p class="rp">Colors, fonts, and components: the house style in one file.</p>
         <div class="rqr"><div class="qbox"><image-slot id="qr-design" shape="rect" src="media/19-qr-brand-skill.png" placeholder="QR"></image-slot></div><span class="qcap">OPS Tech Brand SKILL &amp; DESIGN.md</span></div>
+      </div>
+      <div class="rcard">
+        <div class="rnum">2</div>
+        <h3 class="rh">Start with the sheet</h3>
+        <p class="rp">Tabs and columns are your database. Set them up before you build.</p>
       </div>
       <div class="rcard">
         <div class="rnum">3</div>
@@ -801,7 +802,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <div class="footmark anim3" style="margin-top:56px;"><div class="rule"></div><span>The sheet, the script, and the app all live in your Workspace, so the tool survives staff turnover.</span></div>
   </section>
 
-  <!-- 21 · STARTER IDEAS -->
+  <!-- 22 · STARTER IDEAS -->
   <section data-label="Twelve ideas" class="s light">
     <div class="head-block">
       <p class="kicker anim">Steal these</p>
@@ -824,7 +825,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     </div>
   </section>
 
-  <!-- 22 · GOTCHAS -->
+  <!-- 23 · GOTCHAS -->
   <section data-label="Before you ship" class="s light">
     <div class="head-block">
       <p class="kicker anim">Once you're rolling</p>
@@ -835,11 +836,10 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <div class="frow"><div class="ft-term">Role-based views</div><div class="ft-def">Add a Roles tab to your sheet so students, teachers, and admins each see only their part of the app.</div></div>
       <div class="frow"><div class="ft-term">Two-way configuration</div><div class="ft-def">An admin panel can reshape the sheet itself; edits flow both directions.</div></div>
       <div class="frow"><div class="ft-term">Your data stays with you</div><div class="ft-def">Everything lives in your own Google Sheets under your existing district agreement. No new vendor, and no student data leaves Workspace.</div></div>
-      <div class="frow"><div class="ft-term">Review before rollout</div><div class="ft-def">Anything touching student data goes through the same district review as any other tool. Builder-made doesn't mean unreviewed.</div></div>
     </div>
   </section>
 
-  <!-- 23 · RESOURCES -->
+  <!-- 24 · RESOURCES -->
   <section data-label="Resources" class="s navy res">
     <div class="res-left">
       <p class="kicker anim">Take the playground home</p>
@@ -847,7 +847,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <div class="reslist cascade" style="--cascade-start:2s; --cascade-step:4s">
         <div class="resrow"><p class="rr-h">All the repos</p><p class="rr-p" style="font-family: Lexend">github.com/OPS-PIvers</p></div>
         <div class="resrow"><p class="rr-h">Start here</p><p class="rr-p" style="font-family: Lexend">Copy a DESIGN.md · open a sheet · describe it</p></div>
-        <div class="resrow"><p class="rr-h">Questions later?</p><p class="rr-p" style="font-family: Lexend">Orono Public Schools · Technology</p></div>
+        <div class="resrow"><p class="rr-h">Questions later?</p><p class="rr-p" style="font-family: Lexend"><a href="mailto:paul.ivers@orono.k12.mn.us" style="color: inherit;">paul.ivers@orono.k12.mn.us</a></p></div>
       </div>
     </div>
     <div class="res-right anim3">
@@ -856,7 +856,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     </div>
   </section>
 
-  <!-- 24 · THANK YOU -->
+  <!-- 25 · THANK YOU -->
   <section data-label="Thank you" class="s navy close">
     <p class="kicker anim">Thank you</p>
     <p class="thanks anim2" style="white-space:nowrap;font-size:88px;">Let's make <span class="morph-out m1" style="--mw:500px">something </span><span class="spin"><span class="spin-track"><span class="spin-item">new.</span><span class="spin-item">helpful.</span><span class="spin-item">exciting.</span><span class="spin-item">different.</span><span class="spin-item">collaborative.</span><span class="spin-item">meaning<span class="morph-out m2" style="--mw:125px">ful</span>.</span></span></span></p>
@@ -876,7 +876,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   "So how do you build the front door? Three pieces. The browser is what people see. Apps Script holds the logic. The Sheet holds the data. What makes it practical for a school: it costs nothing and deploys as a link, every action lands in a real sheet you can open and audit, and sign-in is just Google login, so access control is a conversation your district has already had.",
   "This stack has existed for years, so why now? Because the hard part was never the spreadsheet. It was building the app on top, and that part needed a developer. AI closes the gap. You describe the tool and it writes the code. That puts this within reach of everyone in this room, and I can prove it, because we built ten of these.",
   "Enough theory. Ten tools, grouped by who they serve: teachers in the classroom, buildings and the teams that run them, and the whole district. Same recipe every time. A sheet, a web app, AI in the middle.",
-  "First group: the classroom. These are tools a teacher built and runs without waiting on anyone.",
+  "First group: the classroom. These are custom web apps built for teachers, purpose-made for what's actually happening in the room.",
   "The Digital Microscope lets science students capture and label what they're seeing, in the browser on a Chromebook. Research and Annotations has students highlighting, tagging, and citing sources while the bibliography assembles itself, and it replaced a paid subscription. The Gamified Ranking System is a mythology-themed XP layer that's become part of the class culture. Different jobs, same recipe underneath.",
   "Let me show you one. Watch a student capture a microscope view right in the browser, nothing installed. They label it, save it, and the image files itself into Sheets and Drive. Pay attention to the look and feel, too, because you'll see this same style in every tool today. [Run the live demo here.]",
   "One more from the classroom. Watch a student highlight, tag, and cite right on a website or PDF, with the bibliography assembling itself as they go. The teacher sees the whole class's research in one place. It quietly does the job of a subscription we used to pay for. [Play the promo.]",
@@ -886,11 +886,12 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   "Third group: district-wide. Hundreds of users, our own data, and enough polish to put in front of anybody.",
   "Subbing for Teachers lets staff request and claim internal coverage without the reply-all chain. The Peer Observation Portal runs structured observations on shared rubrics. The Digital Learning Hub is one front door to the district's tools and guides.",
   "People always ask whether this really scales, so let me open one up. The Observation Portal is our peer evaluation system, built on the Danielson framework. Apps Script serves a single-page rubric. Google Sheets hold the staff list, role assignments, the rubric for each role, and every observation record. Recordings, tagged evidence, and exported PDFs live in Drive, private while in draft, then shared view-only with the teacher once finalized. Four roles each see exactly their slice. A whole district trusts this pattern with sensitive evaluations.",
+  "Step back for a second. You just saw tools for classrooms, for whole buildings, and for the entire district, built by different people at different times. And yet they all feel like one product. That's not luck, and it's not a big design team. Here's the trick.",
   "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts. [Tap the media, then arrow to the style guide the DESIGN.md produced.]",
   "Now the make-and-take. I want you to leave with something you can do, not just something that was fun to watch: the recipe, a dozen starter ideas, and what makes this district-ready.",
-  "The recipe is the same four steps every time. Start with the sheet: tabs and columns are your database. Write a DESIGN dot md so everything matches your house style. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
+  "The recipe is the same four steps every time. Write a DESIGN dot md once so everything matches your house style. Then start with the sheet: tabs and columns are your database. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
   "If you want somewhere to start, steal one of these. A sign-in kiosk, a hall pass, a booking system, a help-desk queue. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
-  "Before you roll anything out, a few things that make this district-safe. You pick the access level, from just you to anyone with the link. A Roles tab lets students, teachers, and admins each see only their part of the app. The data never leaves your own Workspace or your existing district agreement. And anything touching student data still goes through your normal review. Builder-made doesn't mean unreviewed.",
+  "Before you roll anything out, a few things that make this district-safe. You pick the access level, from just you to anyone with the link. A Roles tab lets students, teachers, and admins each see only their part of the app. The data never leaves your own Workspace or your existing district agreement.",
   "Everything I showed you today is open. The repos are at github dot com slash OPS-PIvers. To start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and it's all on your phone before you leave the room.",
   "Thank you. I would genuinely love to see what you build, so come find me. You have the data, you have the tools, and the spreadsheet is already sitting there. Give it a front door, and make something meaningful."
 ]
