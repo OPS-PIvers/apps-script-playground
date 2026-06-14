@@ -197,18 +197,38 @@
   .step-qr .ql { font-size: 24px; font-weight: 600; color: var(--ot-blue); text-align: center; line-height: 1.15; }
 
   /* cohesion media */
-  .cohesion { flex-direction: row; gap: 64px; align-items: stretch; }
-  .cohesion .coh-left { width: 44%; display: flex; flex-direction: column; justify-content: center; }
+  .cohesion { flex-direction: row; gap: 52px; align-items: stretch; padding-top: 52px; padding-bottom: 48px; }
+  .cohesion .coh-left { width: 48%; display: flex; flex-direction: column; justify-content: center; }
   .cohesion .coh-left .whys { grid-template-columns: 1fr; gap: 24px; margin-top: 40px; }
   /* One hero figure: the DESIGN.md, with the style guide behind it in the
      lightbox carousel, centered in the column. */
-  .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+  .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; }
   .mediafig { display: flex; flex-direction: column; }
+  .cohesion .mediafig { align-items: center; }
+  .cohesion .mediacap { text-align: center; }
   .cohesion .fig-page { flex: 1; min-height: 0; }
   .mediacap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
   .cohesion .coh-right media-slot { width: auto; max-width: 100%; box-shadow: var(--shadow-2); display: block; }
   /* portrait figure that fills the column's available height */
   .cohesion .fig-page media-slot { flex: 1; min-height: 0; aspect-ratio: 17 / 22; align-self: center; }
+  /* === before / after: the DESIGN.md impact (slide 19b) === */
+  .beforeafter .ba-pair { display: flex; align-items: center; justify-content: center; gap: 44px; margin-top: 22px; flex: 1 1 auto; min-height: 0; }
+  .beforeafter .ba-fig { position: relative; display: flex; flex-direction: column; align-items: center; min-height: 0; }
+  .beforeafter .ba-frame { position: relative; display: block; }
+  .beforeafter .ba-frame media-slot { display: block; height: 540px; aspect-ratio: 3 / 4; width: auto; box-shadow: var(--shadow-2); border-radius: 14px; background: var(--ot-gray-lightest); }
+  .beforeafter #ba-before { aspect-ratio: 1348 / 1831; }
+  .beforeafter #ba-after { aspect-ratio: 1506 / 1875; }
+  .beforeafter .ba-rail { position: absolute; top: 0; bottom: 0; left: -30px; display: flex; flex-direction: column; align-items: center; }
+  .beforeafter .ba-rail-label { writing-mode: vertical-rl; transform: rotate(180deg); font: 700 14px/1 var(--font-display); letter-spacing: 0.24em; text-transform: uppercase; }
+  .beforeafter .ba-rail-line { flex: 1; width: 2px; margin-top: 12px; background: currentColor; opacity: 0.5; border-radius: 1px; }
+  .beforeafter .ba-before { color: var(--ot-gray-light); }
+  .beforeafter .ba-after { color: var(--ot-red); }
+  .beforeafter .ba-arrow { flex: none; font-size: 38px; line-height: 1; color: var(--ot-red); font-weight: 700; }
+  .beforeafter .ba-fig figcaption { margin-top: 16px; font-size: 20px; line-height: 1.3; color: var(--ot-gray-dark); text-align: center; max-width: 400px; }
+  .beforeafter .ba-prompt { flex: 0 1 490px; min-width: 380px; align-self: center; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 16px; }
+  .beforeafter .ba-prompt-kicker { margin: 0 0 22px; font: 700 16px/1 var(--font-display); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ot-red); }
+  .beforeafter .ba-prompt-text { margin: 0; font-size: 28px; line-height: 1.55; color: var(--ot-gray-dark); font-weight: 400; }
+  .beforeafter .ba-prompt-text b { font-weight: 700; color: var(--ot-red); font-family: var(--font-mono); font-size: 0.92em; }
 
   /* recipe — four inline cards */
   .recipe4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
@@ -246,6 +266,20 @@
   .idea .it { font-size: 30px; line-height: 1.35; color: var(--ot-gray-darkest); }
   .idea .it b { display: block; color: var(--ot-red); font-weight: 700; }
   .idea .it span { display: block; font-size: 24px; color: var(--ot-gray); margin-top: 3px; }
+  .idea .it .live { display: inline-flex; align-items: center; gap: 7px; vertical-align: middle; margin-left: 14px; font-family: var(--font-display); font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--success-fg); background: var(--success-bg); padding: 3px 12px; border-radius: var(--r-pill); }
+  .idea .it .live::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--success-fg); }
+  .idea .it .repo { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--ot-gray-light); }
+  /* === dense 12-idea slide: scoped overrides so the grid fits 1920x1080 === */
+  .ideas-slide { padding: 60px 90px 48px; }
+  .ideas-slide .title { font-size: 50px; margin-top: 22px; }
+  .ideas-slide .ideas { margin-top: 26px; gap: 18px 44px; }
+  .ideas-slide .idea { gap: 18px; }
+  .ideas-slide .idea .ic { width: 10px; height: 10px; margin-top: 9px; }
+  .ideas-slide .idea .it { font-size: 23px; line-height: 1.3; }
+  .ideas-slide .idea .it span { font-size: 18px; line-height: 1.3; margin-top: 2px; }
+  .ideas-slide .idea .it .live { font-size: 12px; padding: 2px 9px; margin-left: 10px; gap: 5px; }
+  .ideas-slide .idea .it .live::before { width: 6px; height: 6px; }
+  .ideas-slide .idea .it .repo { font-size: 13px; margin-top: 5px; }
 
   /* gotchas */
   .gotchas { display: flex; flex-direction: column; gap: 30px; margin-top: 52px; flex: 1 1 auto; justify-content: center; }
@@ -260,11 +294,11 @@
   .reslist { display: flex; flex-direction: column; gap: 30px; margin-top: 44px; }
   .resrow .rr-h { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #e57e7f; margin: 0 0 8px; }
   .resrow .rr-p { font-size: 34px; color: #fff; margin: 0; font-family: var(--font-mono); }
-  .qrwrap { width: 460px; height: 460px; background: #fff; border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; padding: 22px; box-sizing: border-box; }
-  .qrwrap image-slot { width: 416px; height: 416px; }
+  .qrwrap { width: 560px; height: 560px; background: #fff; border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; padding: 26px; box-sizing: border-box; }
+  .qrwrap image-slot { width: 508px; height: 508px; }
   .qrcap { font-size: 24px; color: #9aa1c4; margin-top: 24px; font-family: var(--font-mono); }
   /* combined close: animated sign-off above, repos + QR in a row below */
-  .closerow { display: flex; gap: 90px; align-items: center; margin-top: 52px; }
+  .closerow { display: flex; gap: 90px; align-items: center; margin-top: 36px; }
   .closerow .res-text { flex: 1; }
   .closerow .res-qr { flex: none; display: flex; flex-direction: column; align-items: center; }
 
@@ -773,6 +807,37 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     </div>
   </section>
 
+  <!-- 19b · BEFORE / AFTER — the DESIGN.md impact -->
+  <section data-label="Before / after" class="s light beforeafter">
+    <div class="head-block">
+      <p class="kicker anim">The same app, one DESIGN.md apart</p>
+      <h2 class="title anim" style="font-size:56px;">What a DESIGN.md actually changes</h2>
+    </div>
+    <div class="ba-pair">
+      <figure class="ba-fig anim2">
+        <div class="ba-frame">
+          <div class="ba-rail ba-before"><span class="ba-rail-label">Before</span><span class="ba-rail-line"></span></div>
+          <media-slot id="ba-before" shape="rounded" radius="14" fit="contain" src="media/designmd-before.png" gallery="media/designmd-before.png" placeholder="Drop the BEFORE screenshot — default-styled rubric"></media-slot>
+        </div>
+        <figcaption>Default styling. Generic, off-brand, hard to scan.</figcaption>
+      </figure>
+      <div class="ba-arrow anim3" aria-hidden="true">&rarr;</div>
+      <div class="ba-prompt anim2">
+        <p class="ba-prompt-kicker">The entire prompt</p>
+        <p class="ba-prompt-text">&ldquo;Here's our existing app and our <b>DESIGN.md</b>. Restyle every screen to match the spec &mdash; colors, type, spacing, components. Change only the look; leave all logic and data exactly as-is.&rdquo;</p>
+      </div>
+      <div class="ba-arrow anim3" aria-hidden="true">&rarr;</div>
+      <figure class="ba-fig anim2">
+        <div class="ba-frame">
+          <div class="ba-rail ba-after"><span class="ba-rail-label">After</span><span class="ba-rail-line"></span></div>
+          <media-slot id="ba-after" shape="rounded" radius="14" fit="contain" src="media/designmd-after.png" gallery="media/designmd-after.png" placeholder="Drop the AFTER screenshot — Orono Observations"></media-slot>
+        </div>
+        <figcaption>Same data, now unmistakably Orono &mdash; and easier to use.</figcaption>
+      </figure>
+    </div>
+    <div class="footmark anim3" style="margin-top:36px;"><div class="rule"></div><span>No redesign and no designer &mdash; the AI read one DESIGN.md and applied the house style.</span></div>
+  </section>
+
   <!-- 20 · DIVIDER 04 -->
   <section data-label="Make & take" class="s navy divider">
     <div class="bignum anim">04</div>
@@ -819,25 +884,25 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   </section>
 
   <!-- 22 · STARTER IDEAS -->
-  <section data-label="Twelve ideas" class="s light">
+  <section data-label="Twelve ideas" class="s light ideas-slide">
     <div class="head-block">
       <p class="kicker anim">Steal these</p>
       <h2 class="title anim">A dozen ideas to get you started</h2>
     </div>
     <!-- a dozen ideas rolling in steadily while the examples are spoken -->
     <div class="ideas cascade" style="--cascade-start:2.5s; --cascade-step:1.5s">
-      <div class="idea"><div class="ic"></div><div class="it"><b>A sign-in kiosk</b> <span>Tap a name, stamp the time.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A form-to-dashboard</b> <span>Responses roll into a live summary.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A points &amp; leaderboard</b> <span>Award points; the ranking keeps itself.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A request-and-approve queue</b> <span>Subs, passes, field-trip requests.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A directory or resource hub</b> <span>One searchable front door.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A paperless forms portal</b> <span>Reimbursements, travel, expenses.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>An inventory tracker</b> <span>Who has which device, and since when.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>An event check-in</b> <span>RSVPs, attendance, name tags.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A digital hall pass</b> <span>Issued, timed, logged.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A room &amp; resource booking</b> <span>Claim a slot without the double-booking.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A volunteer &amp; chaperone signup</b> <span>Slots fill themselves.</span></div></div>
-      <div class="idea"><div class="ic"></div><div class="it"><b>A help-desk ticket queue</b> <span>Report it, claim it, close it.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A field-trip command center</b> <span>Roster, payments, signed slips, and medical flags in one place &mdash; with a tap-to-count headcount on the bus.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A student book-review library <span class="live">Live</span></b> <span>Students submit reviews; once a teacher approves them, they fill a searchable library with covers and star ratings. <span class="repo">github.com/OPS-PIvers/OMSLibrary</span></span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A live academics dashboard <span class="live">Live</span></b> <span>Grades, attendance, behavior, and eligibility for every student in one role-aware dashboard with at-risk alerts. <span class="repo">github.com/OPS-PIvers/OHS_Academics</span></span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A shared parent-contact log</b> <span>Every call and email in one place, so anyone meeting a student sees the whole family history first.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A media-bias plotting game <span class="live">Live</span></b> <span>Students plot news articles on a bias-and-reliability chart, earn reporter ranks, and teachers blind-verify each analysis. <span class="repo">github.com/OPS-PIvers/OHS-Journalism-Media-Bias</span></span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A duty-roster manager</b> <span>Assign lunch, bus, and hallway duty; when someone's out, it fills the gap and emails the replacement.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A booking app that knows your rules</b> <span>Claim the cart, the lab, the gym &mdash; it blocks conflicts and enforces one-per-teacher, no double-bookings.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A reading-challenge leaderboard <span class="live">Live</span></b> <span>Students log the books, shows, and games they consume to earn points and auto-climb a ranked class leaderboard. <span class="repo">github.com/OPS-PIvers/GamifiedRankingSystem</span></span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A facilities work-order app</b> <span>Snap a photo of what's broken; it routes to the right custodian, files the picture, and shows you the status.</span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A staff-observation platform <span class="live">Live</span></b> <span>Score a classroom observation on a rubric, attach notes and audio, and share a finished PDF with the teacher. <span class="repo">github.com/OPS-PIvers/PeerEvaluatorForm</span></span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A speech peer-feedback tool <span class="live">Live</span></b> <span>Students rate a classmate's speech; the app averages every peer's scores and emails each speaker a visual summary. <span class="repo">github.com/OPS-PIvers/PublicSpeakingPeerEval</span></span></div></div>
+      <div class="idea"><div class="ic"></div><div class="it"><b>A daily-agenda hub <span class="live">Live</span></b> <span>Pulls every teacher's daily agenda out of their slides into one searchable, grade-filtered page families can find. <span class="repo">github.com/OPS-PIvers/OMSAgendaSync</span></span></div></div>
     </div>
   </section>
 
@@ -900,9 +965,10 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   "People always ask whether this really scales, so let me open one up. The Observation Portal is our peer evaluation system, built on the Danielson framework. Apps Script serves a single-page rubric. Google Sheets hold the staff list, role assignments, the rubric for each role, and every observation record. Recordings, tagged evidence, and exported PDFs live in Drive, private while in draft, then shared view-only with the teacher once finalized. Four roles each see exactly their slice. A whole district trusts this pattern with sensitive evaluations.",
   "Step back for a second. You just saw tools for classrooms, for whole buildings, and for the entire district, built by different people at different times. And yet they all feel like one product. That's not luck, and it's not a big design team. Here's the trick.",
   "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts. [Tap the media, then arrow to the style guide the DESIGN.md produced.]",
+  "Quick before-and-after to make this concrete. Remember that observation portal? On the left is an early build, before the DESIGN dot md. On the right is the same app, the same data, after the AI read that one file. No redesign, no designer, no new code for the look. And the prompt in the middle is the entire ask: here's the app, here's our DESIGN dot md, restyle it to match and don't touch the logic. One document taught it our colors, our type, and our components, and it just put them on. Write the house style down once, and everything you build next shows up already wearing it. [The middle shows the actual prompt; tap either screenshot to zoom in.]",
   "Now the make-and-take. I want you to leave with something you can do, not just something that was fun to watch: the recipe, a dozen starter ideas, and what makes this district-ready.",
   "The recipe is the same four steps every time. Write a DESIGN dot md once so everything matches your house style. Then start with the sheet: tabs and columns are your database. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
-  "If you want somewhere to start, steal one of these. A sign-in kiosk, a hall pass, a booking system, a help-desk queue. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
+  "If you want somewhere to start, steal one of these. And half of them aren't hypothetical. The book-review library, the academics dashboard, the media-bias tracker, the agenda hub: those are running in Orono right now, and the code is already on our GitHub, ready to copy. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
   "Before you roll anything out, a few things that make this district-safe. You pick the access level, from just you to anyone with the link. A Roles tab lets students, teachers, and admins each see only their part of the app. The data never leaves your own Workspace or your existing district agreement.",
   "Everything I showed you today is open. The repos are at github dot com slash OPS-PIvers. To start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and it's all on your phone before you leave the room. I would genuinely love to see what you build, so come find me. You have the data, you have the tools, and the spreadsheet is already sitting there. Give it a front door, and make something meaningful. Thank you."
 ]
