@@ -204,9 +204,11 @@
      lightbox carousel, centered in the column. */
   .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
   .mediafig { display: flex; flex-direction: column; }
+  .cohesion .fig-page { flex: 1; min-height: 0; }
   .mediacap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
-  .cohesion .coh-right media-slot { width: 100%; box-shadow: var(--shadow-2); display: block; }
-  .cohesion .fig-page media-slot { height: 560px; }
+  .cohesion .coh-right media-slot { width: auto; max-width: 100%; box-shadow: var(--shadow-2); display: block; }
+  /* portrait figure that fills the column's available height */
+  .cohesion .fig-page media-slot { flex: 1; min-height: 0; aspect-ratio: 17 / 22; align-self: center; }
 
   /* recipe — four inline cards */
   .recipe4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
@@ -746,7 +748,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <div class="coh-left">
       <p class="kicker anim">The cohesion story</p>
       <h2 class="title anim" style="font-size:60px;">One DESIGN.md, one product family</h2>
-      <p class="lead anim2" style="font-family: Lexend">We wrote our design rules down once, in a single DESIGN.md the AI reads before it builds anything. A dozen tools from different hands all come out feeling like one product.</p>
+      <p class="lead anim2" style="font-family: Lexend">We wrote our design rules down once, in a single DESIGN.md the AI reads before it builds anything.</p>
       <div class="whys cascade" style="--cascade-start:3s; --cascade-step:4s">
         <div class="why"><h3>One file</h3><p>Colors, type scale, and component rules, written down in plain Markdown.</p></div>
         <div class="why"><h3>Read before every build</h3><p>The AI starts from the house style instead of inventing one.</p></div>
