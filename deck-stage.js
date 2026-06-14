@@ -929,6 +929,9 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
         </button>
         <span class="divider"></span>
+        <button class="btn mode-toggle" type="button" aria-pressed="false" aria-label="Auto-play" title="Auto-play (A)">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.5l7 4.5-7 4.5z"/></svg>
+        </button>
         <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
         <span class="divider rail-toggle-div" style="display:none"></span>
         <button class="btn rail-toggle" type="button" style="display:none" aria-label="Toggle thumbnail rail" aria-pressed="true" title="Hide thumbnails (T)">
@@ -942,6 +945,9 @@
       this._railToggleBtn = overlay.querySelector('.rail-toggle');
       this._railToggleDiv = overlay.querySelector('.rail-toggle-div');
       this._railToggleBtn.addEventListener('click', () => this.setRailVisible(!this._railVisible));
+      this._modeBtn = overlay.querySelector('.mode-toggle');
+      this._modeBtn.addEventListener('click', () => this.setRevealMode(this._revealMode === 'auto' ? 'manual' : 'auto'));
+      this._syncModeBtn();
 
       // Thumbnail rail + context menu. Thumbnails are populated in
       // _renderRail() after _collectSlides().
@@ -1331,6 +1337,37 @@
     /** Show/hide the thumbnail rail (animated slide). Public API — driven
      *  by the T key, the overlay's thumbnails button, and the host's
      *  TweaksPanel message. The preference persists alongside rail width. */
+    /** Flip between speaker-driven (manual) and self-running (auto) reveal at
+     *  runtime. Re-seats the current slide in place so the new mode takes hold
+     *  without losing what's on screen. Not persisted — a reload returns to the
+     *  file/URL default, so an accidental auto toggle can't outlive the session. */
+    setRevealMode(mode) {
+      mode = mode === 'auto' ? 'auto' : 'manual';
+      if (mode === this._revealMode) return;
+      this._revealMode = mode;
+      this.setAttribute('data-reveal-mode', mode);
+      this._syncModeBtn();
+      // enterFull keeps the current slide fully shown across the switch; the
+      // _initBuild / _scheduleAutoAdvance calls inside _applyIndex each no-op
+      // outside their own mode, so this both seeds manual builds and arms (or
+      // cancels, via the clearTimeout at the top of _applyIndex) the auto dwell.
+      this._applyIndex({ showOverlay: true, broadcast: false, enterFull: true });
+    }
+
+    /** Reflect the current reveal mode on the toolbar button (icon + a11y). */
+    _syncModeBtn() {
+      const btn = this._modeBtn;
+      if (!btn) return;
+      const auto = this._revealMode === 'auto';
+      const label = auto ? 'Stop auto-play' : 'Auto-play';
+      btn.setAttribute('aria-pressed', auto ? 'true' : 'false');
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label + ' (A)');
+      btn.innerHTML = auto
+        ? '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="4" y="3" width="3.2" height="10" rx="1"/><rect x="8.8" y="3" width="3.2" height="10" rx="1"/></svg>'
+        : '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.5l7 4.5-7 4.5z"/></svg>';
+    }
+
     setRailVisible(on) {
       on = !!on;
       if (!this._railEnabled || on === this._railVisible) return;
@@ -1429,6 +1466,8 @@
         this._go(0, 'keyboard');
       } else if ((key === 't' || key === 'T') && this._railEnabled) {
         this.setRailVisible(!this._railVisible);
+      } else if (key === 'a' || key === 'A') {
+        this.setRevealMode(this._revealMode === 'auto' ? 'manual' : 'auto');
       } else if (/^[0-9]$/.test(key)) {
         // 1..9 jump to that slide; 0 jumps to 10.
         const n = key === '0' ? 9 : parseInt(key, 10) - 1;
