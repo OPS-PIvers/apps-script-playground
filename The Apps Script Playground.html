@@ -314,6 +314,12 @@
     deck-stage[data-reveal-mode="auto"] [data-deck-active].cover h1.anim { transition-delay: .55s; }
     deck-stage[data-reveal-mode="auto"] [data-deck-active] .anim2 { transition-delay: 1.2s; }
     deck-stage[data-reveal-mode="auto"] [data-deck-active] .anim3 { transition-delay: 2.6s; }
+    /* the recipe cards are per-item .anim3 beats; in auto mode they keep the
+       3s/7s/11s/15s ladder the old cascade gave them instead of all firing at 2.6s */
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .recipe4 > .rcard:nth-child(1) { transition-delay: 3s; }
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .recipe4 > .rcard:nth-child(2) { transition-delay: 7s; }
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .recipe4 > .rcard:nth-child(3) { transition-delay: 11s; }
+    deck-stage[data-reveal-mode="auto"] [data-deck-active] .recipe4 > .rcard:nth-child(4) { transition-delay: 15s; }
     /* Footmarks echo the slide's spoken closing line — they arrive after
        the body has settled, not alongside it. */
     deck-stage[data-reveal-mode="auto"] [data-deck-active] .footmark.anim3 { transition-delay: var(--punch, 5.5s); }
@@ -778,26 +784,28 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">The repeatable recipe</p>
       <h2 class="title anim">Get started in 4 steps</h2>
     </div>
-    <!-- the four steps land as the notes walk through them, one per beat -->
-    <div class="recipe4 cascade" style="--cascade-start:3s; --cascade-step:4s">
-      <div class="rcard">
+    <!-- the four steps land as the notes walk through them, one per beat:
+         each card is its own .anim3 build beat (manual mode advances one at a
+         time); auto/kiosk staggers them via the .recipe4 rule in the CSS above -->
+    <div class="recipe4">
+      <div class="rcard anim3">
         <div class="rnum">1</div>
         <h3 class="rh">Write a DESIGN.md</h3>
         <p class="rp">Colors, fonts, and components: the house style in one file.</p>
         <div class="rqr"><div class="qbox"><image-slot id="qr-design" shape="rect" src="media/19-qr-brand-skill.png" placeholder="QR"></image-slot></div><span class="qcap">OPS Tech Brand SKILL &amp; DESIGN.md</span></div>
       </div>
-      <div class="rcard">
+      <div class="rcard anim3">
         <div class="rnum">2</div>
         <h3 class="rh">Start with the sheet</h3>
         <p class="rp">Tabs and columns are your database. Set them up before you build.</p>
       </div>
-      <div class="rcard">
+      <div class="rcard anim3">
         <div class="rnum">3</div>
         <h3 class="rh">Describe it to AI</h3>
         <p class="rp">It writes the app that reads and writes your sheet.</p>
         <div class="rqr"><div class="qbox"><image-slot id="qr-prompts" shape="rect" src="media/19-qr-starter-prompts.png" placeholder="QR"></image-slot></div><span class="qcap">Starter prompts</span></div>
       </div>
-      <div class="rcard">
+      <div class="rcard anim3">
         <div class="rnum">4</div>
         <h3 class="rh">Deploy as a web app</h3>
         <p class="rp">Share it like any Google link. Done.</p>
