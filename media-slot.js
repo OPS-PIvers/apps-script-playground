@@ -153,7 +153,10 @@
       this._dropActive = false;  // a presenter drop is overriding the gallery
       this._modalOpen = false;   // the lightbox is showing this slot
       this._tickBound = this._tick.bind(this);
-      this._onEnded = () => this._next(); // a carousel video reaching its end
+      // A carousel video reaching its end — or erroring out — hands off to the
+      // next item, but only while a gallery is actually rotating, so a stray
+      // media error during a drop or teardown can't advance it underneath.
+      this._onEnded = () => { if (this.hasAttribute('data-carousel') && !this._dropActive) this._next(); };
 
       this._empty.addEventListener('click', () => this._input.click());
       root.addEventListener('click', (e) => {
@@ -254,9 +257,12 @@
       if (!file || !(isVid(file.type) || /^image\//i.test(file.type))) {
         this._setErr('Drop a video (MP4/WebM) or an image/GIF.'); return;
       }
-      // A drop replaces the gallery: stop rotating and show the drop alone.
+      // A drop replaces the gallery: stop rotating, detach the carousel's
+      // video handlers, and show the drop alone.
       this._dropActive = true;
       this.removeAttribute('data-carousel');
+      this._video.removeEventListener('ended', this._onEnded);
+      this._video.removeEventListener('error', this._onEnded);
       this._pause();
       this._show(file, file.type);
       if (this.id) await idbPut(this.id, { blob: file, type: file.type });
@@ -377,8 +383,15 @@
       const it = this._items[i];
       if (!it) return;
       this._video.removeEventListener('ended', this._onEnded);
+      this._video.removeEventListener('error', this._onEnded);
       this._display(it.url, it.video);
-      if (it.video) { this._video.loop = false; this._video.addEventListener('ended', this._onEnded); }
+      if (it.video) {
+        this._video.loop = false;
+        this._video.addEventListener('ended', this._onEnded);
+        // A broken/unplayable video never fires 'ended', so advance on 'error'
+        // too — otherwise the carousel would stall forever on it.
+        this._video.addEventListener('error', this._onEnded);
+      }
     }
 
     _go(i) {
@@ -433,8 +446,9 @@
     _pause() {
       this._running = false;
       if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
-      const it = this._items[this._idx];
-      if (it && it.video) this._video.pause && this._video.pause();
+      // Pause unconditionally: on disconnect a single/dropped video has no
+      // carousel item backing it, but must still stop buffering.
+      if (this._video && this._video.pause) this._video.pause();
     }
 
     // rAF loop: videos drive the progress bar by playback position and advance
