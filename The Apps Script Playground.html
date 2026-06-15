@@ -118,12 +118,14 @@
   .why p { font-size: 25px; line-height: 1.45; color: var(--ot-gray-dark); margin: 0; }
 
   /* playground map — 3 columns */
-  .map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 56px; }
-  .mapcol { background: var(--ot-gray-lightest); border-radius: var(--r-lg); padding: 34px; border-top: 5px solid var(--ot-blue); }
-  .mapcol h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 22px; }
-  .mapcol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 20px; }
-  .mapcol li { font-size: 28px; line-height: 1.3; color: var(--ot-gray-darkest); font-weight: 600; }
-  .mapcol li span { display: block; font-size: 24px; font-weight: 400; line-height: 1.35; color: var(--ot-gray); margin-top: 5px; }
+  .map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; margin-top: 56px; }
+  .mapcol { padding-left: 26px; border-left: 4px solid var(--ot-red); }
+  .mapcol h3 { font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-blue); margin: 0 0 26px; }
+  .mapcol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+  .mapcol li { font-size: 26px; line-height: 1.25; color: var(--ot-gray-darkest); font-weight: 600; }
+  .mapcol li a { color: inherit; text-decoration: none; }
+  .mapcol li a:hover { text-decoration: underline; text-decoration-color: var(--ot-red); text-underline-offset: 3px; }
+  .mapcol li span { display: block; font-size: 22px; font-weight: 400; line-height: 1.3; color: var(--ot-gray); margin-top: 4px; }
 
   /* tool grids */
   .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 56px; }
@@ -503,7 +505,7 @@
     <img class="torch-bg" src="assets/orono-torch-white-outlined.png" alt="">
     <img class="wordmark anim" src="assets/orono-technology-logo-white.png" alt="Orono Technology">
     <p class="kicker anim">MN Thought Leaders Summit · 2026</p>
-    <h1 class="anim">The Apps Script Playground</h1>
+    <h1 class="anim">Building Custom Educational Systems at Scale</h1>
     <p class="sub anim2">Create accessible and sustainable systems from the spreadsheets you already have.</p>
     <div class="spacer"></div>
     <div class="footmark anim3"><div class="rule"></div><span>Paul Ivers · Digital Learning Specialist · Orono Public Schools</span></div>
@@ -583,42 +585,47 @@ That front door is a web app.</p>
   <section data-label="The unlock" class="s navy statement">
     <p class="kicker anim">Why now</p>
     <p class="big anim2">Describe it. Let AI build it. Iterate.</p>
-    <p class="sub2 anim3">The hard part was never getting data into a spreadsheet. It was turning that data into something <em>anybody</em> could actually use.
+    <p class="sub2 anim3">The hard part was never getting data into a spreadsheet. It was turning that data into something <em>anybody</em> could use.
 
-Now you explain what you need, in plain language, with a screenshot of your sheet. If the first version isn't right, you say so, and it gets fixed.</p>
+Now you explain what you need with a screenshot of your sheet. If the first version isn't right, you say so, and it gets fixed.</p>
   </section>
 
   <!-- 7 · PLAYGROUND MAP -->
-  <section data-label="Ten tools" class="s light">
+  <section data-label="Tools by audience" class="s light">
     <div class="head-block">
       <p class="kicker anim">Keep your spreadsheets out of sight</p>
-      <h2 class="title anim">Ten tools. One recipe.</h2>
+      <h2 class="title anim">Classroom to district. One recipe.</h2>
     </div>
     <!-- columns land left-to-right; each list starts after its column -->
     <div class="map cascade" style="--cascade-start:3s; --cascade-step:5s">
       <div class="mapcol">
         <h3>For teachers</h3>
         <ul class="cascade" style="--cascade-start:3.5s; --cascade-step:1.2s">
-          <li>Digital Microscope<span>Upload screenshots &amp; label zones directly in the browser</span></li>
-          <li>Research &amp; Annotations<span>Highlight, tag, and cite sources across any website or PDF</span></li>
-          <li>Gamified Ranking<span>Earn XP, ranks, and badges through class activities</span></li>
+          <li><a href="https://github.com/OPS-PIvers/OHS_Digital-Microscope" target="_blank" rel="noopener">Digital Microscope</a><span>Upload screenshots &amp; label zones directly in the browser</span></li>
+          <li><a href="https://github.com/OPS-PIvers/ops-research-tool" target="_blank" rel="noopener">Research &amp; Annotations</a><span>Highlight, tag, and cite sources across any website or PDF</span></li>
+          <li><a href="https://github.com/OPS-PIvers/GamifiedRankingSystem" target="_blank" rel="noopener">Points-Based Rewards System</a><span>Points and recognition for positive participation</span></li>
+          <li><a href="https://github.com/OPS-PIvers/PublicSpeakingPeerEval" target="_blank" rel="noopener">Public Speaking Peer Evaluation</a><span>Students score each other's speeches on a shared rubric</span></li>
+          <li><a href="https://github.com/OPS-PIvers/OHS-Journalism-Media-Bias" target="_blank" rel="noopener">Media Bias Reflection</a><span>Students compare sources and reflect on bias</span></li>
         </ul>
       </div>
       <div class="mapcol">
         <h3>For buildings &amp; teams</h3>
         <ul class="cascade" style="--cascade-start:8.5s; --cascade-step:1.2s">
-          <li>Assessment Portal<span>Secure assessment sharing with accessibility built in</span></li>
-          <li>OMS Agenda Sync<span>50+ teacher agendas synced to one web app</span></li>
-          <li>Flex Sign-In<span>Flex attendance with customizable approve/deny flags</span></li>
-          <li>The Spartan Cup<span>Geo-verified event check-ins, leaderboards, and badges</span></li>
+          <li><a href="https://github.com/OPS-PIvers/Spartan_Read_Aloud" target="_blank" rel="noopener">Assessment Portal</a><span>Secure assessment sharing with accessibility built in</span></li>
+          <li><a href="https://github.com/OPS-PIvers/OMSAgendaSync" target="_blank" rel="noopener">Agenda Sync</a><span>50+ teacher agendas synced to one web app</span></li>
+          <li><a href="https://github.com/OPS-PIvers/OHS_Academics" target="_blank" rel="noopener">Academic &amp; Attendance Hub</a><span>Academics and attendance in one dashboard</span></li>
+          <li><a href="https://github.com/OPS-PIvers/OMSBehaviorForm" target="_blank" rel="noopener">Character &amp; Behavior Notifications</a><span>Logs and routes character &amp; behavior notes</span></li>
+          <li><a href="https://github.com/OPS-PIvers/Spartan_Cup" target="_blank" rel="noopener">The Spartan Cup</a><span>Geo-verified event check-ins, leaderboards, and badges</span></li>
         </ul>
       </div>
       <div class="mapcol">
         <h3>For districts</h3>
         <ul class="cascade" style="--cascade-start:13.5s; --cascade-step:1.2s">
-          <li>Subbing for Teachers<span>Request and claim coverage, with hours logged</span></li>
-          <li>Peer Observation Portal<span>Interactive rubrics, recording, transcription, and evidence tagging</span></li>
-          <li>Digital Learning Hub<span>Custom Google Sites linked to staff digital guides</span></li>
+          <li><a href="https://github.com/OPS-PIvers/OMS_TST" target="_blank" rel="noopener">Teachers Subbing for Teachers</a><span>Request and claim coverage, with hours logged</span></li>
+          <li><a href="https://github.com/OPS-PIvers/PeerEvaluatorForm" target="_blank" rel="noopener">Observations Portal</a><span>Interactive rubrics, recording, transcription, and evidence tagging</span></li>
+          <li><a href="https://github.com/OPS-PIvers/OPS_Digital_Learning_Hub" target="_blank" rel="noopener">Digital Learning Hub</a><span>Custom Google Sites linked to staff digital guides</span></li>
+          <li><a href="https://github.com/OPS-PIvers/ops-flex" target="_blank" rel="noopener">Flex Sign-In</a><span>Flex attendance with customizable approve/deny flags</span></li>
+          <li><a href="https://github.com/OPS-PIvers/PaperPal" target="_blank" rel="noopener">Paperless Forms</a><span>Turns paper forms into paperless digital workflows</span></li>
         </ul>
       </div>
     </div>
@@ -642,7 +649,7 @@ Now you explain what you need, in plain language, with a screenshot of your shee
     <div class="grid3 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="toolcard"><div class="tag">Science</div><h3>OHS Digital Microscope</h3><p>Students capture and label microscope views from any device, nothing installed.</p></div>
       <div class="toolcard"><div class="tag">Research</div><h3>Research &amp; Annotations</h3><p>Students highlight, tag, and cite sources on any website or PDF while the bibliography assembles itself. It replaced a paid subscription.</p></div>
-      <div class="toolcard"><div class="tag">Engagement</div><h3>Gamified Ranking System</h3><p>A mythology-themed XP and ranking layer that builds class culture.</p></div>
+      <div class="toolcard"><div class="tag">Engagement</div><h3>Points-Based Rewards System</h3><p>A mythology-themed points layer that builds class culture.</p></div>
     </div>
   </section>
 
@@ -699,15 +706,78 @@ Now you explain what you need, in plain language, with a screenshot of your shee
       <p class="kicker anim">For buildings &amp; teams</p>
       <h2 class="title anim">The daily logistics layer</h2>
     </div>
-    <div class="grid4 cascade" style="--cascade-start:3s; --cascade-step:4s">
+    <div class="grid3 cascade" style="--cascade-start:3s; --cascade-step:4s">
       <div class="toolcard"><div class="tag">Assessment</div><h3>Orono Assessment Portal</h3><p>Teachers securely share assessments, with accessibility tools built in for every student.</p></div>
       <div class="toolcard"><div class="tag">Communication</div><h3>OMS Agenda Sync</h3><p>Write the daily agenda once; it appears on every screen and page that needs it.</p></div>
-      <div class="toolcard"><div class="tag">Attendance</div><h3>OPS Flex Sign-In</h3><p>Flex-period sign-in, live rosters, and attendance at a glance.</p></div>
       <div class="toolcard"><div class="tag">Engagement</div><h3>The Spartan Cup</h3><p>Location-verified event check-ins, points, badges, and live leaderboards.</p></div>
     </div>
   </section>
 
-  <!-- 14 · DEMO: FLEX -->
+  <!-- DEMO · ACADEMIC & BEHAVIOR HUB -->
+  <section data-label="Demo: Academic &amp; Attendance Hub" class="s light demo">
+    <div class="demo-left">
+      <span class="demo-badge anim">DEMO</span>
+      <h2 class="title anim">Academic &amp; Attendance Hub</h2>
+      <div class="watch anim2">
+        <div class="wl">Watch for</div>
+        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+          <li>Eligibility, absences, and Spartan Hour in one live dashboard</li>
+          <li>Filter by grade, team, or activity, then drill into any student</li>
+          <li>Every number drawn straight from a Google Sheet the office already keeps</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-right">
+      <div class="device">
+        <div class="phone"><div class="screen"><media-slot id="demo-academic" shape="rect" fit="cover" src="media/academic-attendance-dashboard.png" gallery="media/academic-attendance-dashboard.png | media/academic-attendance-directory.png" placeholder="Drop a tall (portrait) screenshot or screen recording of the hub"></media-slot></div></div>
+        <span class="devcap">Runs on any device</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · DIVIDER 03 -->
+  <section data-label="For districts" class="s navy divider">
+    <div class="bignum anim">03</div>
+    <p class="kicker anim">For districts</p>
+    <h2 class="anim2">At scale</h2>
+    <div class="ubar grow-x"></div>
+    <p class="desc anim3">Tools that serve the whole district: hundreds of users, data we own, and enough polish to put in front of anyone.</p>
+  </section>
+
+  <!-- 15 · DISTRICT GRID -->
+  <section data-label="District tools" class="s light">
+    <div class="head-block">
+      <p class="kicker anim">For districts</p>
+      <h2 class="title anim">Proven across the whole district</h2>
+    </div>
+    <div class="grid4 cascade" style="--cascade-start:3s; --cascade-step:4s">
+      <div class="toolcard"><div class="tag">Coverage</div><h3>Subbing for Teachers</h3><p>Request and claim internal coverage across the district, without the reply-all chain.</p></div>
+      <div class="toolcard"><div class="tag">Growth</div><h3>Peer Observation Portal</h3><p>Structured peer observations with shared rubrics, district-wide.</p></div>
+      <div class="toolcard"><div class="tag">Resources</div><h3>Digital Learning Hub</h3><p>One front door to the district's tools, guides, and resources.</p></div>
+      <div class="toolcard"><div class="tag">Attendance</div><h3>OPS Flex Sign-In</h3><p>Flex-period sign-in, live rosters, and attendance at a glance.</p></div>
+    </div>
+  </section>
+
+  <!-- DEMO · TEACHERS SUBBING FOR TEACHERS -->
+  <section data-label="Demo: Subbing for Teachers" class="s light demo">
+    <div class="demo-left">
+      <span class="demo-badge anim">DEMO</span>
+      <h2 class="title anim">Teachers Subbing for Teachers</h2>
+      <div class="watch anim2">
+        <div class="wl">Watch for</div>
+        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+          <li>Staff bank hours by covering, then spend them for their own coverage</li>
+          <li>Add a request in a few taps, with no reply-all chain</li>
+          <li>Balances, approvals, and usage all reconcile in one sheet</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-right">
+      <media-slot id="demo-subbing" shape="rounded" radius="16" fit="contain" src="media/subbing-directory.png" gallery="media/subbing-directory.png | media/subbing-add-request.mp4 | media/subbing-directory-sheet.png" placeholder="Drop a landscape screenshot or screen recording of the TST portal"></media-slot>
+    </div>
+  </section>
+
+  <!-- 16 · DEMO: FLEX -->
   <section data-label="Demo: Flex Sign-In" class="s light demo">
     <div class="demo-left">
       <span class="demo-badge anim">DEMO</span>
@@ -732,28 +802,6 @@ Now you explain what you need, in plain language, with a screenshot of your shee
           <span class="devcap">Student scan</span>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- 15 · DIVIDER 03 -->
-  <section data-label="For districts" class="s navy divider">
-    <div class="bignum anim">03</div>
-    <p class="kicker anim">For districts</p>
-    <h2 class="anim2">At scale</h2>
-    <div class="ubar grow-x"></div>
-    <p class="desc anim3">Tools that serve the whole district: hundreds of users, data we own, and enough polish to put in front of anyone.</p>
-  </section>
-
-  <!-- 16 · DISTRICT GRID -->
-  <section data-label="District tools" class="s light">
-    <div class="head-block">
-      <p class="kicker anim">For districts</p>
-      <h2 class="title anim">Proven across the whole district</h2>
-    </div>
-    <div class="grid3 cascade" style="--cascade-start:3s; --cascade-step:4s">
-      <div class="toolcard"><div class="tag">Coverage</div><h3>Subbing for Teachers</h3><p>Request and claim internal coverage across the district, without the reply-all chain.</p></div>
-      <div class="toolcard"><div class="tag">Growth</div><h3>Peer Observation Portal</h3><p>Structured peer observations with shared rubrics, district-wide.</p></div>
-      <div class="toolcard"><div class="tag">Resources</div><h3>Digital Learning Hub</h3><p>One front door to the district's tools, guides, and resources.</p></div>
     </div>
   </section>
 
@@ -951,17 +999,19 @@ Now you explain what you need, in plain language, with a screenshot of your shee
   "Start with the thing every school has too many of. A spreadsheet is genuinely great at storing data. It's terrible as a place to make people work. You protect cells and ranges, you overshare, one stray click wipes a column, and none of it was designed for someone standing in a hallway with a phone. At some point we simply stopped asking people to work inside the sheet.",
   "This is the reframe that unlocked everything for us. A spreadsheet already is a database. Tables, rows, columns. What it's missing is a front door, an interface built for the people using it instead of a wall of cells. That front door is a web app. Hold onto that, because every tool I'm about to show you is the same idea repeated.",
   "So how do you build the front door? Three pieces. The browser is what people see. Apps Script holds the logic. The Sheet holds the data. What makes it practical for a school: it costs nothing and deploys as a link, every action lands in a real sheet you can open and audit, and sign-in is just Google login, so access control is a conversation your district has already had.",
-  "This stack has existed for years, so why now? Because the hard part was never the spreadsheet. It was building the app on top, and that part needed a developer. AI closes the gap. You describe the tool and it writes the code. That puts this within reach of everyone in this room, and I can prove it, because we built ten of these.",
-  "Enough theory. Ten tools, grouped by who they serve: teachers in the classroom, buildings and the teams that run them, and the whole district. Same recipe every time. A sheet, a web app, AI in the middle.",
+  "This stack has existed for years, so why now? Because the hard part was never the spreadsheet. It was building the app on top, and that part needed a developer. AI closes the gap. You describe the tool and it writes the code. That puts this within reach of everyone in this room, and I can prove it, because we built fifteen of these.",
+  "Enough theory. Fifteen tools, grouped by who they serve: teachers in the classroom, buildings and the teams that run them, and the whole district. I'll show you a few from each group. Same recipe every time. A sheet, a web app, AI in the middle.",
   "First group: the classroom. These are custom web apps built for teachers, purpose-made for what's actually happening in the room.",
-  "The Digital Microscope lets science students capture and label what they're seeing, in the browser on a Chromebook. Research and Annotations has students highlighting, tagging, and citing sources while the bibliography assembles itself, and it replaced a paid subscription. The Gamified Ranking System is a mythology-themed XP layer that's become part of the class culture. Different jobs, same recipe underneath.",
+  "The Digital Microscope lets science students capture and label what they're seeing, in the browser on a Chromebook. Research and Annotations has students highlighting, tagging, and citing sources while the bibliography assembles itself, and it replaced a paid subscription. The Points-Based Rewards System is a mythology-themed points layer that's become part of the class culture. Different jobs, same recipe underneath.",
   "Let me show you one. Watch a student capture a microscope view right in the browser, nothing installed. They label it, save it, and the image files itself into Sheets and Drive. Pay attention to the look and feel, too, because you'll see this same style in every tool today. [Run the live demo here.]",
   "One more from the classroom. Watch a student highlight, tag, and cite right on a website or PDF, with the bibliography assembling itself as they go. The teacher sees the whole class's research in one place. It quietly does the job of a subscription we used to pay for. [Play the promo.]",
   "Second group: whole buildings and the teams that run them. This is the daily logistics that otherwise lives in email chains and paper forms.",
-  "The Assessment Portal lets teachers share assessments securely, with accessibility tools built in for every student. Agenda Sync writes the daily agenda once and shows it everywhere it's needed. Flex Sign-In handles flex-period rosters and attendance. And the Spartan Cup runs location-verified check-ins, points, and live leaderboards at the high school. All of it is the plumbing a building actually runs on.",
-  "Flex Sign-In shows the multi-user side, and notice how it works: students don't sign in on their own phones. One staff member scans each student's QR code, so the kids need no device at all. Watch the roster update live as I scan, while a single Google Sheet quietly records everything. [Run the live demo here.]",
+  "The Assessment Portal lets teachers share assessments securely, with accessibility tools built in for every student. Agenda Sync writes the daily agenda once and shows it everywhere it's needed. And the Spartan Cup runs location-verified check-ins, points, and live leaderboards at the high school. All of it is the plumbing a building actually runs on.",
+  "Let me open one of these up. The Academic and Attendance Hub pulls every student's eligibility, absences, and Spartan Hour requests into one dashboard, and every chart you're seeing is drawn straight from a Google Sheet the office already keeps. Staff filter by grade, team, or activity, then drill into any student. [Tap through the views.]",
   "Third group: district-wide. Hundreds of users, our own data, and enough polish to put in front of anybody.",
-  "Subbing for Teachers lets staff request and claim internal coverage without the reply-all chain. The Peer Observation Portal runs structured observations on shared rubrics. The Digital Learning Hub is one front door to the district's tools and guides.",
+  "Subbing for Teachers lets staff request and claim internal coverage without the reply-all chain. The Peer Observation Portal runs structured observations on shared rubrics. The Digital Learning Hub is one front door to the district's tools and guides. And Flex Sign-In handles flex-period rosters and attendance across the district.",
+  "Let me show you that first one live. Teachers Subbing for Teachers is how staff cover for each other without the reply-all chain. You bank hours when you cover a class and spend them when you need coverage, and every balance, approval, and request reconciles in the sheet behind it. Watch a request go in. [Run the live demo here.]",
+  "Flex Sign-In shows the multi-user side, and notice how it works: students don't sign in on their own phones. One staff member scans each student's QR code, so the kids need no device at all. Watch the roster update live as I scan, while a single Google Sheet quietly records everything. [Run the live demo here.]",
   "People always ask whether this really scales, so let me open one up. The Observation Portal is our peer evaluation system, built on the Danielson framework. Apps Script serves a single-page rubric. Google Sheets hold the staff list, role assignments, the rubric for each role, and every observation record. Recordings, tagged evidence, and exported PDFs live in Drive, private while in draft, then shared view-only with the teacher once finalized. Four roles each see exactly their slice. A whole district trusts this pattern with sensitive evaluations.",
   "Step back for a second. You just saw tools for classrooms, for whole buildings, and for the entire district, built by different people at different times. And yet they all feel like one product. That's not luck, and it's not a big design team. Here's the trick.",
   "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts. [Tap the media, then arrow to the style guide the DESIGN.md produced.]",
