@@ -175,16 +175,6 @@
   .devicepair .phone::before { width: 78px; height: 7px; top: 18px; }
   .devicepair .phone .screen { border-radius: 28px; }
 
-  /* Tall, narrow app screenshots (e.g. the Academic & Attendance Hub) zoomed
-     with fit="cover" to fill a landscape tablet, then slowly panned top↔bottom
-     on a loop so the whole page reads without a tiny phone frame. The pan lives
-     on the media ::part so it keeps running as the carousel swaps screenshots.
-     Scoped to the active slide: thumbnails don't repaint, and the pan restarts
-     from the top on each visit — in step with the carousel resetting to slide 1. */
-  .scan-y::part(media) { object-position: 50% 0%; }
-  .s[data-deck-active] .scan-y::part(media) { animation: scan-y 16s ease-in-out infinite; }
-  @keyframes scan-y { 0% { object-position: 50% 0%; } 50% { object-position: 50% 100%; } 100% { object-position: 50% 0%; } }
-  @media (prefers-reduced-motion: reduce) { .s[data-deck-active] .scan-y::part(media) { animation: none; } }
 
   /* spreadsheet problem — pain points */
   /* Problem slide: unify the head copy and the four columns on one width so the
@@ -745,7 +735,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
     <div class="demo-right">
       <div class="devicepair">
         <div class="device">
-          <div class="tablet" style="width:880px;"><div class="screen" style="aspect-ratio:4/3;"><media-slot id="demo-academic" class="scan-y" shape="rect" fit="cover" dwell="16" src="media/academic-attendance-dashboard.png" gallery="media/academic-attendance-dashboard.png | media/academic-attendance-directory.png | media/academic-attendance-comparative.png | media/academic-attendance-sheet.png" placeholder="Drop a tall screenshot or screen recording of the hub"></media-slot></div></div>
+          <div class="tablet" style="width:880px;"><div class="screen" style="aspect-ratio:4/3;"><media-slot id="demo-academic" pan shape="rect" fit="cover" dwell="16" src="media/academic-attendance-dashboard.png" gallery="media/academic-attendance-dashboard.png | media/academic-attendance-directory.png | media/academic-attendance-comparative.png | media/academic-attendance-sheet.png" placeholder="Drop a tall screenshot or screen recording of the hub"></media-slot></div></div>
           <span class="devcap">Runs on any device</span>
         </div>
       </div>
@@ -790,7 +780,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       </div>
     </div>
     <div class="demo-right">
-      <media-slot id="demo-subbing" shape="rounded" radius="16" fit="contain" src="media/subbing-directory.png" gallery="media/subbing-directory.png | media/subbing-add-request.mp4 | media/subbing-directory-sheet.png | media/subbing-approvals-sheet.png | media/subbing-usage-sheet.png" placeholder="Drop a landscape screenshot or screen recording of the TST portal"></media-slot>
+      <media-slot id="demo-subbing" pan dwell="10" shape="rounded" radius="16" fit="cover" src="media/subbing-directory.png" gallery="media/subbing-directory.png | media/subbing-add-request.mp4 | media/subbing-directory-sheet.png | media/subbing-approvals-sheet.png | media/subbing-usage-sheet.png" placeholder="Drop a landscape screenshot or screen recording of the TST portal"></media-slot>
     </div>
   </section>
 

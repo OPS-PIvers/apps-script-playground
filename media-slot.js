@@ -159,6 +159,10 @@
       this._cprev = root.querySelector('.cprev');
       this._cnext = root.querySelector('.cnext');
       this._url = null; this._err = null; this._depth = 0;
+      // aspect-aware auto-pan (see _applyPan): recompute the pan whenever a new
+      // still finishes loading, including each carousel item.
+      this._panAnim = null;
+      this._img.addEventListener('load', () => { this._applyPan(); });
 
       // ── in-slide carousel state ──────────────────────────────────────────
       // items: parsed gallery; idx: current; running: rAF ticking; the four
@@ -220,6 +224,7 @@
           if (this.hasAttribute('data-carousel')) { this._evalRun(); }
           else if (this._visible) this._video.play && this._video.play().catch(() => {});
           else this._video.pause && this._video.pause();
+          this._evalPan();
         }
       }, { threshold: 0.25 });
       this._io.observe(this);
@@ -229,6 +234,7 @@
       if (this._io) { this._io.disconnect(); this._io = null; }
       if (this._mo) { this._mo.disconnect(); this._mo = null; }
       this._pause();
+      this._clearPan();
       this._revoke();
     }
     attributeChangedCallback(name) {
@@ -297,7 +303,9 @@
     }
 
     _display(url, video) {
-      const fit = this.getAttribute('fit') || 'cover';
+      // A `pan` slot always fills (cover) so it can zoom in and scroll; the
+      // declared fit still governs ordinary slots and any video in a pan slot.
+      const fit = (this.hasAttribute('pan') && !video) ? 'cover' : (this.getAttribute('fit') || 'cover');
       if (video) {
         this._video.style.objectFit = fit;
         // Single videos loop forever; a carousel item turns this off in
@@ -320,10 +328,14 @@
       }
       this._empty.style.display = 'none';
       this.setAttribute('data-filled', '');
+      // (Re)compute the pan for whatever is now showing. The 'load' listener
+      // also fires for not-yet-cached images; this covers cached/instant ones.
+      if (this.hasAttribute('pan')) this._applyPan();
     }
 
     async _clear() {
       this._revoke();
+      this._clearPan();
       this._video.removeAttribute('src'); this._img.removeAttribute('src');
       this._video.style.display = 'none'; this._img.style.display = 'none';
       this._empty.style.display = 'flex';
@@ -380,18 +392,23 @@
     _watchActive() {
       const slide = this._findSlide();
       this._active = slide ? slide.hasAttribute('data-deck-active') : true;
-      // Only a multi-item gallery needs this; single slots and dropped videos
-      // keep their original "play whenever on screen" behaviour untouched.
-      if (!slide || this._items.length <= 1) return;
+      // A multi-item gallery needs this to gate rotation; a `pan` slot needs it
+      // to gate (and restart) panning. Plain single slots keep their original
+      // "play whenever on screen" behaviour untouched.
+      if (!slide || (this._items.length <= 1 && !this.hasAttribute('pan'))) return;
       this._mo = new MutationObserver(() => {
         const a = slide.hasAttribute('data-deck-active');
         if (a === this._active) return;
         this._active = a;
-        if (!this.hasAttribute('data-carousel')) return; // drop override active
-        // Each fresh visit to the slide restarts the gallery from the top so
-        // the audience always sees it from item 1.
-        if (a) this._go(0);
-        else { this._pause(); this._setProg(0); }
+        if (this.hasAttribute('data-carousel')) {
+          // Each fresh visit restarts the gallery from item 1 (which re-applies
+          // the pan via _display); leaving pauses rotation.
+          if (a) this._go(0);
+          else { this._pause(); this._setProg(0); }
+        } else if (this.hasAttribute('pan')) {
+          if (a) this._applyPan(); else this._clearPan(); // drop / single-item pan slot
+        }
+        this._evalPan();
       });
       this._mo.observe(slide, { attributes: true, attributeFilter: ['data-deck-active'] });
     }
@@ -451,6 +468,57 @@
 
     _setProg(f) {
       if (this._prog) this._prog.style.width = Math.max(0, Math.min(1, f || 0)) * 100 + '%';
+    }
+
+    // ── aspect-aware auto-pan ───────────────────────────────────────────────
+    // Opt-in via the `pan` attribute. A still is shown object-fit:cover (so it
+    // fills the frame, zoomed in) and slowly panned along whichever axis
+    // overflows — vertically for a tall screenshot, horizontally for a wide one
+    // (e.g. a spreadsheet) — ping-ponging on a loop. A still that already fits
+    // the frame isn't panned, and videos are left alone. Recomputed per item so
+    // a mixed-aspect carousel pans each shot the right way.
+    _applyPan() {
+      this._clearPan();
+      if (!this.hasAttribute('pan')) return;
+      const el = this._img;
+      if (!el || el.style.display === 'none') return;      // stills only
+      const nW = el.naturalWidth, nH = el.naturalHeight;
+      if (!nW || !nH) return;                              // not loaded — 'load' retries
+      const fr = this._frame.getBoundingClientRect();
+      if (!fr.width || !fr.height) return;                 // off-layout — re-run on activation
+      const frameA = fr.width / fr.height, mediaA = nW / nH;
+      const TOL = 0.04;                                    // ~fills → don't pan (avoids jitter)
+      let frames, overflow;
+      if (mediaA > frameA * (1 + TOL)) {                   // wider than frame → pan horizontally
+        frames = [{ objectPosition: '0% 50%' }, { objectPosition: '100% 50%' }];
+        overflow = mediaA / frameA - 1;
+      } else if (mediaA < frameA * (1 - TOL)) {            // taller than frame → pan vertically
+        frames = [{ objectPosition: '50% 0%' }, { objectPosition: '50% 100%' }];
+        overflow = frameA / mediaA - 1;
+      } else {
+        el.style.objectPosition = '50% 50%';
+        return;
+      }
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.style.objectPosition = frames[0].objectPosition; // static: show the start
+        return;
+      }
+      // Constant-ish visual speed: longer when more of the image is off-frame.
+      const dur = Math.min(13000, Math.max(6000, overflow * 7000));
+      this._panAnim = el.animate(frames,
+        { duration: dur, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' });
+      this._evalPan();
+    }
+
+    // Pan only while the audience is looking at it (active + on-screen large).
+    _evalPan() {
+      if (!this._panAnim) return;
+      if (this._active && this._visible) this._panAnim.play();
+      else this._panAnim.pause();
+    }
+
+    _clearPan() {
+      if (this._panAnim) { this._panAnim.cancel(); this._panAnim = null; }
     }
 
     // Decide, from the four gates, whether rotation should be running right now
