@@ -209,15 +209,19 @@
   .cohesion .coh-left .whys { grid-template-columns: 1fr; gap: 24px; margin-top: 40px; }
   /* One hero figure: the DESIGN.md, with the style guide behind it in the
      lightbox carousel, centered in the column. */
-  .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; }
+  .cohesion .coh-right { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: stretch; gap: 18px; }
   .mediafig { display: flex; flex-direction: column; }
-  .cohesion .mediafig { align-items: center; }
+  /* stretch so the figure fills the column width; the caption stays centered
+     via its own text-align */
+  .cohesion .mediafig { align-items: stretch; }
   .cohesion .mediacap { text-align: center; }
   .cohesion .fig-page { flex: 1; min-height: 0; }
   .mediacap { font-size: 24px; font-weight: 700; color: var(--ot-gray); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
-  .cohesion .coh-right media-slot { width: auto; max-width: 100%; box-shadow: var(--shadow-2); display: block; }
-  /* portrait figure that fills the column's available height */
-  .cohesion .fig-page media-slot { flex: 1; min-height: 0; aspect-ratio: 17 / 22; align-self: center; }
+  .cohesion .coh-right media-slot { width: 100%; max-width: 100%; box-shadow: var(--shadow-2); display: block; }
+  /* Fill the column width and match the DESIGN.md recording's aspect (898/958)
+     so the video shows in full instead of being side-cropped; the taller style
+     guide (pan) auto-scrolls vertically. max-height keeps it inside the column. */
+  .cohesion .fig-page media-slot { width: 100%; height: auto; aspect-ratio: 898 / 958; max-height: 100%; min-height: 0; flex: 0 1 auto; align-self: center; }
   /* === before / after: the DESIGN.md impact (slide 19b) === */
   .beforeafter .ba-pair { display: flex; align-items: center; justify-content: center; gap: 44px; margin-top: 22px; flex: 1 1 auto; min-height: 0; }
   .beforeafter .ba-fig { position: relative; display: flex; flex-direction: column; align-items: center; min-height: 0; }
@@ -857,7 +861,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
     <div class="coh-right anim2">
       <div class="mediafig fig-page">
         <p class="mediacap">Our DESIGN.md &amp; the style guide it builds</p>
-        <media-slot id="coh-designmd" shape="rounded" radius="14" src="media/17-design-md.mp4" gallery="media/17-design-md.mp4 | media/17-style-guide.png" placeholder="Drop a DESIGN.md screenshot"></media-slot>
+        <media-slot id="coh-designmd" pan shape="rounded" radius="14" src="media/17-design-md.mp4" gallery="media/17-design-md.mp4 | media/17-style-guide.png" placeholder="Drop a DESIGN.md screenshot"></media-slot>
       </div>
     </div>
   </section>
