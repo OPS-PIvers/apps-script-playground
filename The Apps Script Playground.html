@@ -117,11 +117,15 @@
   .why h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 10px; }
   .why p { font-size: 25px; line-height: 1.45; color: var(--ot-gray-dark); margin: 0; }
 
-  /* playground map — 3 columns */
-  .map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; margin-top: 56px; }
-  .mapcol { padding-left: 26px; border-left: 4px solid var(--ot-red); }
-  .mapcol h3 { font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-blue); margin: 0 0 26px; }
-  .mapcol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+  /* playground map — 3 columns. Each column spans all six rows (header + five
+     tools) and borrows the parent grid's row tracks via subgrid, so a tool that
+     wraps to two lines grows ITS row in every column at once — every title stays
+     inline across the row. ul is display:contents so the <li>s become the
+     column's grid items (the <ul> box itself doesn't break the subgrid). */
+  .map { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto repeat(5, auto); gap: 18px 48px; margin-top: 56px; }
+  .mapcol { grid-row: 1 / -1; display: grid; grid-template-rows: subgrid; padding-left: 26px; border-left: 4px solid var(--ot-red); }
+  .mapcol h3 { font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-blue); margin: 0; padding-bottom: 8px; }
+  .mapcol ul { list-style: none; margin: 0; padding: 0; display: contents; }
   .mapcol li { font-size: 26px; line-height: 1.25; color: var(--ot-gray-darkest); font-weight: 600; }
   .mapcol li a { color: inherit; text-decoration: none; }
   .mapcol li a:hover { text-decoration: underline; text-decoration-color: var(--ot-red); text-underline-offset: 3px; }
@@ -170,6 +174,17 @@
   .devicepair .phone { width: 206px; height: 420px; border-radius: 38px; padding: 12px; }
   .devicepair .phone::before { width: 78px; height: 7px; top: 18px; }
   .devicepair .phone .screen { border-radius: 28px; }
+
+  /* Tall, narrow app screenshots (e.g. the Academic & Attendance Hub) zoomed
+     with fit="cover" to fill a landscape tablet, then slowly panned top↔bottom
+     on a loop so the whole page reads without a tiny phone frame. The pan lives
+     on the media ::part so it keeps running as the carousel swaps screenshots.
+     Scoped to the active slide: thumbnails don't repaint, and the pan restarts
+     from the top on each visit — in step with the carousel resetting to slide 1. */
+  .scan-y::part(media) { object-position: 50% 0%; }
+  .s[data-deck-active] .scan-y::part(media) { animation: scan-y 16s ease-in-out infinite; }
+  @keyframes scan-y { 0% { object-position: 50% 0%; } 50% { object-position: 50% 100%; } 100% { object-position: 50% 0%; } }
+  @media (prefers-reduced-motion: reduce) { .s[data-deck-active] .scan-y::part(media) { animation: none; } }
 
   /* spreadsheet problem — pain points */
   /* Problem slide: unify the head copy and the four columns on one width so the
@@ -659,7 +674,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <span class="demo-badge anim">DEMO</span>
       <h2 class="title anim">OHS Digital Microscope</h2>
       <div class="watch anim2">
-        <div class="wl">Watch for</div>
+        <div class="wl">Features</div>
         <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>Upload images in a teacher-only web page</li>
           <li>Create click zones with labels and banners</li>
@@ -678,7 +693,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <span class="demo-badge anim">DEMO</span>
       <h2 class="title anim">Research &amp; Annotations</h2>
       <div class="watch anim2">
-        <div class="wl">Watch for</div>
+        <div class="wl">Features</div>
         <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>Highlight, tag, and cite sources across any website or PDF</li>
           <li>Bibliographies that build themselves as students work</li>
@@ -719,7 +734,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <span class="demo-badge anim">DEMO</span>
       <h2 class="title anim">Academic &amp; Attendance Hub</h2>
       <div class="watch anim2">
-        <div class="wl">Watch for</div>
+        <div class="wl">Features</div>
         <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>Eligibility, absences, and Spartan Hour in one live dashboard</li>
           <li>Filter by grade, team, or activity, then drill into any student</li>
@@ -728,9 +743,11 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       </div>
     </div>
     <div class="demo-right">
-      <div class="device">
-        <div class="phone"><div class="screen"><media-slot id="demo-academic" shape="rect" fit="cover" src="media/academic-attendance-dashboard.png" gallery="media/academic-attendance-dashboard.png | media/academic-attendance-directory.png" placeholder="Drop a tall (portrait) screenshot or screen recording of the hub"></media-slot></div></div>
-        <span class="devcap">Runs on any device</span>
+      <div class="devicepair">
+        <div class="device">
+          <div class="tablet" style="width:880px;"><div class="screen" style="aspect-ratio:4/3;"><media-slot id="demo-academic" class="scan-y" shape="rect" fit="cover" dwell="16" src="media/academic-attendance-dashboard.png" gallery="media/academic-attendance-dashboard.png | media/academic-attendance-directory.png | media/academic-attendance-comparative.png | media/academic-attendance-sheet.png" placeholder="Drop a tall screenshot or screen recording of the hub"></media-slot></div></div>
+          <span class="devcap">Runs on any device</span>
+        </div>
       </div>
     </div>
   </section>
@@ -764,7 +781,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <span class="demo-badge anim">DEMO</span>
       <h2 class="title anim">Teachers Subbing for Teachers</h2>
       <div class="watch anim2">
-        <div class="wl">Watch for</div>
+        <div class="wl">Features</div>
         <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>Staff bank hours by covering, then spend them for their own coverage</li>
           <li>Add a request in a few taps, with no reply-all chain</li>
@@ -773,7 +790,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       </div>
     </div>
     <div class="demo-right">
-      <media-slot id="demo-subbing" shape="rounded" radius="16" fit="contain" src="media/subbing-directory.png" gallery="media/subbing-directory.png | media/subbing-add-request.mp4 | media/subbing-directory-sheet.png" placeholder="Drop a landscape screenshot or screen recording of the TST portal"></media-slot>
+      <media-slot id="demo-subbing" shape="rounded" radius="16" fit="contain" src="media/subbing-directory.png" gallery="media/subbing-directory.png | media/subbing-add-request.mp4 | media/subbing-directory-sheet.png | media/subbing-approvals-sheet.png | media/subbing-usage-sheet.png" placeholder="Drop a landscape screenshot or screen recording of the TST portal"></media-slot>
     </div>
   </section>
 
@@ -783,7 +800,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <span class="demo-badge anim">DEMO</span>
       <h2 class="title anim">OPS Flex Sign-In</h2>
       <div class="watch anim2">
-        <div class="wl">Watch for</div>
+        <div class="wl">Features</div>
         <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
           <li>A staff member scanning a student's QR code</li>
           <li>No student devices needed; one staff device runs the room</li>
