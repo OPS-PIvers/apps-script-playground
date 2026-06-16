@@ -742,6 +742,25 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
     </div>
   </section>
 
+  <!-- DEMO · OMS AGENDA SYNC -->
+  <section data-label="Demo: OMS Agenda Sync" class="s light demo">
+    <div class="demo-left">
+      <span class="demo-badge anim">DEMO</span>
+      <h2 class="title anim">OMS Agenda Sync</h2>
+      <div class="watch anim2">
+        <div class="wl">Features</div>
+        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+          <li>Pulls every teacher's daily agenda from their slides into one Sheet, automatically</li>
+          <li>Families and staff filter by grade and export a PDF of just the agendas they need</li>
+          <li>Replaced a weekly deck one person built by hand; teachers just keep their normal slides</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-right">
+      <media-slot id="demo-agenda" pan dwell="8" shape="rounded" radius="16" fit="contain" style="height:auto; aspect-ratio:1816/990;" src="media/daily-agenda-sync-web-app.mp4" gallery="media/daily-agenda-sync-web-app.mp4 | media/daily-agenda-sync-slides.webp | media/daily-agenda-sync-data-spreadsheet.webp" placeholder="Drop a clip or screenshots of Agenda Sync"></media-slot>
+    </div>
+  </section>
+
   <!-- DEMO · ACADEMIC & BEHAVIOR HUB -->
   <section data-label="Demo: Academic &amp; Attendance Hub" class="s light demo">
     <div class="demo-left">
@@ -1041,6 +1060,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
   "Second group: whole buildings and the teams that run them. This is the daily logistics that otherwise lives in email chains and paper forms.",
   "The Assessment Portal lets teachers share assessments securely, with accessibility tools built in for every student. Agenda Sync writes the daily agenda once and shows it everywhere it's needed. And the Spartan Cup runs location-verified check-ins, points, and live leaderboards at the high school. All of it is the plumbing a building actually runs on.",
   "This one started as an accessibility tool. A handful of teachers were spending hours a week reading assessments aloud for 504 and IEP accommodations, and the built-in text-to-speech was either robotic or locked behind a paid subscription. So I built a way to upload a PDF or Doc: the app pulls out the question text, drops each chunk into a Google Sheet, and turns it into natural audio right away — a 75-question test was fully converted in under five minutes. Because the text lives in the web app, students get real control: dim everything but the question they're on, change the line spacing, set the playback speed. Two teachers leaned on it all fall and helped me refine it. Then in February someone asked me about 'the secure testing app,' and I had no idea what they meant — the accessibility tool had quietly become how teachers shared assessments securely, and the high school asked to roll it out school-wide for second semester. The bumps after that were all onboarding, never the technology. [Tap through: student read-aloud, the picker, the teacher dashboard, the Sheet doing the work, and the role-based access behind it.]",
+  "This replaced a job nobody should have to do by hand. Last year a support specialist spent her week copying every teacher's agenda into a slide deck and hand-linking it, so counselors, case managers, parents, and absent students had one place to see what happened in class. The fix was a standard agenda format: a teacher on our instructional leadership team built a template slide, I added the text boxes, and I mapped each box to a column in one central Google Sheet. Two scripts do the rest — one creates each week's blank agenda slide on Sunday so teachers never have to remember, and another runs every weekday, reads every teacher's slide, and drops it all into the Sheet. The web app lets families, students, and staff filter by grade and export a PDF of just the teachers they care about. By the second week of school it ran itself; when I checked in over the winter, the only feedback was teachers and parents telling me how much they leaned on it. [Tap through: the public web app, the teacher template slide, the Sheet it all syncs into.]",
   "Let me open one of these up. The Academic and Attendance Hub pulls every student's eligibility, absences, and Spartan Hour requests into one dashboard, and every chart you're seeing is drawn straight from a Google Sheet the office already keeps. Staff filter by grade, team, or activity, then drill into any student. [Tap through the views.]",
   "Third group: district-wide. Hundreds of users, our own data, and enough polish to put in front of anybody.",
   "Subbing for Teachers lets staff request and claim internal coverage without the reply-all chain. The Peer Observation Portal runs structured observations on shared rubrics. The Digital Learning Hub is one front door to the district's tools and guides. And Flex Sign-In handles flex-period rosters and attendance across the district.",
