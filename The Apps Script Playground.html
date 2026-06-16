@@ -464,10 +464,29 @@
       transform: scaleX(0);
     }
   }
+  /* Demo feature lists (<ul class="featlist">) auto-cascade in on slide
+     arrival — they are intentionally NOT build beats, so the bullets stagger
+     in by themselves and → just advances to the next slide. Same invariant as
+     .cascade: resting state is visible, only non-active slides pre-hide, and
+     the :not([noscale]) guard keeps the PPTX/image exporter showing the whole
+     list — so print / reduced-motion / export / rail thumbnails always render
+     every bullet. */
+  @media (prefers-reduced-motion: no-preference) {
+    .featlist > li {
+      transition: opacity .55s var(--reveal-ease), transform .8s var(--reveal-ease);
+    }
+    deck-stage:not([noscale]) > .s:not([data-deck-active]) .featlist > li {
+      opacity: 0; transform: translateY(20px);
+    }
+    deck-stage > .s.demo[data-deck-active] .featlist > li:nth-child(1) { transition-delay: .4s; }
+    deck-stage > .s.demo[data-deck-active] .featlist > li:nth-child(2) { transition-delay: .65s; }
+    deck-stage > .s.demo[data-deck-active] .featlist > li:nth-child(3) { transition-delay: .9s; }
+    deck-stage > .s.demo[data-deck-active] .featlist > li:nth-child(4) { transition-delay: 1.15s; }
+  }
   /* deck-stage's beforeprint freeze zeroes transition-duration but not
      transition-delay — kill both so nothing prints mid-delay. */
   @media print {
-    .anim, .anim2, .anim3, .cascade > *, .grow-x { transition: none !important; }
+    .anim, .anim2, .anim3, .cascade > *, .featlist > li, .grow-x { transition: none !important; }
   }
 
   /* thank-you morph — "Let's make something meaningful." → "Let's make meaning."
@@ -670,7 +689,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <h2 class="title anim">OHS Digital Microscope</h2>
       <div class="watch anim2">
         <div class="wl">Features</div>
-        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+        <ul class="featlist">
           <li>Upload images in a teacher-only web page</li>
           <li>Create click zones with labels and banners</li>
           <li>Everything saved to a Sheet and Drive folder automatically</li>
@@ -689,7 +708,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <h2 class="title anim">Research &amp; Annotations</h2>
       <div class="watch anim2">
         <div class="wl">Features</div>
-        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+        <ul class="featlist">
           <li>Highlight, tag, and cite sources across any website or PDF</li>
           <li>Bibliographies that build themselves as students work</li>
           <li>Teachers see the whole class's research in one place</li>
@@ -730,7 +749,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <h2 class="title anim">Secure Assessment Portal</h2>
       <div class="watch anim2">
         <div class="wl">Features</div>
-        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+        <ul class="featlist">
           <li>Upload a PDF or Doc; it pulls out the text and builds natural read-aloud audio in minutes</li>
           <li>Students set their own focus, line spacing, and playback speed</li>
           <li>Built for read-aloud accommodations; adopted school-wide as a secure way to share assessments</li>
@@ -749,7 +768,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <h2 class="title anim">OMS Agenda Sync</h2>
       <div class="watch anim2">
         <div class="wl">Features</div>
-        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+        <ul class="featlist">
           <li>Pulls every teacher's daily agenda from their slides into one Sheet, automatically</li>
           <li>Families and staff filter by grade and export a PDF of just the agendas they need</li>
           <li>Replaced a weekly deck one person built by hand; teachers just keep their normal slides</li>
@@ -768,7 +787,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <h2 class="title anim">Academic &amp; Attendance Hub</h2>
       <div class="watch anim2">
         <div class="wl">Features</div>
-        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+        <ul class="featlist">
           <li>Eligibility, absences, and Spartan Hour in one live dashboard</li>
           <li>Filter by grade, team, or activity, then drill into any student</li>
           <li>Every number drawn straight from a Google Sheet the office already keeps</li>
@@ -816,7 +835,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <h2 class="title anim">Teachers Subbing for Teachers</h2>
       <div class="watch anim2">
         <div class="wl">Features</div>
-        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+        <ul class="featlist">
           <li>Staff bank hours by covering, then spend them for their own coverage</li>
           <li>Add a request in a few taps, with no reply-all chain</li>
           <li>Balances, approvals, and usage all reconcile in one sheet</li>
@@ -836,7 +855,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
       <h2 class="title anim">OPS Flex Sign-In</h2>
       <div class="watch anim2">
         <div class="wl">Features</div>
-        <ul class="cascade" style="--cascade-start:2s; --cascade-step:4s">
+        <ul class="featlist">
           <li>A staff member scanning a student's QR code</li>
           <li>No student devices needed; one staff device runs the room</li>
           <li>The roster updating live, recorded to one sheet</li>
