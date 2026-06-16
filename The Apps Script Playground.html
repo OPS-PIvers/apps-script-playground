@@ -255,12 +255,12 @@
 
   /* spartan architecture — the portrait tablet sets the right column's
      width; the text column takes everything left over so it can breathe */
-  .arch { flex-direction: row; gap: 72px; align-items: stretch; }
+  .arch { flex-direction: row; gap: 48px; align-items: stretch; }
   .arch .arch-left { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .arch .arch-right { flex: none; display: flex; align-items: center; }
-  .stacklist { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
-  .stackrow { background: var(--ot-gray-lightest); border-radius: var(--r-md); padding: 16px 28px; }
-  .stackrow .sr-h { font-size: 28px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 6px; }
+  .stacklist { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .stackrow { background: var(--ot-gray-lightest); border-radius: var(--r-md); padding: 13px 24px; }
+  .stackrow .sr-h { font-size: 28px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 4px; }
   .stackrow .sr-p { font-size: 24px; color: var(--ot-gray); margin: 0; font-family: var(--font-mono); line-height: 1.4; }
 
   /* recipe steps */
@@ -535,7 +535,7 @@ We aren't building the car anymore. We're driving it. And like any driver, we st
     <div class="head-block">
       <p class="kicker anim">The spreadsheet problem</p>
       <h2 class="title anim">Our systems are already built on many disconnected spreadsheets</h2>
-      <p class="lead anim2">Every school runs on them. Rosters, points, sign-ins, observations, and more forms than anyone can count. A spreadsheet is a fine place to keep data. It's a miserable place to ask people to work.</p>
+      <p class="lead anim2">Every school runs on them. Rosters, points, sign-ins, observations, and more forms than anyone can count. Some of us love a spreadsheet and know exactly how much it can do. Others want all that capability in a friendlier, more accessible form.</p>
     </div>
     <div class="spacer"></div>
     <div class="pains cascade" style="--cascade-start:5s; --cascade-step:4s">
@@ -824,7 +824,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
     <div class="arch-left">
       <p class="kicker anim">Proof it scales</p>
       <h2 class="title anim" style="font-size:54px;">Inside the Observation Portal</h2>
-      <p class="body anim2" style="margin-top:16px; color:var(--ot-gray-dark);">A multi-role Danielson rubric for peer observations across Orono, and proof the pattern scales.</p>
+      <p class="body anim2" style="margin-top:12px; color:var(--ot-gray-dark);">A multi-role Danielson rubric for peer observations across Orono, and proof the pattern scales.</p>
       <div class="stacklist cascade" style="--cascade-start:3s; --cascade-step:3.5s">
         <div class="stackrow"><p class="sr-h">Web app</p><p class="sr-p">Apps Script serves a single-page rubric</p></div>
         <div class="stackrow"><p class="sr-h">Google Sheets — the database</p><p class="sr-p">Staff · Settings · Role rubrics · Observation_Data</p></div>
@@ -835,7 +835,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
     <div class="arch-right">
       <div class="devicepair">
         <div class="device">
-          <div class="tablet" style="width:820px;"><div class="screen" style="aspect-ratio:1210/896;"><media-slot id="demo-observation" pan dwell="9" shape="rect" fit="contain" src="media/16-observation-portal.mp4" gallery="media/16-observation-portal.mp4 | media/peer-eval-create-observation.webp | media/peer-eval-edit-script.mp4 | media/peer-eval-staff-spreadsheet.webp | media/peer-eval-observation-data-spreadsheet.webp" placeholder="Drop a landscape GIF or MP4 of the rubric view"></media-slot></div></div>
+          <div class="tablet" style="width:820px;"><div class="screen" style="aspect-ratio:1/1;"><media-slot id="demo-observation" pan dwell="9" shape="rect" fit="contain" src="media/16-observation-portal.mp4" gallery="media/16-observation-portal.mp4 | media/peer-eval-create-observation.webp | media/peer-eval-staff-spreadsheet.webp | media/peer-eval-observation-data-spreadsheet.webp" placeholder="Drop a landscape GIF or MP4 of the rubric view"></media-slot></div></div>
           <span class="devcap">Rubric &amp; evidence</span>
         </div>
       </div>
