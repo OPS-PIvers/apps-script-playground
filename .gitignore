@@ -12,3 +12,4 @@ standalone-src.html
 
 # Original heavy media sources (web-optimized copies are tracked instead)
 media/*_*
+media/ops-flex-*.png
