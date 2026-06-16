@@ -188,6 +188,80 @@
       visibility: visible;
     }
 
+    /* Persistent corner badge — cloned from a light-DOM <template id="deck-pin">
+       into the canvas (see _render). Lives in slide coordinates, so it scales
+       with the deck and pins to the slide's top-right on every slide.
+       No container: transparent and theme-aware — white on .navy slides, brand
+       blue on .light slides. _applyIndex sets [data-theme] from the active
+       slide. The QR is a CSS mask filled with currentColor, so it recolors
+       with the theme (the transparent-background PNG's alpha is the matrix). */
+    .deck-pin {
+      position: absolute;
+      top: 28px;
+      right: 34px;
+      z-index: 60;
+      display: flex;
+      align-items: flex-start; /* top URL lines up with the top of the QR */
+      gap: 18px;
+      color: #fff; /* default: dark slide */
+    }
+    .deck-pin[data-theme="light"] { color: var(--ot-blue, #2d3f89); }
+    .deck-pin .dp-text {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: right;
+    }
+    .deck-pin .dp-url {
+      font: 600 24px/1.15 var(--font-display, 'Lexend', system-ui, sans-serif);
+      white-space: nowrap;
+    }
+    /* thin divider between the two URLs (tinted to the theme color) */
+    .deck-pin .dp-url + .dp-url {
+      border-top: 1.5px solid currentColor;
+      border-top-color: color-mix(in srgb, currentColor 42%, transparent);
+      padding-top: 8px;
+    }
+    /* QR sits on a contrasting square chip: white box + dark modules on dark
+       slides; dark (navy) box + white modules on light slides. The chip color
+       and the module "ink" are independent of the URL text color. */
+    .deck-pin .dp-qrbox {
+      flex: none;
+      display: block;
+      padding: 6px;
+      border-radius: 7px;
+      background: #fff; /* dark slide: white square */
+    }
+    .deck-pin[data-theme="light"] .dp-qrbox {
+      background: var(--ot-blue-dark, #1d2a5d); /* light slide: dark square */
+    }
+    .deck-pin .dp-qr {
+      width: 124px;
+      height: 124px;
+      display: block;
+      background-color: var(--ot-blue-dark, #1d2a5d); /* modules on white chip */
+      -webkit-mask: url("media/qr-slides.png") center / contain no-repeat;
+      mask: url("media/qr-slides.png") center / contain no-repeat;
+    }
+    .deck-pin[data-theme="light"] .dp-qr {
+      background-color: #fff; /* white modules on the dark chip */
+    }
+    /* Working slides: collapse to just the QR chip in the corner — the URLs
+       appear only on the hero (title) slides, so the rest stay quiet. */
+    .deck-pin[data-layout="compact"] .dp-text { display: none; }
+    /* Title/cover slide: the "start here" footprint — bigger URLs with the QR
+       stacked below them. */
+    .deck-pin[data-layout="hero"] {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 18px;
+    }
+    .deck-pin[data-layout="hero"] .dp-text { gap: 14px; }
+    .deck-pin[data-layout="hero"] .dp-url { font-size: 42px; }
+    .deck-pin[data-layout="hero"] .dp-url + .dp-url { padding-top: 14px; }
+    .deck-pin[data-layout="hero"] .dp-qrbox { padding: 9px; border-radius: 10px; }
+    .deck-pin[data-layout="hero"] .dp-qr { width: 240px; height: 240px; }
+
     .overlay {
       position: fixed;
       left: 50%;
@@ -571,7 +645,7 @@
         page-break-after: auto;
       }
       ::slotted([data-deck-skip]) { display: none !important; }
-      .overlay, .rail, .rail-resize, .ctxmenu, .confirm-backdrop { display: none !important; }
+      .overlay, .rail, .rail-resize, .ctxmenu, .confirm-backdrop, .deck-pin { display: none !important; }
     }
   `;
 
@@ -912,6 +986,22 @@
       const slot = document.createElement('slot');
       slot.addEventListener('slotchange', this._onSlotChange);
       canvas.appendChild(slot);
+
+      // Persistent corner badge: clone a light-DOM <template id="deck-pin">
+      // into the canvas so it rides on top of every slide (scales with the
+      // slide coordinate system). The <template> is skipped by _collectSlides,
+      // so it never counts as a slide.
+      const pinTpl = document.getElementById('deck-pin');
+      if (pinTpl && pinTpl.content) {
+        const pin = document.createElement('div');
+        pin.className = 'deck-pin export-hidden';
+        pin.setAttribute('data-omelette-chrome', '');
+        pin.setAttribute('aria-hidden', 'true');
+        pin.appendChild(pinTpl.content.cloneNode(true));
+        canvas.appendChild(pin);
+        this._pin = pin;
+      }
+
       stage.appendChild(canvas);
 
       // Overlay: compact, solid black, with clickable controls.
@@ -1190,6 +1280,23 @@
         if (i === curr) s.setAttribute('data-deck-active', '');
         else s.removeAttribute('data-deck-active');
       });
+      // Theme the persistent corner badge to the active slide's background:
+      // .navy slides are dark (white badge); everything else reads light
+      // (brand-blue badge).
+      if (this._pin) {
+        const active = this._slides[curr];
+        const dark = !!(active && active.classList.contains('navy'));
+        this._pin.setAttribute('data-theme', dark ? 'dark' : 'light');
+        // The cover and any slide marked [data-pin-hero] get the expanded
+        // "start here" badge (QR stacked below larger URLs); every other slide
+        // uses the compact row.
+        const hero = !!(active && (active.classList.contains('cover') || active.hasAttribute('data-pin-hero')));
+        this._pin.setAttribute('data-layout', hero ? 'hero' : 'compact');
+        // Hide the badge entirely on demo slides (device frames crowd it) and
+        // any slide marked [data-pin-hide].
+        const hide = !!(active && (active.classList.contains('demo') || active.hasAttribute('data-pin-hide')));
+        this._pin.style.display = hide ? 'none' : '';
+      }
       // Set the active slide's build to its starting step in the same frame as
       // data-deck-active, so manual-mode beats never flash their resting state.
       // Arriving forward / via a jump starts at step 0; arriving backward over a
@@ -1687,6 +1794,9 @@
      *  word count at ~140 wpm, with a floor so sparse slides don't flash by. */
     _scheduleAutoAdvance(curr) {
       if (this._revealMode !== 'auto') return;
+      // [no-autoadvance]: auto-reveal content on a timed cascade, but let the
+      // presenter control slide-to-slide navigation (no unattended advance).
+      if (this.hasAttribute('no-autoadvance')) return;
       const note = (this._notes[curr] || '').trim();
       const words = note ? note.split(/\s+/).length : 0;
       const dwell = Math.max(6, words / 2.3 + 3) * 1000;
