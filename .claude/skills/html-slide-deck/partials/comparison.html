@@ -1,0 +1,37 @@
+<!--
+  PARTIAL: comparison
+  Purpose: Two text columns — the old way vs the new way — entering from opposite edges.
+  Theme: navy (default) — works on light too.
+  Uses: .s.navy, .head-block, .kicker, .title, .compare/.compare-col (NEW §9), .cmp-head, .cmp-list,
+        .slide-in-l / .slide-in-r (motion.css)
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively  (calm drops the travel; columns fade in place)
+  Configurable: kicker, title, each column heading + its bullet list.
+  Notes: The MOTION is the contrast — the old-way column enters from the left (.slide-in-l), the new-way
+         from the right (.slide-in-r); the new-way is delayed slightly in auto mode. The left column is
+         tinted "muted/old", the right "accent/new". This is text-based; for a scored table use feature-matrix.html.
+-->
+<section data-label="Old vs new" class="s navy">
+  <div class="head-block">
+    <p class="kicker anim">The shift</p>
+    <h2 class="title anim">Before and after</h2>
+  </div>
+  <div class="compare">
+    <div class="compare-col old slide-in-l">
+      <p class="cmp-head">The old way</p>
+      <ul class="cmp-list">
+        <li>What it used to take</li>
+        <li>Where it broke down</li>
+        <li>Who got left out</li>
+      </ul>
+    </div>
+    <div class="compare-col new slide-in-r">
+      <p class="cmp-head">The new way</p>
+      <ul class="cmp-list">
+        <li>What it takes now</li>
+        <li>Why it holds up</li>
+        <li>Who it reaches</li>
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,23 @@
+<!--
+  PARTIAL: recap
+  Purpose: "What we covered" — the closing summary of the session's key takeaways.
+  Theme: light (default) — works on navy too.
+  Uses: .s.light, .head-block, .kicker, .title, .recap/.recap-item (NEW §9), .rc-num, .rc-text
+        (.rc-h + .rc-d), .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each takeaway (heading + one-line reinforcement).
+  Notes: Mirrors learning-objectives.html in past tense — bookend a PD session with the two. Numbered
+         takeaways reveal via .cascade. Keep to 3–4; this is reinforcement, not new material.
+-->
+<section data-label="Recap" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">To wrap up</p>
+    <h2 class="title anim">What we covered</h2>
+  </div>
+  <ul class="recap cascade" style="--cascade-start:2.5s; --cascade-step:1.1s">
+    <li class="recap-item"><span class="rc-num">1</span><div class="rc-text"><span class="rc-h">A sheet is a database</span><span class="rc-d">Storage you already trust.</span></div></li>
+    <li class="recap-item"><span class="rc-num">2</span><div class="rc-text"><span class="rc-h">Describe, don't code</span><span class="rc-d">AI writes the app on top.</span></div></li>
+    <li class="recap-item"><span class="rc-num">3</span><div class="rc-text"><span class="rc-h">Deploy as a link</span><span class="rc-d">Share it like any Google file.</span></div></li>
+  </ul>
+</section>

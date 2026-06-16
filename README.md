@@ -21,7 +21,7 @@ _brand/               ← OPS Tech brand layer (shared)
   assets/               logos + torch marks
 <deck-slug>/          ← one folder per deck: index.html + media/
 poll-backend/         ← Apps Script source for live polls (NOT served; deploy once)
-skill/html-slide-deck/ ← the skill that builds decks (SKILL.md + partials/structures/audiences)
+.claude/skills/html-slide-deck/ ← the skill that builds decks (SKILL.md + partials/structures/audiences)
 ```
 
 ## Decks
@@ -49,10 +49,10 @@ npx serve .          # or: python -m http.server 8000
 
 ## Building a new deck
 
-Use the **html-slide-deck** skill (`skill/html-slide-deck/`). It composes a
+Use the **html-slide-deck** skill (`.claude/skills/html-slide-deck/`). It composes a
 **structure** (purpose) with an **audience** (who) over the OPS brand, scaffolds
 the deck folder wired to `../_framework` + `../_brand`, and registers it on the
-landing page. See [`skill/html-slide-deck/SKILL.md`](skill/html-slide-deck/SKILL.md).
+landing page. See [`.claude/skills/html-slide-deck/SKILL.md`](.claude/skills/html-slide-deck/SKILL.md).
 
 ## Live polls
 

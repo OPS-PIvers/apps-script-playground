@@ -1,0 +1,27 @@
+<!--
+  PARTIAL: cta
+  Purpose: A single clear call-to-action — what to do next, with a scan-to-go QR.
+  Theme: navy
+  Uses: .s.navy.cta (NEW §9), .kicker, .cta-title, .cta-sub, .cta-action (.cta-text + .cta-qr),
+        .qrwrap + image-slot, .anim/.anim2/.anim3
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, the action headline, the sub line, the QR + its caption.
+  Notes: One ask, stated plainly, with a QR to act on it now. Distinct from close.html (which is the
+         sign-off with multiple resource rows) and qa-prompt.html (which invites questions). Drop the QR
+         image on the image-slot.
+-->
+<section data-label="Call to action" class="s navy cta">
+  <p class="kicker anim">Your next step</p>
+  <h2 class="cta-title anim2">Pick one spreadsheet and turn it into an app.</h2>
+  <p class="cta-sub anim2">You don't need permission or a budget — just the one sheet you already babysit.</p>
+  <div class="cta-action anim3">
+    <div class="cta-text">
+      <p class="rr-h" style="color:#e57e7f">Start here</p>
+      <p class="rr-p" style="font-family:Lexend; color:#fff">Scan to copy the DESIGN.md &amp; starter prompts</p>
+    </div>
+    <div class="cta-qr">
+      <div class="qrwrap" style="width:300px; height:300px;"><image-slot id="cta-qr" shape="rect" placeholder="Drop the QR"></image-slot></div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,33 @@
+<!--
+  PARTIAL: callout
+  Purpose: An info / warning / neutral box — a flagged aside. Usable standalone OR inline in another slide.
+  Theme: either (light shown; the tints read on navy too)
+  Uses: .s.light, .head-block, .kicker, .title, .callout (.callout-info / .callout-warn / .callout-neutral)
+        (NEW §9), .co-label, .co-body, .anim/.anim2
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: variant (info/warn/neutral), label, body text.
+  Notes: Two ways to use it —
+         (1) STANDALONE SLIDE: keep the <section> wrapper (shown below).
+         (2) INLINE BLOCK: lift just the <div class="callout …"> out and drop it inside any other partial's
+             body (e.g. under a head-block, beside a list). It carries its own border + tint, no section needed.
+         Variants: .callout-info (blue, --info-bg), .callout-warn (red, --warn-bg), .callout-neutral (--bg-2).
+         Each has a 3px left border in its accent color.
+-->
+<section data-label="Callout" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Worth flagging</p>
+    <h2 class="title anim">One thing to keep in mind</h2>
+  </div>
+
+  <!-- INLINE BLOCK — copy this div alone into any other partial's body. -->
+  <div class="callout callout-info anim2">
+    <p class="co-label">Good to know</p>
+    <p class="co-body">An informational note — context, a tip, or a clarification the audience needs.</p>
+  </div>
+
+  <!-- Other variants:
+  <div class="callout callout-warn"><p class="co-label">Heads up</p><p class="co-body">A caution or gotcha.</p></div>
+  <div class="callout callout-neutral"><p class="co-label">Note</p><p class="co-body">A neutral aside.</p></div>
+  -->
+</section>

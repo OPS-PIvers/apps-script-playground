@@ -1,0 +1,23 @@
+<!--
+  PARTIAL: agenda
+  Purpose: "Here's the plan" — a numbered roadmap of the talk's sections.
+  Theme: light (default) — flip to navy by swapping .light→.navy on the section.
+  Uses: .s.light, .head-block, .kicker, .title, .agenda/.ag-item (NEW §9), .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each item (number auto from order; label + optional sub).
+  Notes: Items reveal one-by-one via .cascade. Mark the current section with class "now" on an
+         .ag-item to highlight it (handy if you reuse the slide as a progress marker).
+-->
+<section data-label="Agenda" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">What we'll cover</p>
+    <h2 class="title anim">Today's plan</h2>
+  </div>
+  <ol class="agenda cascade" style="--cascade-start:2.5s; --cascade-step:1.6s">
+    <li class="ag-item"><span class="ag-num">1</span><div class="ag-text"><b>First section</b><span>One line on what it covers</span></div></li>
+    <li class="ag-item"><span class="ag-num">2</span><div class="ag-text"><b>Second section</b><span>One line on what it covers</span></div></li>
+    <li class="ag-item"><span class="ag-num">3</span><div class="ag-text"><b>Third section</b><span>One line on what it covers</span></div></li>
+    <li class="ag-item"><span class="ag-num">4</span><div class="ag-text"><b>Fourth section</b><span>One line on what it covers</span></div></li>
+  </ol>
+</section>

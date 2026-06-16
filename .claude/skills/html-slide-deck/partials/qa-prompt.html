@@ -1,0 +1,22 @@
+<!--
+  PARTIAL: qa-prompt
+  Purpose: A "Questions?" slide — a big invitation plus how to reach you / where to go next.
+  Theme: navy
+  Uses: .s.navy.qa (NEW §9), .kicker, .qa-big, .qa-rows/.qa-row (.qa-k + .qa-v), .anim/.anim2/.anim3,
+        .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, the big prompt line, each row (label + value: email, repo, link).
+  Notes: A lighter-weight close than close.html — use mid-deck before discussion, or as a penultimate
+         slide. Rows reveal via .cascade. For an actual live audience poll instead of a static prompt,
+         use qa with check-understanding.html / live-poll.html.
+-->
+<section data-label="Questions" class="s navy qa">
+  <p class="kicker anim">Over to you</p>
+  <p class="qa-big anim2">Questions?</p>
+  <div class="qa-rows cascade" style="--cascade-start:1s; --cascade-step:0.9s">
+    <div class="qa-row"><span class="qa-k">Email</span><span class="qa-v">name@org.org</span></div>
+    <div class="qa-row"><span class="qa-k">Code</span><span class="qa-v">github.com/your-org</span></div>
+    <div class="qa-row"><span class="qa-k">Slides</span><span class="qa-v">your-short.link/slides</span></div>
+  </div>
+</section>

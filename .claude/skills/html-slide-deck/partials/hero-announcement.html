@@ -1,0 +1,22 @@
+<!--
+  PARTIAL: hero-announcement
+  Purpose: "Introducing…" — a bigger, darker reveal than the cover. The headline moment.
+  Theme: navy (deepest)
+  Uses: .s.navy.hero (NEW §9), .hero-eyebrow, .hero-title, .hero-sub, .hero-chip, .anim/.anim2/.anim3,
+        .spacer
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively  (built for lively — a launch beat)
+  Configurable: eyebrow ("Introducing"), the product/idea name, the sub line, an optional chip (URL/tag).
+  Notes: Larger and darker than cover.html — meant for a single big reveal mid-deck (a launch, a new tool).
+         The .hero-title runs to display scale; keep it to a few words. The .hero-chip is an optional
+         mono pill (a URL, a date, a "now live" tag). A faint torch watermark anchors the brand.
+-->
+<section data-label="Introducing" class="s navy hero">
+  <img class="torch-bg" src="../_brand/assets/orono-torch-white-outlined.png" alt="">
+  <div class="spacer"></div>
+  <p class="hero-eyebrow anim">Introducing</p>
+  <h1 class="hero-title anim2">The Big Thing</h1>
+  <p class="hero-sub anim3">One line that says why it matters, in plain language.</p>
+  <div class="hero-chip anim3"><span class="arrow">→</span> your-short.link/launch</div>
+  <div class="spacer"></div>
+</section>

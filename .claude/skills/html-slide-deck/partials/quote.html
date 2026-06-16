@@ -1,0 +1,20 @@
+<!--
+  PARTIAL: quote
+  Purpose: A large pull-quote with attribution — a voice from the field.
+  Theme: navy
+  Uses: .s.navy.quote-slide (NEW §9), .kicker, .pullquote, .quote-attr (.qa-name + .qa-meta),
+        .anim/.anim2/.anim3
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: optional kicker, the quote text, attribution name + role.
+  Notes: A giant decorative quote mark sits behind the text. Keep the quote to ~2 lines for impact.
+         On navy the quote is near-white and the attribution muted; works on light too (swap .navy→.light).
+-->
+<section data-label="Quote" class="s navy quote-slide">
+  <p class="kicker anim">In their words</p>
+  <blockquote class="pullquote anim2">A short, vivid sentence someone actually said — the kind that earns its own slide.</blockquote>
+  <div class="quote-attr anim3">
+    <span class="qa-name">Person's Name</span>
+    <span class="qa-meta">Role · Organization</span>
+  </div>
+</section>

@@ -1,0 +1,25 @@
+<!--
+  PARTIAL: kpi-row
+  Purpose: 3–4 headline metrics across a row, each counting up.
+  Theme: navy
+  Uses: .s.navy, .head-block, .kicker, .title, .kpis/.kpi (NEW §9), .kpi-num.count-up (motion.css),
+        .kpi-label, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively  (calm jumps to values)
+  Configurable: kicker, title, each metric (data-target + prefix/suffix + label).
+  Notes: Reuses the SAME count-up script that ships in big-stat.html — include that script ONCE per deck
+         (or paste the <script> block here if this is the only count-up slide). Each .count-up reads
+         data-target / data-prefix / data-suffix / data-dur. The .kpis row reveals via .cascade.
+-->
+<section data-label="KPIs" class="s navy">
+  <div class="head-block">
+    <p class="kicker anim">By the numbers</p>
+    <h2 class="title anim">Where we are today</h2>
+  </div>
+  <div class="kpis cascade" style="--cascade-start:2.5s; --cascade-step:0.9s">
+    <div class="kpi"><p class="kpi-num count-up" data-target="15" data-suffix="">15</p><p class="kpi-label">tools shipped</p></div>
+    <div class="kpi"><p class="kpi-num count-up" data-target="600" data-suffix="+">600+</p><p class="kpi-label">daily users</p></div>
+    <div class="kpi"><p class="kpi-num count-up" data-target="0" data-prefix="$">$0</p><p class="kpi-label">hosting cost</p></div>
+    <div class="kpi"><p class="kpi-num count-up" data-target="100" data-suffix="%">100%</p><p class="kpi-label">data in Workspace</p></div>
+  </div>
+</section>

@@ -1,0 +1,32 @@
+<!--
+  PARTIAL: close
+  Purpose: Sign-off slide — thanks line, resource rows, and a QR, combined.
+  Theme: navy
+  Uses: .s.navy.close, .kicker, .thanks, .closerow, .res-text, .reslist/.resrow, .res-qr,
+        .qrwrap + image-slot, .footmark, .scan-note, .anim/.anim2/.anim3, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: thanks line, resource rows (label + value), contact emails, QR image, event footmark.
+  Notes: This is the plain close. For the optional animated word-cycler flourish (.spin/.morph-out)
+         see the close-slide block in slides.css §18 — use it sparingly, only here, never on content.
+         Swap the QR by dropping an image on the image-slot (or set its src).
+-->
+<section data-label="Thank you" class="s navy close" data-pin-hide>
+  <div class="spacer"></div>
+  <p class="kicker anim">Thank you</p>
+  <p class="thanks anim2">Let's build something.</p>
+  <div class="closerow">
+    <div class="res-text">
+      <div class="reslist cascade" style="--cascade-start:0.7s; --cascade-step:0.9s">
+        <div class="resrow"><p class="rr-h">All the repos</p><p class="rr-p" style="font-family: Lexend">github.com/your-org</p></div>
+        <div class="resrow"><p class="rr-h">Start here</p><p class="rr-p" style="font-family: Lexend">Copy a DESIGN.md · open a sheet · describe it</p></div>
+        <div class="resrow"><p class="rr-h">Questions?</p><p class="rr-p" style="font-family: Lexend"><a href="mailto:name@org.org" style="color: inherit;">name@org.org</a></p></div>
+      </div>
+    </div>
+    <div class="res-qr anim3">
+      <div class="qrwrap"><image-slot id="qr-close" shape="rect" placeholder="Drop the resources QR"></image-slot></div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="footmark anim3"><div class="rule"></div><span>Event Name · Year</span><span class="scan-note">scan for resources</span></div>
+</section>

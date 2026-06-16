@@ -1,0 +1,25 @@
+<!--
+  PARTIAL: people-grid
+  Purpose: A grid of people — team, presenters, or contributors — each with a headshot, name, and role.
+  Theme: light (default) — works on navy too.
+  Uses: .s.light, .head-block, .kicker, .title, .people/.person (NEW §9), .person-photo + media-slot,
+        .person-name, .person-role, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each person (headshot + name + role). 3–4 per row reads best.
+  Notes: Circle media-slots — drop a square headshot in each. People reveal via .cascade. For a single
+         presenter with a bio paragraph, use presenter-bio.html instead. The grid auto-fits; add more
+         .person cards and they wrap.
+-->
+<section data-label="The team" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Who built this</p>
+    <h2 class="title anim">The team behind it</h2>
+  </div>
+  <div class="people cascade" style="--cascade-start:2.5s; --cascade-step:0.7s">
+    <div class="person"><div class="person-photo"><media-slot id="person-1" shape="circle" placeholder="Headshot"></media-slot></div><p class="person-name">Name One</p><p class="person-role">Role</p></div>
+    <div class="person"><div class="person-photo"><media-slot id="person-2" shape="circle" placeholder="Headshot"></media-slot></div><p class="person-name">Name Two</p><p class="person-role">Role</p></div>
+    <div class="person"><div class="person-photo"><media-slot id="person-3" shape="circle" placeholder="Headshot"></media-slot></div><p class="person-name">Name Three</p><p class="person-role">Role</p></div>
+    <div class="person"><div class="person-photo"><media-slot id="person-4" shape="circle" placeholder="Headshot"></media-slot></div><p class="person-name">Name Four</p><p class="person-role">Role</p></div>
+  </div>
+</section>

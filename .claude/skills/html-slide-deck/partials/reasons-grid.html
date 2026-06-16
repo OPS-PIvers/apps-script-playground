@@ -1,0 +1,23 @@
+<!--
+  PARTIAL: reasons-grid
+  Purpose: 3-up (or 4-up) "why this works" / pain-point grid with a red top rule on each cell.
+  Theme: light
+  Uses: .s.light, .head-block, .kicker, .title, .lead, .whys/.why (3-up) — or .pains/.pain (4-up),
+        .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, optional lead, each reason (h3 + p). Swap .whys/.why → .pains/.pain for 4-up.
+  Notes: .whys is a 3-column grid; .pains is a 4-column grid (use for pain points / drawbacks). Each
+         cell carries a red top border. Cells reveal via .cascade.
+-->
+<section data-label="Why It Works" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Kicker</p>
+    <h2 class="title anim">Three reasons it holds up</h2>
+  </div>
+  <div class="whys cascade" style="--cascade-start:3s; --cascade-step:4s">
+    <div class="why"><h3>First reason</h3><p>One or two sentences backing it up.</p></div>
+    <div class="why"><h3>Second reason</h3><p>One or two sentences backing it up.</p></div>
+    <div class="why"><h3>Third reason</h3><p>One or two sentences backing it up.</p></div>
+  </div>
+</section>

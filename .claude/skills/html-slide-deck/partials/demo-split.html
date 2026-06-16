@@ -1,0 +1,31 @@
+<!--
+  PARTIAL: demo-split
+  Purpose: Live-demo slide — a 40% feature column beside a big demo media frame.
+  Theme: light
+  Uses: .s.light.demo, .demo-left, .demo-badge, .title, .watch (.wl + .featlist), .demo-right,
+        media-slot, .anim/.anim2
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: demo title, the feature bullets (.featlist), the media clip.
+  Notes: .featlist auto-cascades its bullets on slide arrival — they are NOT manual build beats, so →
+         advances straight to the next slide while the bullets stagger in by themselves. The media-slot
+         ships empty; drop a 16:9 MP4/GIF, or set its src/gallery. Override the slot's height/aspect-ratio
+         inline to match your recording (default 760px tall).
+-->
+<section data-label="Demo: Tool Name" class="s light demo">
+  <div class="demo-left">
+    <span class="demo-badge anim">DEMO</span>
+    <h2 class="title anim">Tool Name</h2>
+    <div class="watch anim2">
+      <div class="wl">Features</div>
+      <ul class="featlist">
+        <li>First thing the audience should watch for</li>
+        <li>Second thing the audience should watch for</li>
+        <li>Third thing the audience should watch for</li>
+      </ul>
+    </div>
+  </div>
+  <div class="demo-right">
+    <media-slot id="demo-tool" shape="rounded" radius="14" placeholder="Drop a 16:9 demo clip (MP4) or GIF of the tool"></media-slot>
+  </div>
+</section>

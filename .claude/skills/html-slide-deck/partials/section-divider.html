@@ -1,0 +1,19 @@
+<!--
+  PARTIAL: section-divider
+  Purpose: Numbered act break — ghost big number behind a kicker, heading, grow-x underbar, and blurb.
+  Theme: navy
+  Uses: .s.navy.divider, .bignum, .kicker, .ubar.grow-x, .desc, .anim/.anim2/.anim3
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: section number (.bignum), kicker, heading, desc.
+  Notes: The .bignum is decorative — keep it 1–2 digits. The .ubar uses .grow-x (scales in from
+         left; resting state is full width). Heading goes in <h2> with no .title class (divider
+         h2 is its own larger scale).
+-->
+<section data-label="Section Title" class="s navy divider">
+  <div class="bignum anim">01</div>
+  <p class="kicker anim">Section Kicker</p>
+  <h2 class="anim2">Section Heading</h2>
+  <div class="ubar grow-x"></div>
+  <p class="desc anim3">One or two lines previewing what this section covers.</p>
+</section>
