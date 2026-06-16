@@ -252,6 +252,9 @@
   .rcard .rqr .qbox { width: 132px; height: 132px; background: #fff; border: 1px solid var(--border-1); border-radius: 12px; padding: 9px; box-sizing: border-box; flex: none; }
   .rcard .rqr .qbox image-slot { width: 100%; height: 100%; }
   .rcard .rqr .qcap { font-size: 24px; font-weight: 600; color: var(--ot-blue); line-height: 1.15; }
+  /* step 4 has no QR — a faint, angled launch icon balances the card instead */
+  .rcard .rlaunch { margin-top: auto; padding-top: 24px; display: flex; justify-content: flex-end; }
+  .rcard .rlaunch svg { width: 132px; height: 132px; color: var(--ot-blue); opacity: 0.16; transform: rotate(-18deg); }
 
   /* spartan architecture — the portrait tablet sets the right column's
      width; the text column takes everything left over so it can breathe */
@@ -997,14 +1000,15 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
     <div class="recipe4">
       <div class="rcard anim3">
         <div class="rnum">1</div>
-        <h3 class="rh">Write a DESIGN.md</h3>
-        <p class="rp">Colors, fonts, and components: the house style in one file.</p>
-        <div class="rqr"><div class="qbox"><image-slot id="qr-design" shape="rect" src="media/19-qr-brand-skill.png" placeholder="QR"></image-slot></div><span class="qcap">OPS Tech Brand SKILL &amp; DESIGN.md</span></div>
+        <h3 class="rh">Establish your brand</h3>
+        <p class="rp">Copy the DESIGN.md and SKILL templates.</p>
+        <div class="rqr"><div class="qbox"><image-slot id="qr-design" shape="rect" src="media/19-qr-brand-doc.png" placeholder="QR"></image-slot></div><span class="qcap">OPS Tech Brand SKILL &amp; DESIGN.md</span></div>
       </div>
       <div class="rcard anim3">
         <div class="rnum">2</div>
-        <h3 class="rh">Start with the sheet</h3>
-        <p class="rp">Tabs and columns are your database. Set them up before you build.</p>
+        <h3 class="rh">Choose the sheet</h3>
+        <p class="rp">Pick a sheet you already share often that needs a better front door.</p>
+        <div class="rqr"><div class="qbox"><image-slot id="qr-schema" shape="rect" src="media/19-qr-schema-gem.png" placeholder="QR"></image-slot></div><span class="qcap">Gemini Gem: map your sheet's schema</span></div>
       </div>
       <div class="rcard anim3">
         <div class="rnum">3</div>
@@ -1016,6 +1020,14 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
         <div class="rnum">4</div>
         <h3 class="rh">Deploy as a web app</h3>
         <p class="rp">Share it like any Google link. Done.</p>
+        <div class="rlaunch" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+            <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+          </svg>
+        </div>
       </div>
     </div>
     <div class="footmark anim3" style="margin-top:56px;"><div class="rule"></div><span>The sheet, the script, and the app all live in your Workspace, so the tool survives staff turnover.</span></div>
@@ -1110,7 +1122,7 @@ Now you explain what you need with a screenshot of your sheet. If the first vers
   "This part is the least technical and it might matter most. We wrote our design down once, in a DESIGN dot md the AI reads before it builds anything. So a dozen tools, made by different people for different jobs, feel like one product. New tool, familiar feel. That consistency is what turns a pile of scripts into something a district actually adopts. [Tap the media, then arrow to the style guide the DESIGN.md produced.]",
   "Quick before-and-after to make this concrete. Remember that observation portal? On the left is an early build, before the DESIGN dot md. On the right is the same app, the same data, after the AI read that one file. No redesign, no designer, no new code for the look. And the prompt in the middle is the entire ask: here's the app, here's our DESIGN dot md, restyle it to match and don't touch the logic. One document taught it our colors, our type, and our components, and it just put them on. Write the house style down once, and everything you build next shows up already wearing it. [The middle shows the actual prompt; tap either screenshot to zoom in.]",
   "Now the make-and-take. I want you to leave with something you can do, not just something that was fun to watch: the recipe, a dozen starter ideas, and what makes this district-ready.",
-  "The recipe is the same four steps every time. Write a DESIGN dot md once so everything matches your house style. Then start with the sheet: tabs and columns are your database. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
+  "The recipe is the same four steps every time. First, establish your brand: copy our DESIGN dot md and SKILL templates so everything matches your house style. Then choose the sheet, and not a brand-new one. Pick one you already edit or share all the time that could use a better front door; its tabs and columns are your database. Describe the tool to the AI and it writes the app that reads and writes your sheet. Deploy as a web app and share the link. Notice that at no point did you touch the code.",
   "If you want somewhere to start, steal one of these. And half of them aren't hypothetical. The book-review library, the academics dashboard, the media-bias tracker, the agenda hub: those are running in Orono right now, and the code is already on our GitHub, ready to copy. Honestly, the real prompt is simpler than any of them: think of a spreadsheet you already babysit. If it lives in a sheet, it can be an app.",
   "Before you roll anything out, a few things that make this district-safe. You pick the access level, from just you to anyone with the link. A Roles tab lets students, teachers, and admins each see only their part of the app. The data never leaves your own Workspace or your existing district agreement.",
   "Everything I showed you today is open. The repos are at github dot com slash OPS-PIvers. To start, copy one of our DESIGN dot md files, open a sheet, and describe what you want. Scan the code and it's all on your phone before you leave the room. I would genuinely love to see what you build, so come find me. You have the data, you have the tools, and the spreadsheet is already sitting there. Give it a front door, and make something meaningful. Thank you."
