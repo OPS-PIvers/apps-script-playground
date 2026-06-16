@@ -1,0 +1,21 @@
+<!--
+  PARTIAL: head-block
+  Purpose: The standard content-slide header (kicker + title + lead). Drop body content under it.
+  Theme: light (default) — works on navy too.
+  Uses: .s.light, .head-block, .kicker, .title, .lead, .anim/.anim2, .spacer, .footmark
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, lead, the body region, optional footmark punchline.
+  Notes: This is the reusable top block every content archetype starts from. Keep titles centered
+         only if you mean it — body stays left-aligned. The lead is optional; drop it for a tighter head.
+-->
+<section data-label="Section" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Kicker</p>
+    <h2 class="title anim">A clear, declarative slide title</h2>
+    <p class="lead anim2">One or two sentences of context that the body below will expand on.</p>
+  </div>
+  <!-- Body region: drop a grid, list, table, media, or any Tier-2/3 block here. -->
+  <div class="spacer"></div>
+  <div class="footmark anim3"><div class="rule"></div><span>Optional one-line punchline that echoes the spoken close.</span></div>
+</section>

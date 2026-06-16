@@ -1,0 +1,38 @@
+<!--
+  PARTIAL: flow-diagram
+  Purpose: A left-to-right pipeline of nodes joined by arrows (e.g. data → logic → front door).
+  Theme: light
+  Uses: .s.light, .head-block, .kicker, .title, .flow, .node (+ .sheet / .browser variants),
+        .nlabel/.nname/.nmeta, .flowarrow (.glyph + optional .alabel), .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each node (label/name/meta), arrow glyphs/labels.
+  Notes: Nodes + arrows live in one .cascade so they land in flow order; arrows arrive along the
+         flow direction. .node.sheet (green = the data source) and .node.browser (deeper blue =
+         the front door) read a 3-step sequence as a journey. Add .alabel to a .flowarrow to label the step.
+-->
+<section data-label="The Flow" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Kicker</p>
+    <h2 class="title anim">How the pieces connect</h2>
+  </div>
+  <div class="flow cascade" style="--cascade-start:2s; --cascade-step:2.5s">
+    <div class="node sheet">
+      <div class="nlabel">The data</div>
+      <div class="nname">Google Sheet</div>
+      <div class="nmeta" style="font-family: Lexend">Tabs, rows, columns</div>
+    </div>
+    <div class="flowarrow"><div class="glyph">→</div></div>
+    <div class="node">
+      <div class="nlabel">The brains</div>
+      <div class="nname">Apps Script</div>
+      <div class="nmeta" style="font-family: Lexend">Your logic</div>
+    </div>
+    <div class="flowarrow"><div class="glyph">→</div></div>
+    <div class="node browser">
+      <div class="nlabel">Front door</div>
+      <div class="nname">The browser</div>
+      <div class="nmeta" style="font-family: Lexend">What people see</div>
+    </div>
+  </div>
+</section>

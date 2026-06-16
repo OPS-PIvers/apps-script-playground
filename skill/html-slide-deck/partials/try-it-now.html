@@ -1,0 +1,30 @@
+<!--
+  PARTIAL: try-it-now
+  Purpose: A hands-on "your turn" slide — a timed activity with clear instructions and a QR to the resource.
+  Theme: navy
+  Uses: .s.navy.tryit (NEW §9), .ti-badge, .title, .ti-body, .ti-steps/.ti-step, .ti-side (.ti-timer +
+        .qrwrap + image-slot), .anim/.anim2, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: activity title, intro, the numbered mini-steps, the timer text, the QR + caption.
+  Notes: A "do this now" beat for workshops — a red TRY IT badge, short numbered steps, a timer chip, and
+         a QR to the starter resource. Steps reveal via .cascade. The timer is just text (e.g. "5 min");
+         the engine doesn't run a clock. Drop the QR image on the image-slot.
+-->
+<section data-label="Try it now" class="s navy tryit">
+  <div class="ti-main">
+    <span class="ti-badge anim">TRY IT</span>
+    <h2 class="title anim">Your turn — map a sheet</h2>
+    <p class="ti-body anim2">Open a spreadsheet you already use and describe its shape to the AI.</p>
+    <ol class="ti-steps cascade" style="--cascade-start:2s; --cascade-step:1s">
+      <li class="ti-step">Pick a sheet with tabs you know well.</li>
+      <li class="ti-step">Screenshot a few rows of it.</li>
+      <li class="ti-step">Ask the AI: &ldquo;What columns and roles do you see?&rdquo;</li>
+    </ol>
+  </div>
+  <div class="ti-side anim2">
+    <div class="ti-timer">5 min</div>
+    <div class="qrwrap" style="width:300px; height:300px;"><image-slot id="tryit-qr" shape="rect" placeholder="Drop the resource QR"></image-slot></div>
+    <p class="qrcap">Starter prompts</p>
+  </div>
+</section>

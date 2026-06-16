@@ -1,0 +1,23 @@
+<!--
+  PARTIAL: full-bleed
+  Purpose: One dominant image/clip filling the slide, with a caption overlay.
+  Theme: navy (the slide chrome behind the media is navy; the overlay text is white)
+  Uses: .s.navy.fullbleed (NEW §9), .fb-media + media-slot (fit="cover"), .fb-overlay (.fb-kicker +
+        .fb-title), .anim/.anim2
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: the media, the overlay kicker + title.
+  Notes: The media-slot fills the slide edge-to-edge (fit="cover"). A bottom gradient scrim keeps the
+         overlay text legible over any image. Keep the overlay short — it's a caption, not a paragraph.
+         IMPORTANT: per the engine rules, do NOT add position/inset/width/height to the <section>; the
+         .fb-media wrapper handles the fill within the slot the engine gives the section.
+-->
+<section data-label="Full bleed" class="s navy fullbleed">
+  <div class="fb-media">
+    <media-slot id="fb-image" shape="rect" fit="cover" placeholder="Drop a full-bleed image or clip (fills the slide)"></media-slot>
+  </div>
+  <div class="fb-overlay">
+    <p class="fb-kicker anim">Kicker</p>
+    <h2 class="fb-title anim2">A short caption over the image.</h2>
+  </div>
+</section>

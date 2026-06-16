@@ -1,0 +1,51 @@
+<!--
+  PARTIAL: live-poll
+  Purpose: A live audience poll on a navy slide — scan-to-vote QR + results that update on screen.
+  Theme: navy
+  Uses: .s.navy, .head-block (optional), the live-poll custom element (_framework/live-poll.js),
+        .tally (motion.css, used internally by the component)
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: poll-id (keep STABLE — it namespaces responses), type, question, the option items,
+        interval, qr-src; for scale: min/max/min-label/max-label.
+
+  LOAD ORDER (required) — in the deck's HEAD, AFTER colors/slides/motion, add these two scripts in
+  THIS order (note: do not nest these as comments — they are real script tags in the deck):
+        1. _brand/poll-config.js     sets window.OPS_POLL_ENDPOINT (do not commit a private endpoint)
+        2. _framework/live-poll.js   defines the live-poll element
+     The component only polls the backend while its slide is [data-deck-active], and renders a static
+     (zeroed / last-known) state for print / export / reduced-motion, so thumbnails never go blank.
+
+  THE FOUR TYPES:
+        type="choice"     list options as child li elements (shown below). Bars tally each option.
+        type="open"       free-text responses stream in as cards. (No options needed.)
+        type="scale"      a 1-N rating; set min / max / min-label / max-label.
+        type="wordcloud"  words size by frequency. (No options needed.)
+
+  Style hooks the component reads (sensible navy defaults already match this slide):
+        --lp-fg  --lp-muted  --lp-track  --lp-card
+  The reset-token attribute is opt-in and should be pasted at runtime, never committed.
+-->
+<section data-label="Live poll" class="s navy">
+  <div class="head-block">
+    <p class="kicker anim">Your turn</p>
+  </div>
+  <div style="flex:1 1 auto; min-height:0; display:flex;">
+    <live-poll poll-id="warmup-tool-first" type="choice"
+               question="Which tool would help your building most?"
+               interval="3">
+      <li>Attendance / sign-in</li>
+      <li>Agenda sync</li>
+      <li>Peer evaluation</li>
+      <li>Something else</li>
+    </live-poll>
+  </div>
+</section>
+
+<!--
+  OTHER TYPES (swap the live-poll element above for one of these):
+    scale:     poll-id="confidence" type="scale" question="How ready do you feel to build one?"
+               min="1" max="5" min-label="Not yet" max-label="Let's go"   (no option items)
+    open:      poll-id="takeaway" type="open" question="One thing you'll try first?"   (no option items)
+    wordcloud: poll-id="oneword" type="wordcloud" question="This session in one word?"  (no option items)
+-->

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vote · Orono Technology</title>
+<link rel="icon" type="image/png" href="../assets/orono-torch.png">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  /* A phone-first voting page. Light theme, OPS brand. Self-contained — it only
+     needs colors_and_type.css and (optionally) ../poll-config.js for the
+     endpoint default. */
+  body { background: var(--bg-2); display: flex; min-height: 100dvh; margin: 0;
+         align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
+  .card { background: var(--bg-1); border-radius: var(--r-xl); box-shadow: var(--shadow-2);
+          width: 100%; max-width: 520px; padding: 32px 28px 36px; box-sizing: border-box; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .brand img { height: 34px; width: auto; }
+  .brand span { font-family: var(--font-display); font-weight: 700; font-size: var(--fs-small);
+                letter-spacing: var(--tr-caps); text-transform: uppercase; color: var(--ot-blue); }
+  h1 { font-family: var(--font-display); font-size: 1.6rem; line-height: 1.25; color: var(--ot-blue-dark);
+       margin: 0 0 24px; }
+  .opt { display: block; width: 100%; text-align: left; font: inherit; font-size: 1.15rem; font-weight: 600;
+         color: var(--ot-blue-dark); background: var(--bg-1); border: 2px solid var(--border-2);
+         border-radius: var(--r-lg); padding: 18px 20px; margin-bottom: 12px; cursor: pointer; }
+  .opt:hover { border-color: var(--ot-blue); }
+  .opt:active { transform: scale(0.99); }
+  textarea, input[type=text] { width: 100%; font: inherit; font-size: 1.15rem; color: var(--fg-2);
+         border: 2px solid var(--border-2); border-radius: var(--r-lg); padding: 14px 16px; box-sizing: border-box; }
+  textarea:focus, input:focus { outline: none; border-color: var(--ot-blue); box-shadow: var(--shadow-focus); }
+  .scale { display: flex; gap: 10px; justify-content: space-between; margin: 8px 0 12px; }
+  .scale button { flex: 1; font: inherit; font-size: 1.3rem; font-weight: 700; color: var(--ot-blue-dark);
+         background: var(--bg-1); border: 2px solid var(--border-2); border-radius: var(--r-lg);
+         padding: 16px 0; cursor: pointer; }
+  .scale button:hover { border-color: var(--ot-blue); }
+  .scale-labels { display: flex; justify-content: space-between; font-size: var(--fs-small); color: var(--fg-3); }
+  .send { width: 100%; font: inherit; font-size: 1.15rem; font-weight: 700; color: #fff;
+          background: var(--ot-blue); border: 0; border-radius: var(--r-lg); padding: 16px; margin-top: 16px;
+          cursor: pointer; }
+  .send:hover { background: var(--ot-blue-light); }
+  .send:disabled { background: var(--ot-gray-light); cursor: default; }
+  .done { text-align: center; padding: 24px 0; }
+  .done .check { font-size: 3rem; color: var(--success-fg); }
+  .done p { font-size: 1.2rem; color: var(--fg-2); margin: 12px 0 0; }
+  .err { color: var(--danger); font-size: var(--fs-small); margin-top: 12px; min-height: 1.2em; }
+  .muted { color: var(--fg-3); font-size: var(--fs-small); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand"><img src="../assets/orono-torch.png" alt=""><span>Orono Technology</span></div>
+  <div id="app"><h1>Loading…</h1></div>
+  <div class="err" id="err"></div>
+</div>
+
+<!-- Endpoint default (overridable by ?endpoint= in the URL). -->
+<script src="../poll-config.js"></script>
+<script>
+(function () {
+  var qs = new URLSearchParams(location.search);
+  var pollId = qs.get('poll') || '';
+  var type = (qs.get('type') || 'choice').toLowerCase();
+  var endpoint = qs.get('endpoint') || (window.OPS_POLL_ENDPOINT || '');
+  var question = qs.get('q') || 'Cast your vote';
+  var app = document.getElementById('app');
+  var errEl = document.getElementById('err');
+
+  // Anonymous per-device id + soft dedupe (discourages double-votes; not auth).
+  function sid() {
+    var k = 'ops-poll-sid';
+    var v = localStorage.getItem(k);
+    if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem(k, v); }
+    return v;
+  }
+  var votedKey = 'ops-poll-voted:' + pollId;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function thanks() {
+    app.innerHTML = '<div class="done"><div class="check">✓</div><p>Thanks — your response is in.</p></div>';
+  }
+
+  function send(value) {
+    errEl.textContent = '';
+    if (!endpoint) { errEl.textContent = 'No poll endpoint configured.'; return; }
+    var payload = JSON.stringify({ pollId: pollId, type: type, value: value, sessionId: sid() });
+    // text/plain → "simple" request, no CORS preflight (Apps Script can't answer one).
+    fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: payload })
+      .then(function (r) { return r.json().catch(function () { return { ok: true }; }); })
+      .then(function () { localStorage.setItem(votedKey, '1'); thanks(); })
+      .catch(function () { errEl.textContent = 'Could not submit — check your connection and try again.'; });
+  }
+
+  function renderChoice() {
+    var opts = (qs.get('opts') || '').split('|').filter(Boolean);
+    var html = '<h1>' + esc(question) + '</h1>';
+    if (!opts.length) { app.innerHTML = html + '<p class="muted">No options provided.</p>'; return; }
+    app.innerHTML = html + opts.map(function (o) {
+      return '<button class="opt" data-v="' + esc(o) + '">' + esc(o) + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(app.querySelectorAll('.opt'), function (b) {
+      b.addEventListener('click', function () { send(b.getAttribute('data-v')); });
+    });
+  }
+
+  function renderOpen() {
+    app.innerHTML = '<h1>' + esc(question) + '</h1>' +
+      '<textarea id="txt" rows="4" maxlength="300" placeholder="Type your answer…"></textarea>' +
+      '<button class="send" id="go">Submit</button>';
+    document.getElementById('go').addEventListener('click', function () {
+      var v = document.getElementById('txt').value.trim();
+      if (!v) { errEl.textContent = 'Type something first.'; return; }
+      send(v);
+    });
+  }
+
+  function renderWordcloud() {
+    app.innerHTML = '<h1>' + esc(question) + '</h1>' +
+      '<input type="text" id="txt" maxlength="60" placeholder="One or a few words…">' +
+      '<button class="send" id="go">Submit</button>';
+    document.getElementById('go').addEventListener('click', function () {
+      var v = document.getElementById('txt').value.trim();
+      if (!v) { errEl.textContent = 'Type a word first.'; return; }
+      send(v);
+    });
+  }
+
+  function renderScale() {
+    var min = parseInt(qs.get('min') || '1', 10), max = parseInt(qs.get('max') || '5', 10);
+    var lo = qs.get('minLabel') || '', hi = qs.get('maxLabel') || '';
+    var btns = '';
+    for (var v = min; v <= max; v++) btns += '<button data-v="' + v + '">' + v + '</button>';
+    app.innerHTML = '<h1>' + esc(question) + '</h1><div class="scale">' + btns + '</div>' +
+      (lo || hi ? '<div class="scale-labels"><span>' + esc(lo) + '</span><span>' + esc(hi) + '</span></div>' : '');
+    Array.prototype.forEach.call(app.querySelectorAll('.scale button'), function (b) {
+      b.addEventListener('click', function () { send(b.getAttribute('data-v')); });
+    });
+  }
+
+  if (!pollId) { app.innerHTML = '<h1>Invalid poll link.</h1>'; return; }
+  if (localStorage.getItem(votedKey)) { thanks(); return; }
+
+  if (type === 'open') renderOpen();
+  else if (type === 'wordcloud') renderWordcloud();
+  else if (type === 'scale') renderScale();
+  else renderChoice();
+})();
+</script>
+</body>
+</html>

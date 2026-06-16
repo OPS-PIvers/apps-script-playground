@@ -1,0 +1,33 @@
+<!--
+  PARTIAL: architecture
+  Purpose: "How it's built" — a labelled stack of layers beside a device/media view.
+  Theme: light
+  Uses: .s.light.arch, .arch-left/.arch-right, .kicker, .title, .body, .stacklist, .stackrow
+        (.sr-h + .sr-p), .devicepair/.device/.tablet/.screen/.devcap, media-slot, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, intro line, each stack row (heading + meta), the device media.
+  Notes: .stackrow .sr-p uses the mono font for the technical detail. Rows reveal via .cascade.
+         The right column is a device frame — set the .tablet width and .screen aspect-ratio to your media.
+-->
+<section data-label="Inside the Tool" class="s light arch">
+  <div class="arch-left">
+    <p class="kicker anim">How it's built</p>
+    <h2 class="title anim" style="font-size:54px;">Inside the Tool</h2>
+    <p class="body anim2" style="margin-top:12px; color:var(--ot-gray-dark);">One sentence on the architecture and why it scales.</p>
+    <div class="stacklist cascade" style="--cascade-start:3s; --cascade-step:3.5s">
+      <div class="stackrow"><p class="sr-h">Web app</p><p class="sr-p">Apps Script serves a single-page UI</p></div>
+      <div class="stackrow"><p class="sr-h">Google Sheets — the database</p><p class="sr-p">Tabs hold the rows, settings, and records</p></div>
+      <div class="stackrow"><p class="sr-h">Google Drive</p><p class="sr-p">Files &amp; exports, private until shared</p></div>
+      <div class="stackrow"><p class="sr-h">Access control</p><p class="sr-p">Roles each see only their slice</p></div>
+    </div>
+  </div>
+  <div class="arch-right">
+    <div class="devicepair">
+      <div class="device">
+        <div class="tablet" style="width:820px;"><div class="screen" style="aspect-ratio:1/1;"><media-slot id="arch-media" shape="rect" fit="contain" placeholder="Drop a clip or screenshot of the app"></media-slot></div></div>
+        <span class="devcap">The app</span>
+      </div>
+    </div>
+  </div>
+</section>

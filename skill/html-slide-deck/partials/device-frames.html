@@ -1,0 +1,39 @@
+<!--
+  PARTIAL: device-frames
+  Purpose: Show a tool on real devices — a tablet and a phone side-by-side, each captioned.
+  Theme: light
+  Uses: .s.light.demo, .demo-left/.demo-right, .devicepair, .device, .tablet, .phone, .screen,
+        .devcap, media-slot, .featlist
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: title, feature bullets, the two device captions, both media clips.
+  Notes: The .screen clips media to the device's rounded corners. Set the tablet's width inline and
+         its .screen aspect-ratio to match your recording (e.g. style="aspect-ratio:4/3"). The phone
+         is a fixed portrait frame. Use one device or two — drop the .phone block for tablet-only.
+-->
+<section data-label="Devices: Tool Name" class="s light demo">
+  <div class="demo-left">
+    <span class="demo-badge anim">DEMO</span>
+    <h2 class="title anim">Tool Name</h2>
+    <div class="watch anim2">
+      <div class="wl">Features</div>
+      <ul class="featlist">
+        <li>Runs on whatever device is in the room</li>
+        <li>Staff view on the tablet, student view on the phone</li>
+        <li>Everything syncs to one Google Sheet</li>
+      </ul>
+    </div>
+  </div>
+  <div class="demo-right">
+    <div class="devicepair">
+      <div class="device">
+        <div class="tablet" style="width:653px;"><div class="screen" style="aspect-ratio:4/3;"><media-slot id="dev-tablet" shape="rect" fit="contain" placeholder="Drop a tablet / desktop clip or screenshot"></media-slot></div></div>
+        <span class="devcap">Staff view</span>
+      </div>
+      <div class="device">
+        <div class="phone"><div class="screen"><media-slot id="dev-phone" shape="rect" fit="contain" placeholder="Drop a phone clip / screenshot"></media-slot></div></div>
+        <span class="devcap">Student view</span>
+      </div>
+    </div>
+  </div>
+</section>

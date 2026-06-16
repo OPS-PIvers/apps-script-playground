@@ -1,0 +1,24 @@
+<!--
+  PARTIAL: checklist
+  Purpose: A "before you ship / make sure you've got" checklist with ticked items.
+  Theme: light (default) — works on navy too.
+  Uses: .s.light, .head-block, .kicker, .title, .checklist/.check-item (NEW §9), .ck-box, .ck-text
+        (.ck-h + .ck-d), .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each item (heading + optional detail).
+  Notes: Items reveal one-by-one via .cascade, each with a green check tile. Add class "todo" to a
+         .check-item for an empty (unchecked) box — useful for "you still need to…" lists.
+-->
+<section data-label="Checklist" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Before you ship</p>
+    <h2 class="title anim">Make sure you've got</h2>
+  </div>
+  <ul class="checklist cascade" style="--cascade-start:2.5s; --cascade-step:1.1s">
+    <li class="check-item"><span class="ck-box"></span><div class="ck-text"><span class="ck-h">First item</span><span class="ck-d">Why it matters, in one line.</span></div></li>
+    <li class="check-item"><span class="ck-box"></span><div class="ck-text"><span class="ck-h">Second item</span><span class="ck-d">Why it matters, in one line.</span></div></li>
+    <li class="check-item"><span class="ck-box"></span><div class="ck-text"><span class="ck-h">Third item</span><span class="ck-d">Why it matters, in one line.</span></div></li>
+    <li class="check-item"><span class="ck-box"></span><div class="ck-text"><span class="ck-h">Fourth item</span><span class="ck-d">Why it matters, in one line.</span></div></li>
+  </ul>
+</section>

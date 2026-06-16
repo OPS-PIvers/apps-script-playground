@@ -1,0 +1,25 @@
+<!--
+  PARTIAL: recipe-steps
+  Purpose: A vertical numbered list of steps — the "here's how, one beat at a time" slide.
+  Theme: light
+  Uses: .s.light, .head-block, .kicker, .title, .recipe, .step (.num + .stext with <b>/<span>),
+        .footmark, .anim/.anim3, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each step (number + text; bold the action, gray the detail), footmark.
+  Notes: For four side-by-side numbered cards (one per build beat, optional QR) use recipe-cards.html.
+         Here the .recipe column is vertically centered and the steps reveal via .cascade. In .stext,
+         <b> is blue-dark, <span> is muted gray.
+-->
+<section data-label="The steps" class="s light" style="justify-content:center">
+  <div class="head-block">
+    <p class="kicker anim">The repeatable recipe</p>
+    <h2 class="title anim">How to get started</h2>
+  </div>
+  <div class="recipe cascade" style="--cascade-start:3s; --cascade-step:3s">
+    <div class="step"><div class="num">1</div><div class="stext"><b>First step.</b> <span>One line of detail.</span></div></div>
+    <div class="step"><div class="num">2</div><div class="stext"><b>Second step.</b> <span>One line of detail.</span></div></div>
+    <div class="step"><div class="num">3</div><div class="stext"><b>Third step.</b> <span>One line of detail.</span></div></div>
+    <div class="step"><div class="num">4</div><div class="stext"><b>Fourth step.</b> <span>One line of detail.</span></div></div>
+  </div>
+</section>

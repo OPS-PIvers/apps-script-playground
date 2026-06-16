@@ -1,0 +1,24 @@
+<!--
+  PARTIAL: prerequisites
+  Purpose: "What you need before we start" — accounts, access, and tools to have ready.
+  Theme: light (default) — works on navy too.
+  Uses: .s.light, .head-block, .kicker, .title, .prereqs/.prereq (NEW §9), .pr-icon, .pr-text
+        (.pr-h + .pr-d), .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each prerequisite (heading + detail).
+  Notes: Each item carries a red bullet tile (signalling "have this ready"). Items reveal via .cascade.
+         Use early in a hands-on session. Same row shape as checklist.html but framed as "bring these",
+         not "did you do these".
+-->
+<section data-label="Prerequisites" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Before we start</p>
+    <h2 class="title anim">What you'll need</h2>
+  </div>
+  <ul class="prereqs cascade" style="--cascade-start:2.5s; --cascade-step:1.1s">
+    <li class="prereq"><span class="pr-icon"></span><div class="pr-text"><span class="pr-h">A Google Workspace account</span><span class="pr-d">Your district sign-in is enough.</span></div></li>
+    <li class="prereq"><span class="pr-icon"></span><div class="pr-text"><span class="pr-h">A spreadsheet you already use</span><span class="pr-d">One you share or edit often.</span></div></li>
+    <li class="prereq"><span class="pr-icon"></span><div class="pr-text"><span class="pr-h">An AI assistant</span><span class="pr-d">Gemini, Claude, or ChatGPT — any will do.</span></div></li>
+  </ul>
+</section>

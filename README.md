@@ -1,36 +1,61 @@
-# The Apps Script Playground
+# Orono Technology · Presentations
 
-Slide deck for the **MN Thought Leaders Summit · 2026** session by the Orono Public Schools Technology Department.
+A monorepo of OPS Tech HTML slide decks built on the **`<deck-stage>`** engine.
+Every presentation is its own folder; the engine and brand are shared at the
+root. No build step, no framework, no server — static files all the way down.
 
-**Core message:** anybody can build highly functional web apps now — with a Google Sheet behind them and AI beside you.
+**Live:** https://ops-pivers.github.io/apps-script-playground/ (landing page)
 
-## View the deck
-
-Live: **https://ops-pivers.github.io/apps-script-playground/**
-
-Or serve it locally (the deck loads media via `fetch`, so open it over HTTP, not `file://`):
+## Layout
 
 ```
-python -m http.server 8000
-# then visit http://localhost:8000/
+index.html            ← landing page; one card per deck (DECKS array)
+_framework/           ← the <deck-stage> engine (shared, verbatim)
+  deck-stage.js  media-slot.js  image-slot.js  media-lightbox.js  live-poll.js
+_brand/               ← OPS Tech brand layer (shared)
+  colors_and_type.css   design tokens (colors, type, spacing)
+  slides.css            shared slide archetypes + the animation contract
+  motion.css  MOTION.md  meaningful-motion vocabulary + intensity knob
+  poll-config.js        the one live-poll endpoint URL (blank until deployed)
+  poll/vote.html        brand-styled voting page
+  assets/               logos + torch marks
+<deck-slug>/          ← one folder per deck: index.html + media/
+poll-backend/         ← Apps Script source for live polls (NOT served; deploy once)
+skill/html-slide-deck/ ← the skill that builds decks (SKILL.md + partials/structures/audiences)
 ```
 
-## Presenting
+## Decks
 
-- **→ / ←** advance and rewind slides; the left rail jumps anywhere.
-- Demo clips autoplay muted and loop. Click any filled media frame to open it large in a lightbox (Esc closes).
-- Speaker notes are embedded in the HTML (`#speaker-notes`) and used by the presenter view in `deck-stage.js`.
+- **[apps-script-playground-mn-2026/](apps-script-playground-mn-2026/)** — *The
+  Apps Script Playground* (MN Thought Leaders Summit 2026). The reference deck:
+  anybody can build highly functional web apps now, with a Google Sheet behind
+  them and AI beside you.
 
-## How it's put together
+## View / present a deck
 
-| File | Role |
-|---|---|
-| `The Apps Script Playground.html` | The deck — 24 slides authored at 1920×1080 |
-| `colors_and_type.css` | Orono Technology design tokens (colors, type, spacing) |
-| `deck-stage.js` | `<deck-stage>` web component — navigation, rail, presenter view |
-| `media-slot.js` / `image-slot.js` | Drop-in media placeholders; `src` attributes point at `media/` so the deck travels with its demos |
-| `media-lightbox.js` | Click-to-enlarge modal for any filled media slot |
-| `media/` | Demo recordings (H.264 MP4) and QR codes |
-| `assets/` | Orono Technology logos and torch marks |
+Decks load media via `fetch`, so serve over HTTP (not `file://`):
 
-Built with Google Apps Script energy: no build step, no framework, no server — static files all the way down.
+```
+npx serve .          # or: python -m http.server 8000
+# then open http://localhost:<port>/<deck-slug>/
+```
+
+- **→ / ←** advance and rewind; the left rail jumps anywhere; **T** toggles the
+  rail; **A** flips manual ↔ auto-build; **R** resets.
+- Demo clips autoplay muted and loop; click any filled media frame to enlarge it
+  (Esc closes).
+- Print → Save as PDF gives one slide per page.
+- Speaker notes live in `#speaker-notes` in each deck's HTML.
+
+## Building a new deck
+
+Use the **html-slide-deck** skill (`skill/html-slide-deck/`). It composes a
+**structure** (purpose) with an **audience** (who) over the OPS brand, scaffolds
+the deck folder wired to `../_framework` + `../_brand`, and registers it on the
+landing page. See [`skill/html-slide-deck/SKILL.md`](skill/html-slide-deck/SKILL.md).
+
+## Live polls
+
+`<live-poll>` slides need a one-time Google Apps Script backend
+([`poll-backend/README.md`](poll-backend/README.md)) and the endpoint URL pasted
+into `_brand/poll-config.js`. Then any deck can drop in a poll.

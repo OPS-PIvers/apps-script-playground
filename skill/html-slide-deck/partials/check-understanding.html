@@ -1,0 +1,38 @@
+<!--
+  PARTIAL: check-understanding
+  Purpose: A quick comprehension check — a question with answer options, or a live audience poll.
+  Theme: navy
+  Uses: .s.navy.checku (NEW §9), .kicker, .cu-q, .cu-options/.cu-option (.cu-key + .cu-text), .cascade
+        — OR a wrapped <live-poll> (see variant)
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, the question, the answer options (key + text). Or swap the static options for a poll.
+  Notes: TWO modes —
+         (1) STATIC (shown): lettered options the presenter reads/discusses. Add class "correct" to an
+             .cu-option to highlight the answer on the next build beat.
+         (2) LIVE POLL: replace .cu-options with a <live-poll type="choice"> (see commented variant) for a
+             real audience vote. That requires the two scripts loaded in the deck head, in this order:
+               <script src="../_brand/poll-config.js"></script>      (sets window.OPS_POLL_ENDPOINT)
+               <script src="../_framework/live-poll.js"></script>
+             See live-poll.html for the full poll contract and the four types.
+-->
+<section data-label="Check understanding" class="s navy checku">
+  <p class="kicker anim">Quick check</p>
+  <p class="cu-q anim2">Where does the data actually live?</p>
+  <ul class="cu-options cascade" style="--cascade-start:1s; --cascade-step:0.8s">
+    <li class="cu-option"><span class="cu-key">A</span><span class="cu-text">In a new database we have to buy</span></li>
+    <li class="cu-option correct"><span class="cu-key">B</span><span class="cu-text">In a Google Sheet you already own</span></li>
+    <li class="cu-option"><span class="cu-key">C</span><span class="cu-text">On a server we have to rent</span></li>
+  </ul>
+
+  <!-- LIVE-POLL VARIANT — replace .cu-options above with:
+  <div class="cu-poll anim2" style="flex:1 1 auto; min-height:0;">
+    <live-poll poll-id="cu-where-data" type="choice" question="Where does the data live?">
+      <li>A new database</li><li>A Google Sheet you own</li><li>A rented server</li>
+    </live-poll>
+  </div>
+  Load order in the deck head (poll-config BEFORE live-poll):
+    <script src="../_brand/poll-config.js"></script>
+    <script src="../_framework/live-poll.js"></script>
+  -->
+</section>

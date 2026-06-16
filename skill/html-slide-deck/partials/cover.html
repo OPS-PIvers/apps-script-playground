@@ -1,0 +1,21 @@
+<!--
+  PARTIAL: cover
+  Purpose: Opening title slide — wordmark, kicker, display headline, sub, presenter footmark.
+  Theme: navy
+  Uses: .s.navy.cover, .wordmark, .kicker, .sub, .footmark, .anim/.anim2/.anim3, .spacer
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: event/kicker text, headline, sub line, presenter name(s)·role(s)·organization, --punch timing.
+  Notes: On navy ALWAYS use the white-knockout wordmark (orono-technology-logo-white.png) or the
+         white torch — never the blue Primary Logo (its wordmark vanishes into the navy). The
+         torch-bg is a faint decorative watermark; drop it if you want a cleaner cover.
+-->
+<section data-label="Cover" class="s navy cover" style="--punch:8s">
+  <img class="torch-bg" src="../_brand/assets/orono-torch-white-outlined.png" alt="">
+  <img class="wordmark anim" src="../_brand/assets/orono-technology-logo-white.png" alt="Orono Technology">
+  <p class="kicker anim">Event Name · Year</p>
+  <h1 class="anim">Your Headline Goes Here</h1>
+  <p class="sub anim2">One supporting sentence that frames what this talk is about.</p>
+  <div class="spacer"></div>
+  <div class="footmark anim3"><div class="rule"></div><span>Presenter Name · Role &nbsp;·&nbsp; Second Presenter · Role &nbsp;·&nbsp; Organization</span></div>
+</section>

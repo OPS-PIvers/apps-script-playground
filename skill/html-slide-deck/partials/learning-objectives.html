@@ -1,0 +1,24 @@
+<!--
+  PARTIAL: learning-objectives
+  Purpose: "By the end you'll be able to…" — the objectives slide for a PD session.
+  Theme: light (default) — works on navy too.
+  Uses: .s.light, .head-block, .kicker, .title, .objectives/.objective (NEW §9), .ob-icon, .ob-text,
+        .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each objective (one action-verb outcome).
+  Notes: Phrase each as a learner outcome ("Build…", "Explain…", "Deploy…"). Items reveal via .cascade,
+         each with a blue target/check glyph. 3–5 objectives read best. Pairs with recap.html (same shape,
+         past-tense) to bookend a session.
+-->
+<section data-label="Objectives" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">By the end of this session</p>
+    <h2 class="title anim">You'll be able to</h2>
+  </div>
+  <ul class="objectives cascade" style="--cascade-start:2.5s; --cascade-step:1.1s">
+    <li class="objective"><span class="ob-icon">✓</span><span class="ob-text">Explain why a spreadsheet can be the database behind an app.</span></li>
+    <li class="objective"><span class="ob-icon">✓</span><span class="ob-text">Describe a tool you need to an AI and get a working first version.</span></li>
+    <li class="objective"><span class="ob-icon">✓</span><span class="ob-text">Deploy it as a Google web app and share the link.</span></li>
+  </ul>
+</section>

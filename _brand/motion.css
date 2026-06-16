@@ -1,0 +1,146 @@
+/* =============================================================
+   Orono Technology — Motion System (motion.css)
+
+   The "meaningful motion" vocabulary that sits on top of slides.css. Load
+   order in a deck head: colors_and_type.css → slides.css → motion.css.
+
+   ONE CURVE, ONE SCALE
+   --------------------
+   Every reveal in the library shares a single easing curve (--reveal-ease,
+   defined in slides.css) and a small duration set (below). Never invent a
+   per-slide easing — motion that all moves the same way reads as one system.
+
+   THE INVARIANT (non-negotiable — read before adding a class)
+   -----------------------------------------------------------
+   Each class makes its VISIBLE end-state the resting/base style and animates
+   *from* hidden. Only non-active slides pre-hide. Everything is wrapped in
+   @media (prefers-reduced-motion: no-preference) and the :not([noscale]) guard,
+   so print, reduced-motion, html-to-image export (noscale), and rail
+   thumbnails always render the full, finished slide. None of these loop.
+
+   These classes auto-reveal on slide ARRIVAL (like .featlist), not as manual
+   build beats — a chart or stat should animate when its slide appears,
+   independent of the speaker's →/Space build. The base text idiom
+   (.anim/.anim2/.anim3/.cascade/.grow-x) lives in slides.css; reach for it for
+   text, and for these expressive classes when motion carries meaning (a number
+   counting, a bar rising, two halves entering from opposite edges).
+
+   INTENSITY IS AN AUDIENCE KNOB
+   -----------------------------
+   Set data-motion="calm|standard|lively" on the <deck-stage> element (the
+   audience layer chooses it):
+     calm     — fades only; the expressive transforms resolve instantly
+                (briefing, documentation, school-board)
+     standard — the default; the full vocabulary at normal pace (most decks)
+     lively   — the full vocabulary, a touch larger/slower for stage presence
+                (showcase, launch, conference-peers)
+   See MOTION.md for the full contract and which audiences pick which.
+
+   VOCABULARY
+   ----------
+     .count-up      a number ticks to its value      (big-stat / KPI) — JS-paired
+     .grow-bar      a bar rises from its baseline     (chart panel)
+     .draw-line     an SVG path draws in              (chart panel, line series)
+     .slide-in-l    enters from the left edge         (comparison: old way)
+     .slide-in-r    enters from the right edge        (comparison: new way)
+     .draw-timeline a horizontal line draws L→R        (timeline / roadmap)
+     .tally         a bar eases to its result          (<live-poll>)
+   ============================================================= */
+
+:root {
+  /* Reuse --reveal-ease from slides.css. Duration scale for the vocabulary. */
+  --motion-dur-quick: .5s;
+  --motion-dur-base:  .8s;
+  --motion-dur-slow:  1.1s;
+  /* Numeric multiplier the expressive classes scale their durations by; the
+     data-motion attribute resets it. Default = standard. */
+  --motion-scale: 1;
+}
+deck-stage[data-motion="lively"]  { --motion-scale: 1.15; }
+deck-stage[data-motion="calm"]    { --motion-scale: 1; }
+
+/* ───────── count-up ─────────
+   Resting state is the FINAL number (the element's text content). A tiny,
+   reduced-motion-aware counter in the partial ticks it from 0 → target only
+   while the slide is [data-deck-active]; print / reduced-motion / thumbnails
+   show the final value because the text never actually changes at rest.
+   tabular-nums keeps the width stable so the layout doesn't jitter mid-tick. */
+.count-up { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ───────── grow-bar (chart bars) ─────────
+     Rises from the baseline. transform-origin keeps it pinned to the axis. */
+  .grow-bar {
+    transform: none; transform-origin: bottom center;
+    transition: transform calc(var(--motion-dur-base) * var(--motion-scale)) var(--reveal-ease);
+  }
+  deck-stage:not([noscale]) > .s:not([data-deck-active]) .grow-bar { transform: scaleY(0); }
+  /* a row of bars staggers via --i on each bar (author sets it, 0,1,2,…) */
+  deck-stage[data-reveal-mode="auto"] [data-deck-active] .grow-bar {
+    transition-delay: calc(.3s + var(--i, 0) * .12s);
+  }
+
+  /* ───────── draw-line (SVG path) ─────────
+     Put pathLength="1" on the <path> so --len is always 1, then this draws the
+     stroke in. Resting = fully drawn. */
+  .draw-line {
+    stroke-dasharray: var(--len, 1); stroke-dashoffset: 0;
+    transition: stroke-dashoffset calc(var(--motion-dur-slow) * var(--motion-scale)) var(--reveal-ease);
+  }
+  deck-stage:not([noscale]) > .s:not([data-deck-active]) .draw-line { stroke-dashoffset: var(--len, 1); }
+
+  /* ───────── slide-in halves (comparison) ─────────
+     The MOTION is the contrast: old way enters from the left, new way from the
+     right. Resting = settled in place. */
+  .slide-in-l, .slide-in-r {
+    transform: none; opacity: 1;
+    transition: transform calc(var(--motion-dur-base) * var(--motion-scale)) var(--reveal-ease),
+                opacity calc(var(--motion-dur-quick) * var(--motion-scale)) var(--reveal-ease);
+  }
+  deck-stage:not([noscale]) > .s:not([data-deck-active]) .slide-in-l { transform: translateX(-48px); opacity: 0; }
+  deck-stage:not([noscale]) > .s:not([data-deck-active]) .slide-in-r { transform: translateX(48px);  opacity: 0; }
+  deck-stage[data-reveal-mode="auto"] [data-deck-active] .slide-in-r { transition-delay: .25s; }
+
+  /* ───────── draw-timeline (milestones along a line) ─────────
+     The connecting line scales in left→right (resting = full width); put the
+     milestones in a .cascade so they reveal along it. */
+  .draw-timeline {
+    transform: none; transform-origin: left center;
+    transition: transform calc(var(--motion-dur-slow) * var(--motion-scale)) var(--reveal-ease);
+  }
+  deck-stage:not([noscale]) > .s:not([data-deck-active]) .draw-timeline { transform: scaleX(0); }
+
+  /* ───────── tally (<live-poll> bars) ─────────
+     Bars ease to their current result as votes arrive (the component sets the
+     width/height live). Not gated to arrival — it smooths every value change.
+     Reduced-motion jumps straight to the value. */
+  .tally {
+    transition: width calc(var(--motion-dur-quick) * var(--motion-scale)) var(--reveal-ease),
+                height calc(var(--motion-dur-quick) * var(--motion-scale)) var(--reveal-ease),
+                transform calc(var(--motion-dur-quick) * var(--motion-scale)) var(--reveal-ease);
+  }
+}
+
+/* ───────── calm intensity ─────────
+   Strip the expressive transforms (fades-only feel). Content still arrives via
+   the slides.css .anim/.cascade fade; these classes just resolve to their
+   end-state with no transform travel. Kept inside the motion query so
+   reduced-motion is unaffected (it already shows everything). */
+@media (prefers-reduced-motion: no-preference) {
+  deck-stage[data-motion="calm"]:not([noscale]) > .s:not([data-deck-active]) .grow-bar,
+  deck-stage[data-motion="calm"]:not([noscale]) > .s:not([data-deck-active]) .slide-in-l,
+  deck-stage[data-motion="calm"]:not([noscale]) > .s:not([data-deck-active]) .slide-in-r,
+  deck-stage[data-motion="calm"]:not([noscale]) > .s:not([data-deck-active]) .draw-timeline {
+    transform: none;
+  }
+  deck-stage[data-motion="calm"]:not([noscale]) > .s:not([data-deck-active]) .slide-in-l,
+  deck-stage[data-motion="calm"]:not([noscale]) > .s:not([data-deck-active]) .slide-in-r {
+    opacity: 1;
+  }
+  deck-stage[data-motion="calm"]:not([noscale]) > .s:not([data-deck-active]) .draw-line {
+    stroke-dashoffset: 0;
+  }
+  /* calm keeps a gentle fade on stats rather than a hard count; the partial's
+     counter reads this attribute and jumps to the final value. */
+}

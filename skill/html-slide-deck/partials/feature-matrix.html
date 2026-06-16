@@ -1,0 +1,34 @@
+<!--
+  PARTIAL: feature-matrix
+  Purpose: A multi-column compare TABLE — features down the side, options across the top, scored cells.
+  Theme: light
+  Uses: .s.light, .head-block, .kicker, .title, .matrix/.mx-* (NEW §9), .mx-yes/.mx-no/.mx-partial, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, column headers, row labels, each cell (✓ / ✗ / ~ or short text).
+  Notes: Distinct from comparison.html (which is two text columns). This is a real table: highlight your
+         own column with class "mx-own" on its header + cells. Cell states: .mx-yes (green check),
+         .mx-no (muted dash), .mx-partial (red ~). Rows reveal via .cascade (put it on <tbody>).
+-->
+<section data-label="Compare" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">How it stacks up</p>
+    <h2 class="title anim">Side by side</h2>
+  </div>
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th class="mx-rowhead"></th>
+        <th>Option A</th>
+        <th>Option B</th>
+        <th class="mx-own">This approach</th>
+      </tr>
+    </thead>
+    <tbody class="cascade" style="--cascade-start:2.5s; --cascade-step:1s">
+      <tr><th class="mx-rowhead">Cost</th><td>$$$</td><td>$$</td><td class="mx-own">Free</td></tr>
+      <tr><th class="mx-rowhead">Data stays with you</th><td class="mx-no">—</td><td class="mx-partial">~</td><td class="mx-own mx-yes">✓</td></tr>
+      <tr><th class="mx-rowhead">No new vendor</th><td class="mx-no">—</td><td class="mx-no">—</td><td class="mx-own mx-yes">✓</td></tr>
+      <tr><th class="mx-rowhead">Built in a day</th><td class="mx-no">—</td><td class="mx-partial">~</td><td class="mx-own mx-yes">✓</td></tr>
+    </tbody>
+  </table>
+</section>

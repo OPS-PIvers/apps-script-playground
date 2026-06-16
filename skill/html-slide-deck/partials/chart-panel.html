@@ -1,0 +1,29 @@
+<!--
+  PARTIAL: chart-panel
+  Purpose: A simple bar chart inside a white rounded card sitting on a navy slide.
+  Theme: navy (the chart card is white/#f3f3f3 — brand-prescribed: charts live on a light surface)
+  Uses: .s.navy, .head-block, .kicker, .title, .chart-card/.chart-bars (NEW §9), .cbar/.cbar-fill.grow-bar
+        (motion.css), .cbar-val, .cbar-label, .chart-axis
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively  (calm: bars resolve instantly)
+  Configurable: kicker, title, each bar (height % via --h, value text, label), axis caption, series colors.
+  Notes: Brand rule — put data on a light card even on a navy slide. Bars rise from the baseline via
+         .grow-bar; set each bar's height with --h (a percentage of the plot area) and its stagger with
+         --i (0,1,2,…). Series color order follows the brand: blue-700 → red-700 → blue-600 → red-600,
+         i.e. --ot-blue, --ot-red, --ot-blue-light, --ot-red-light (set per bar with --c). Placeholder data below.
+-->
+<section data-label="Chart" class="s navy">
+  <div class="head-block">
+    <p class="kicker anim">The trend</p>
+    <h2 class="title anim">Growth over time</h2>
+  </div>
+  <div class="chart-card anim2">
+    <div class="chart-bars">
+      <div class="cbar" style="--h:38%; --i:0; --c:var(--ot-blue)"><span class="cbar-val">12</span><span class="cbar-fill grow-bar"></span><span class="cbar-label">Year 1</span></div>
+      <div class="cbar" style="--h:60%; --i:1; --c:var(--ot-red)"><span class="cbar-val">19</span><span class="cbar-fill grow-bar"></span><span class="cbar-label">Year 2</span></div>
+      <div class="cbar" style="--h:82%; --i:2; --c:var(--ot-blue-light)"><span class="cbar-val">26</span><span class="cbar-fill grow-bar"></span><span class="cbar-label">Year 3</span></div>
+      <div class="cbar" style="--h:100%; --i:3; --c:var(--ot-red-light)"><span class="cbar-val">31</span><span class="cbar-fill grow-bar"></span><span class="cbar-label">Now</span></div>
+    </div>
+    <p class="chart-axis">Tools in daily use, by school year</p>
+  </div>
+</section>

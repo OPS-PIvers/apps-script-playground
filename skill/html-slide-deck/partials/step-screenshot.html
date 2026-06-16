@@ -1,0 +1,27 @@
+<!--
+  PARTIAL: step-screenshot
+  Purpose: A single instructional step — a big number + heading + a screenshot with a caption.
+  Theme: light
+  Uses: .s.light.stepshot (NEW §9), .ss-left (.ss-num + .ss-head + .ss-body + .ss-note), .ss-right,
+        media-slot, .anim/.anim2, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: step number, heading, body, optional note, the screenshot + its caption.
+  Notes: The instructional workhorse — calmer than recipe-cards (one step per slide, lots of room for the
+         screenshot). Chain several of these for a walkthrough, incrementing .ss-num. The media-slot ships
+         empty (drop a screenshot or short clip); set fit/aspect-ratio inline to your capture.
+-->
+<section data-label="Step" class="s light stepshot">
+  <div class="ss-left">
+    <span class="ss-num anim">1</span>
+    <h2 class="ss-head anim">Do this first</h2>
+    <p class="ss-body anim2">A sentence or two telling the audience exactly what to do in this step.</p>
+    <p class="ss-note anim2">Optional tip: where to look on the screenshot to the right.</p>
+  </div>
+  <div class="ss-right anim2">
+    <figure class="mediafig">
+      <media-slot id="step-shot" shape="rounded" radius="14" fit="contain" placeholder="Drop a screenshot of this step"></media-slot>
+      <figcaption class="ss-cap">What the screen looks like at this step.</figcaption>
+    </figure>
+  </div>
+</section>

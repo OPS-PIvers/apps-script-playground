@@ -1,0 +1,28 @@
+<!--
+  PARTIAL: timeline
+  Purpose: Horizontal milestones along a drawn line — a roadmap or "how we got here".
+  Theme: navy (default) — works on light too.
+  Uses: .s.navy, .head-block, .kicker, .title, .timeline/.tl-line.draw-timeline (motion.css),
+        .tl-track.cascade, .milestone (.ms-dot + .ms-when + .ms-what)
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively  (calm draws instantly; milestones still cascade)
+  Configurable: kicker, title, each milestone (when + what). 3–5 milestones read best.
+  Notes: The connecting line uses .draw-timeline (scales in left→right; resting = full width); the
+         milestones sit in a sibling .cascade so they reveal along it. Keep milestone count == the dots
+         on the line; the line and the track share the same column layout so dots align.
+-->
+<section data-label="Timeline" class="s navy">
+  <div class="head-block">
+    <p class="kicker anim">How we got here</p>
+    <h2 class="title anim">The road so far</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-line draw-timeline"></div>
+    <div class="tl-track cascade" style="--cascade-start:1.5s; --cascade-step:1.2s">
+      <div class="milestone"><span class="ms-dot"></span><p class="ms-when">Year 1</p><p class="ms-what">First milestone — what happened.</p></div>
+      <div class="milestone"><span class="ms-dot"></span><p class="ms-when">Year 2</p><p class="ms-what">Second milestone — what happened.</p></div>
+      <div class="milestone"><span class="ms-dot"></span><p class="ms-when">Year 3</p><p class="ms-what">Third milestone — what happened.</p></div>
+      <div class="milestone"><span class="ms-dot"></span><p class="ms-when">Now</p><p class="ms-what">Where we are today.</p></div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,57 @@
+<!--
+  PARTIAL: big-stat
+  Purpose: One huge number that counts up, with a label and a line of context.
+  Theme: navy
+  Uses: .s.navy.bigstat (NEW §9), .kicker, .stat-num.count-up (motion.css), .stat-label, .stat-sub,
+        .anim/.anim2/.anim3
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively  (calm jumps straight to the value — no tick)
+  Configurable: kicker, the number (data-target + prefix/suffix), label, context line.
+  Notes: The .count-up resting text IS the final number, so print / reduced-motion / thumbnails show
+         it. The inline counter below is idempotent, respects prefers-reduced-motion (jumps to final),
+         and only ticks while its section is [data-deck-active]. Set data-target (the number),
+         data-prefix / data-suffix (e.g. "$", "%", "+"), and data-dur (ms, default 1400) on the .count-up.
+-->
+<section data-label="Big stat" class="s navy bigstat">
+  <p class="kicker anim">The number that matters</p>
+  <p class="stat-num count-up anim2" data-target="15" data-suffix="" data-dur="1400">15</p>
+  <p class="stat-label anim2">tools, built by our team</p>
+  <p class="stat-sub anim3">A short line of context that makes the number land.</p>
+</section>
+
+<script>
+/* big-stat / kpi count-up — self-contained, idempotent, reduced-motion-aware.
+   Animates every .count-up only while its closest <section> is [data-deck-active];
+   resting/print/reduced-motion show the final value (the element's own text). */
+(() => {
+  if (window.__otCountUp) return; window.__otCountUp = true;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = (el, n) => (el.dataset.prefix || '') + Math.round(n).toLocaleString() + (el.dataset.suffix || '');
+  function run(el) {
+    if (el.__done && el.__done === el.dataset.target) return;     // don't re-run for same target
+    const target = parseFloat(el.dataset.target);
+    if (!isFinite(target)) return;
+    el.__done = el.dataset.target;
+    if (reduce) { el.textContent = fmt(el, target); return; }
+    // Start the tick from the FIRST real rAF frame (lazy start) rather than
+    // zeroing synchronously: in a paused/throttled renderer (background tab,
+    // print, html-to-image export) no frame ever fires, so the element keeps
+    // its resting text — the final number — instead of getting stuck at 0.
+    const dur = parseFloat(el.dataset.dur) || 1400;
+    let t0 = null;
+    function tick(now) {
+      if (t0 === null) t0 = now;
+      const p = Math.min(1, (now - t0) / dur);
+      el.textContent = fmt(el, target * (1 - Math.pow(1 - p, 3)));  // easeOutCubic
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  // Always scan from document: the active slide is matched by
+  // `section[data-deck-active]`, which a slide-rooted query can't satisfy.
+  function scan() { document.querySelectorAll('section[data-deck-active] .count-up').forEach(run); }
+  document.addEventListener('slidechange', () => requestAnimationFrame(scan));
+  document.addEventListener('DOMContentLoaded', scan);
+  scan();
+})();
+</script>

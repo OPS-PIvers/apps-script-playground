@@ -1,0 +1,43 @@
+<!--
+  PARTIAL: before-after
+  Purpose: Two framed screenshots — a "before" and an "after" — with a centered prompt between them.
+  Theme: light
+  Uses: .s.light.beforeafter, .head-block, .ba-pair, .ba-fig, .ba-frame, .ba-rail (.ba-before /
+        .ba-after), .ba-rail-label/.ba-rail-line, .ba-arrow, .ba-prompt (.ba-prompt-kicker/-text),
+        media-slot, .anim/.anim2/.anim3, .footmark
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, both screenshots, the prompt text (bold the literal bits), captions, footmark.
+  Notes: Each frame ships a 3:4 media-slot (585px tall) — match the aspect-ratio to your screenshots
+         inline (the reference deck sets per-id aspect-ratios in its own <style>). The center .ba-prompt
+         is the "what changed" ask. If you just want the prompt itself with no screenshots, use prompt-panel.html.
+-->
+<section data-label="Before / after" class="s light beforeafter">
+  <div class="head-block">
+    <p class="kicker anim">The same thing, one change apart</p>
+    <h2 class="title anim" style="font-size:56px;">What actually changed</h2>
+  </div>
+  <div class="ba-pair">
+    <figure class="ba-fig anim2">
+      <div class="ba-frame">
+        <div class="ba-rail ba-before"><span class="ba-rail-label">Before</span><span class="ba-rail-line"></span></div>
+        <media-slot id="ba-before" shape="rounded" radius="14" fit="contain" placeholder="Drop the BEFORE screenshot"></media-slot>
+      </div>
+      <figcaption>What it looked like to start.</figcaption>
+    </figure>
+    <div class="ba-arrow anim3" aria-hidden="true">&rarr;</div>
+    <div class="ba-prompt anim2">
+      <p class="ba-prompt-kicker">The entire prompt</p>
+      <p class="ba-prompt-text">&ldquo;Paste the exact prompt here. Bold the <b>load-bearing</b> phrase that did the work.&rdquo;</p>
+    </div>
+    <div class="ba-arrow anim3" aria-hidden="true">&rarr;</div>
+    <figure class="ba-fig anim2">
+      <div class="ba-frame">
+        <div class="ba-rail ba-after"><span class="ba-rail-label">After</span><span class="ba-rail-line"></span></div>
+        <media-slot id="ba-after" shape="rounded" radius="14" fit="contain" placeholder="Drop the AFTER screenshot"></media-slot>
+      </div>
+      <figcaption>Same content, the change applied.</figcaption>
+    </figure>
+  </div>
+  <div class="footmark anim3" style="margin-top:16px;"><div class="rule"></div><span>The one-line takeaway about what made the difference.</span></div>
+</section>

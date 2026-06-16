@@ -1,0 +1,35 @@
+<!--
+  PARTIAL: two-up
+  Purpose: A balanced two-column slide — text on one side, media (or a second text block) on the other.
+  Theme: light (default) — works on navy too.
+  Uses: .s.light, .head-block, .kicker, .title, .twoup/.tu-col (NEW §9), .body, media-slot, .mediafig,
+        .anim/.anim2
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, the left text/list, the right media or text.
+  Notes: A flexible 50/50 split for when neither demo-split (40/60 + featlist) nor cohesion fits. Put any
+         content in either .tu-col. The media-slot ships empty; set its aspect-ratio inline. For 40/60 with
+         a demo badge + feature bullets, use demo-split.html instead.
+-->
+<section data-label="Two-up" class="s light">
+  <div class="head-block">
+    <p class="kicker anim">Kicker</p>
+    <h2 class="title anim">Two things, side by side</h2>
+  </div>
+  <div class="twoup">
+    <div class="tu-col anim2">
+      <p class="body">The left column — a paragraph, a short list, or a set of points. Left-aligned, easy to scan.</p>
+      <ul class="body" style="margin-top:18px; padding-left:1.1em;">
+        <li>First point</li>
+        <li>Second point</li>
+        <li>Third point</li>
+      </ul>
+    </div>
+    <div class="tu-col anim2">
+      <figure class="mediafig">
+        <media-slot id="twoup-media" shape="rounded" radius="14" fit="cover" placeholder="Drop a 16:9 image or clip"></media-slot>
+        <figcaption class="mediacap" style="margin-top:12px;">Optional caption</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>

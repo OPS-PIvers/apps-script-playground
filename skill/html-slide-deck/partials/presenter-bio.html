@@ -1,0 +1,33 @@
+<!--
+  PARTIAL: presenter-bio
+  Purpose: "Who's talking" — headshot, name, role, and a short bio with a few credentials.
+  Theme: navy (default) — works on light too (swap .navy→.light).
+  Uses: .s.navy, .head-block, .kicker, .bio (NEW §9), .bio-photo + media-slot, .bio-body,
+        .bio-name, .bio-role, .bio-facts/.bio-fact, .anim/.anim2, .cascade
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, name, role, bio paragraph, fact rows (label + value), headshot.
+  Notes: Headshot uses a circle media-slot — drop a square portrait. For two presenters, duplicate
+         the .bio block inside a flex row, or use people-grid.html instead.
+-->
+<section data-label="Presenter" class="s navy">
+  <div class="head-block">
+    <p class="kicker anim">Who's talking</p>
+  </div>
+  <div class="bio">
+    <div class="bio-photo anim">
+      <media-slot id="bio-photo" shape="circle" placeholder="Drop a square headshot"></media-slot>
+    </div>
+    <div class="bio-body anim2">
+      <p class="bio-name">Presenter Name</p>
+      <p class="bio-role">Role · Organization</p>
+      <p class="body">A two- or three-sentence bio in your own voice — what you do, what you've
+        built, and why this talk. Keep it warm and short.</p>
+      <div class="bio-facts cascade" style="--cascade-start:2.5s; --cascade-step:1.2s">
+        <div class="bio-fact"><span class="bf-k">Building</span><span class="bf-v">Tools teachers actually use</span></div>
+        <div class="bio-fact"><span class="bf-k">Years in</span><span class="bf-v">Education technology</span></div>
+        <div class="bio-fact"><span class="bf-k">Find me</span><span class="bf-v">name@org.org</span></div>
+      </div>
+    </div>
+  </div>
+</section>

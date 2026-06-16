@@ -1,0 +1,54 @@
+<!--
+  PARTIAL: recipe-cards
+  Purpose: Four numbered cards in a row — each step its own card, optional QR per card.
+  Theme: light
+  Uses: .s.light, .head-block, .kicker, .title, .recipe4, .rcard (.rnum + .rh + .rp), .rqr
+        (.qbox + image-slot + .qcap) OR .rlaunch (faint icon), .footmark, .anim3
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, each card (number/heading/body), per-card QR + caption, footmark.
+  Notes: Each .rcard is its own .anim3 build beat — in manual mode → reveals them one at a time; in
+         auto/kiosk they stagger via the .recipe4 ladder in slides.css §19. A card can end in a QR (.rqr,
+         opt-in — drop the image on the image-slot) or a faint angled launch icon (.rlaunch) to balance it.
+-->
+<section data-label="The recipe" class="s light" style="justify-content:center">
+  <div class="head-block">
+    <p class="kicker anim">The repeatable recipe</p>
+    <h2 class="title anim">Get started in 4 steps</h2>
+  </div>
+  <div class="recipe4">
+    <div class="rcard anim3">
+      <div class="rnum">1</div>
+      <h3 class="rh">First step</h3>
+      <p class="rp">One or two sentences on what to do.</p>
+      <div class="rqr"><div class="qbox"><image-slot id="rc-qr-1" shape="rect" placeholder="QR"></image-slot></div><span class="qcap">Link or resource for this step</span></div>
+    </div>
+    <div class="rcard anim3">
+      <div class="rnum">2</div>
+      <h3 class="rh">Second step</h3>
+      <p class="rp">One or two sentences on what to do.</p>
+      <div class="rqr"><div class="qbox"><image-slot id="rc-qr-2" shape="rect" placeholder="QR"></image-slot></div><span class="qcap">Link or resource for this step</span></div>
+    </div>
+    <div class="rcard anim3">
+      <div class="rnum">3</div>
+      <h3 class="rh">Third step</h3>
+      <p class="rp">One or two sentences on what to do.</p>
+      <div class="rqr"><div class="qbox"><image-slot id="rc-qr-3" shape="rect" placeholder="QR"></image-slot></div><span class="qcap">Link or resource for this step</span></div>
+    </div>
+    <div class="rcard anim3">
+      <div class="rnum">4</div>
+      <h3 class="rh">Fourth step</h3>
+      <p class="rp">One or two sentences on what to do.</p>
+      <!-- a card with no QR can use a faint angled launch icon to balance it instead -->
+      <div class="rlaunch" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+          <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+          <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+          <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="footmark anim3" style="margin-top:56px;"><div class="rule"></div><span>One-line takeaway about why this recipe sticks.</span></div>
+</section>

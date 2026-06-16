@@ -666,6 +666,13 @@
       // Per-slide build geometry is memoized in _buildCache; _dwellTimer drives
       // auto-mode slide advance. Both are wired up in connectedCallback.
       this._revealMode = 'manual';
+      /* === OPS EXTENSION: reveal modes — begin ===
+         _autoAdvance is the single switch for "does the kiosk dwell timer fire".
+         Set at connect from reveal=/?kiosk/no-autoadvance, and forced false by
+         the runtime toggle so the A key / overlay button always yields AUTOBUILD
+         (self-running build, no slide advance) rather than kiosk. */
+      this._autoAdvance = false;
+      /* === OPS EXTENSION: reveal modes — end === */
       this._buildCache = new WeakMap();
       this._dwellTimer = null;
 
@@ -701,9 +708,27 @@
       // self-running speech-paced timeline with ?autoplay / ?kiosk in the URL
       // or reveal="auto" on the element. The attribute is what the page CSS
       // keys off to switch between the two reveal styles.
-      const kiosk = /[?&](?:autoplay|kiosk)\b/.test(location.search) || this.getAttribute('reveal') === 'auto';
-      this._revealMode = kiosk ? 'auto' : 'manual';
+      /* === OPS EXTENSION: reveal modes (three named modes) — begin ===
+         The handoff names three modes; this maps them onto the existing
+         manual/auto + no-autoadvance machinery without changing it:
+           manual    (default, no param)          — speaker-controlled beats
+           autobuild (reveal="autobuild", or       — auto build timeline,
+                      reveal="auto" + no-autoadvance)  NO slide advance
+           kiosk     (?autoplay / ?kiosk /          — auto build timeline +
+                      reveal="auto")                   auto advance
+         reveal="autobuild" is sugar for reveal="auto" + the no-autoadvance
+         attribute, so it rides the already-tested no-advance path. The CSS only
+         distinguishes manual vs auto (data-reveal-mode), so both autobuild and
+         kiosk set data-reveal-mode="auto"; advance behavior lives in JS via
+         _autoAdvance, not CSS. */
+      const revealAttr = this.getAttribute('reveal');
+      if (revealAttr === 'autobuild') this.setAttribute('no-autoadvance', '');
+      const auto = /[?&](?:autoplay|kiosk)\b/.test(location.search)
+        || revealAttr === 'auto' || revealAttr === 'autobuild';
+      this._revealMode = auto ? 'auto' : 'manual';
+      this._autoAdvance = auto && !this.hasAttribute('no-autoadvance');
       this.setAttribute('data-reveal-mode', this._revealMode);
+      /* === OPS EXTENSION: reveal modes — end === */
       this._render();
       this._loadNotes();
       this._syncPrintPageRule();
@@ -1452,6 +1477,18 @@
       mode = mode === 'auto' ? 'auto' : 'manual';
       if (mode === this._revealMode) return;
       this._revealMode = mode;
+      /* === OPS EXTENSION: reveal modes — begin ===
+         The runtime toggle (A key / overlay button) targets AUTOBUILD, never
+         kiosk: a presenter flipping modes mid-talk wants the build to self-run,
+         not the deck to start advancing on its own. Forcing _autoAdvance=false
+         on entry to auto keeps the dwell timer disarmed after a live toggle,
+         even on a deck that launched in kiosk. Kiosk is therefore entered only
+         via ?kiosk / ?autoplay / reveal="auto" at load. Deliberately NOT
+         persisted to localStorage — upstream's doc comment above explains why
+         (an accidental auto toggle shouldn't outlive the session) and we keep
+         that contract. */
+      if (mode === 'auto') this._autoAdvance = false;
+      /* === OPS EXTENSION: reveal modes — end === */
       this.setAttribute('data-reveal-mode', mode);
       this._syncModeBtn();
       // enterFull keeps the current slide fully shown across the switch; the
@@ -1794,6 +1831,14 @@
      *  word count at ~140 wpm, with a floor so sparse slides don't flash by. */
     _scheduleAutoAdvance(curr) {
       if (this._revealMode !== 'auto') return;
+      /* === OPS EXTENSION: reveal modes — begin ===
+         AUTOBUILD = auto build, no slide advance. _autoAdvance is false in that
+         mode (from reveal=/no-autoadvance at init, or forced false by the A
+         toggle), so the dwell timer never arms. The no-autoadvance attribute
+         check below remains as the authoring-time gate; this is the runtime
+         one. */
+      if (!this._autoAdvance) return;
+      /* === OPS EXTENSION: reveal modes — end === */
       // [no-autoadvance]: auto-reveal content on a timed cascade, but let the
       // presenter control slide-to-slide navigation (no unattended advance).
       if (this.hasAttribute('no-autoadvance')) return;

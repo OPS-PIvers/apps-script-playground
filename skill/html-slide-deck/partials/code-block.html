@@ -1,0 +1,33 @@
+<!--
+  PARTIAL: code-block
+  Purpose: A syntax-styled code panel — show the actual snippet, legible at 1920×1080.
+  Theme: navy (the code panel is a light/tinted surface on the navy slide)
+  Uses: .s.navy, .head-block, .kicker, .title, .codepanel/.code-head/.code-dots/.code-file (NEW §9),
+        <pre><code> in --font-mono, .tok-* token classes, .anim/.anim2
+  Modes: manual | autobuild | kiosk
+  Intensity: calm | standard | lively
+  Configurable: kicker, title, the filename in the title bar, the code itself + token spans.
+  Notes: JetBrains Mono via --font-mono. Wrap tokens in spans for color: .tok-key (keyword), .tok-str
+         (string), .tok-fn (function), .tok-com (comment), .tok-num (number). Keep lines short enough to
+         avoid wrap at this size (~64 chars). Use prompt-panel.html for natural-language prompts, not code.
+-->
+<section data-label="Code" class="s navy">
+  <div class="head-block">
+    <p class="kicker anim">The code</p>
+    <h2 class="title anim">What it actually looks like</h2>
+  </div>
+  <div class="codepanel anim2">
+    <div class="code-head">
+      <span class="code-dots"><i></i><i></i><i></i></span>
+      <span class="code-file">Code.gs</span>
+    </div>
+<pre><code><span class="tok-com">// Serve the web app and read the bound sheet</span>
+<span class="tok-key">function</span> <span class="tok-fn">doGet</span>() {
+  <span class="tok-key">const</span> sheet = SpreadsheetApp.<span class="tok-fn">getActive</span>()
+    .<span class="tok-fn">getSheetByName</span>(<span class="tok-str">'Roster'</span>);
+  <span class="tok-key">const</span> rows = sheet.<span class="tok-fn">getDataRange</span>().<span class="tok-fn">getValues</span>();
+  <span class="tok-key">return</span> HtmlService.<span class="tok-fn">createTemplateFromFile</span>(<span class="tok-str">'Index'</span>)
+    .<span class="tok-fn">evaluate</span>();
+}</code></pre>
+  </div>
+</section>
