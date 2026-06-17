@@ -4,7 +4,7 @@ A monorepo of OPS Tech HTML slide decks built on the **`<deck-stage>`** engine.
 Every presentation is its own folder; the engine and brand are shared at the
 root. No build step, no framework, no server — static files all the way down.
 
-**Live:** https://ops-pivers.github.io/apps-script-playground/ (landing page)
+**Live:** https://ops-pivers.github.io/ops-presentations/ (landing page)
 
 ## Layout
 
