@@ -1,5 +1,87 @@
+# **DESIGN.md**
+
+## **Overview:**
+
+This is your brand's rulebook, structured for AI-use. It lists your exact colors, fonts, spacing, and component styles as named values (called "tokens"). Anything that builds something for you, such as an AI assistant, a website, a slide tool, etc. can read this one file and match your brand requirements.
+
+This file is the "WHAT" for brand and style requirements.  Its partner file, SKILL.md, in tab 2 of this document is the "WHEN and HOW" to apply these requirements.
+
+## **Prompt (Copy everything below and paste into your LLM chat):**
+
+You are helping me turn a blank "DESIGN.md" skeleton into a finished brand specification.
+
+DESIGN.md is a single file that describes a brand's exact colors, fonts, spacing, and component styles as named values (called "tokens") in YAML, followed by plain-English notes. I will paste the skeleton at the end of this message. Your job is to fill it in completely and return the finished file.
+
+### **What I'm giving you**
+
+* The DESIGN.md skeleton (at the bottom), full of placeholders to replace.  
+* Whatever I know about my brand. This might be detailed, or it might be just a name and a one-line description — that's fine.
+
+## **Step 1 — Make sure you have what you need**
+
+Check whether you have all of these:
+
+1. A brand or organization name.  
+2. A one-line sense of what it is and its personality.  
+3. A main (primary) color.  
+4. An accent color.  
+5. Two fonts — one for headings, one for body text.
+
+Then:
+
+* If you have enough to make reasonable choices, go straight to Step 2 and list your assumptions at the end.  
+* If something essential is missing, ask me up to five short questions in a single message, wait for my reply, then continue. Don't ask one at a time.
+
+When I only give you a vague description, you may choose colors and fonts yourself (for example, "a friendly youth robotics club" might become a confident blue, an energetic orange, a clean geometric heading font, and a plain body font). Pick tasteful, widely available fonts.
+
+Colors:
+
+* If I give exact hex codes, use them exactly as the canonical anchor colors.  
+* If I give color names ("navy", "forest green"), convert each to a specific hex.
+
+## **Step 2 — Fill in the skeleton**
+
+Replace everywhere it appears:
+
+* Every ALL-CAPS placeholder (such as BRAND\_NAME, HEADING\_FONT, BANNED\_FONTS).  
+* Every {{word in braces}}.  
+* Every \#XXXXXX hex placeholder.  
+* Every short *italic prompt* in the prose section: replace each with one to three plain-language sentences, then delete the prompt itself.  
+* Any instructional text that is sitting in place of a real value — most importantly the description: line, which currently describes what to write instead of being a real description. Write a true one-sentence description there.
+
+Leave everything else exactly as it is:
+
+* Do NOT change values that are already filled in (the spacing scale, the gray neutrals, the default corner radii and shadows) unless I asked you to, or unless my brand clearly calls for it — and if you do change one, note it at the end.  
+* Do NOT resolve or replace token references written like {colors.primary-700} or {typography.label-lg}. These are deliberate cross-references and must stay exactly as written. Only the \#XXXXXX placeholders become real hex codes.  
+* Do NOT add or remove sections. Work only inside the structure I give you. If I deleted the ramps or the components, don't put them back.  
+* Delete the instruction comment block at the very top (the \<\!-- ... \--\> part that explains how to fill the file in) and the helper sentence telling the reader to replace the italic prompts. The finished file should read like a real specification, not a template.
+
+## **Step 3 — The color ramps (read carefully)**
+
+Each color family has an 11-step ramp from 50 (lightest) to 950 (darkest). The skeleton marks which steps equal the canonical colors with comments like "same as primary-base." Honor those exactly:
+
+* primary-100 \= primary-lighter, primary-600 \= primary-light, primary-700 \= primary-base, primary-900 \= primary-dark — and the same pattern for the accent family.  
+* Fill the remaining steps by keeping the same hue and changing only lightness: step 50 is a near-white tint of the color, the steps grow steadily darker through the anchor values, and step 950 is a very dark, near-black version of the hue.  
+* Aim for a smooth, even progression. Exact precision isn't needed — the canonical anchors are what matter; the in-between steps just need to look like one consistent scale.
+
+## **Taste and accessibility rules**
+
+* Body text uses the dark gray neutral (around \#333333), never pure black.  
+* White text must stay readable on the primary and the accent base colors. If a color I give is too light for white text, use a darker step of its ramp as the "base" and tell me you did.  
+* Keep the accent a highlight, not a co-star equal to the primary.  
+* Use exactly two font families — no more.  
+* Set focus-ring to your primary color at about 10% opacity, written as rgba(r, g, b, 0.1).  
+* Keep the YAML valid: preserve the indentation, keep quotes around hex codes and rgba strings, and keep the \--- fences at the top and bottom of the frontmatter.
+
+## **What to return**
+
+1. The complete, finished DESIGN.md inside a single code block, ready for me to save as-is.  
+2. After the code block, a short bullet list of any colors, fonts, or wording you chose or assumed, so I can adjust them.
+
+Here is the skeleton to fill in:
+
+```
 ---
-version: alpha
 name: {{BRAND_NAME}} Style
 description: One sentence on what this brand is and when to use it — the things it covers (slides, docs, web, print) and the feeling it should give. An assistant reads this to decide if the file applies.
 
@@ -524,3 +606,5 @@ inputs is required for accessibility and shouldn't be removed.*
 - Don't let the accent match the primary in visual weight.
 - Don't use heavy shadows unless the brand calls for it.
 - *Add the specific mistakes that hurt your brand most.*
+```
+
