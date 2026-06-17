@@ -2,6 +2,7 @@
 export/
 screenshots/
 .thumbnail
+.image-slots.state.json
 scratchpad.md
 Directions.html
 design-canvas.jsx
