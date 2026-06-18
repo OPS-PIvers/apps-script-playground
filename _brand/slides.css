@@ -180,12 +180,12 @@ deck-stage:not(:defined) { visibility: hidden; }
 .flowarrow .alabel { font-size: 24px; font-family: var(--font-mono); color: var(--ot-gray); text-align: center; line-height: 1.2; word-break: break-word; }
 
 .whys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 56px; }
-.why { border-top: 4px solid var(--ot-red); padding-top: 22px; }
+.why { border-top: 1px solid var(--border-2); padding-top: 22px; }
 .why h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 10px; }
 .why p { font-size: 25px; line-height: 1.45; color: var(--ot-gray-dark); margin: 0; }
 
 .pains { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; }
-.pain { border-top: 4px solid var(--ot-red); padding-top: 22px; }
+.pain { border-top: 1px solid var(--border-2); padding-top: 22px; }
 .pain h3 { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 10px; }
 .pain p { font-size: 25px; line-height: 1.4; color: var(--ot-gray-dark); margin: 0; }
 
@@ -195,7 +195,7 @@ deck-stage:not(:defined) { visibility: hidden; }
    row in every column at once — titles stay aligned across the row. The <ul>
    is display:contents so its <li>s become the column's grid items. */
 .map { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto repeat(5, auto); gap: 18px 48px; margin-top: 56px; }
-.mapcol { grid-row: 1 / -1; display: grid; grid-template-rows: subgrid; padding-left: 26px; border-left: 4px solid var(--ot-red); }
+.mapcol { grid-row: 1 / -1; display: grid; grid-template-rows: subgrid; padding-left: 26px; border-left: 1px solid var(--border-2); }
 .mapcol h3 { font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-blue); margin: 0; padding-bottom: 8px; }
 .mapcol ul { list-style: none; margin: 0; padding: 0; display: contents; }
 .mapcol li { font-size: 26px; line-height: 1.25; color: var(--ot-gray-darkest); font-weight: 600; }
@@ -205,14 +205,14 @@ deck-stage:not(:defined) { visibility: hidden; }
 
 /* ───────── 10. tool grids ─────────
    .grid3 / .grid4 lay equal cards; .grid5 is a 3+2 hero layout. .toolcard has
-   a blue left rule, a red .tag eyebrow, a heading, and body copy. */
+   a hairline border, a red .tag eyebrow, a heading, and body copy. */
 .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 56px; }
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
 .grid3 .toolcard, .grid4 .toolcard { min-height: 380px; }
 .grid5 { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 1fr 1fr; gap: 32px; margin-top: 48px; flex: 1 1 auto; }
 .grid5 .toolcard:nth-child(-n+3) { grid-column: span 2; }
 .grid5 .toolcard:nth-child(n+4) { grid-column: span 3; }
-.toolcard { background: var(--ot-white); border: 1px solid var(--border-1); border-left: 6px solid var(--ot-blue); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 36px 40px; display: flex; flex-direction: column; justify-content: flex-start; }
+.toolcard { background: var(--ot-white); border: 1px solid rgba(45,63,137,0.18); border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 36px 40px; display: flex; flex-direction: column; justify-content: flex-start; }
 .toolcard h3 { font-size: 36px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 12px; }
 .toolcard p { font-size: 27px; line-height: 1.45; color: var(--ot-gray-dark); margin: 0; }
 .toolcard .tag { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ot-red); margin-bottom: 14px; }
@@ -272,7 +272,7 @@ image-slot { width: 100%; height: 760px; box-shadow: var(--shadow-2); }
 .step .stext span { color: var(--ot-gray); }
 
 .recipe4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
-.rcard { background: var(--ot-gray-lightest); border-radius: var(--r-lg); border-top: 5px solid var(--ot-blue); padding: 34px 30px; display: flex; flex-direction: column; }
+.rcard { background: var(--ot-gray-lightest); border-radius: var(--r-lg); border: 1px solid rgba(45,63,137,0.18); box-shadow: var(--shadow-1); padding: 34px 30px; display: flex; flex-direction: column; }
 .rcard .rnum { width: 62px; height: 62px; border-radius: 50%; background: var(--ot-blue); color: #fff; font-size: 30px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; margin-bottom: 22px; }
 .rcard .rh { font-size: 30px; font-weight: 700; color: var(--ot-blue-dark); margin: 0 0 12px; }
 .rcard .rp { font-size: 25px; line-height: 1.4; color: var(--ot-gray-dark); margin: 0; }
@@ -609,7 +609,7 @@ image-slot { width: 100%; height: 760px; box-shadow: var(--shadow-2); }
 /* ───────── kpi-row ─────────
    3–4 count-up metrics across a row, each in its own cell. */
 .kpis { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 40px; margin-top: 64px; flex: 1 1 auto; align-content: center; align-items: center; }
-.kpi { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding-left: 30px; border-left: 5px solid var(--ot-red); }
+.kpi { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .kpi-num { font-size: 150px; font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; color: #fff; margin: 0; }
 .light .kpi-num { color: var(--ot-blue-dark); }
 .kpi-label { font-size: 28px; font-weight: 600; color: #c7cbe0; margin: 0; line-height: 1.25; }
@@ -692,24 +692,26 @@ image-slot { width: 100%; height: 760px; box-shadow: var(--shadow-2); }
 .chart-axis { font-size: 24px; color: var(--ot-gray); margin: 28px 0 0; text-align: center; font-family: var(--font-mono); }
 
 /* ───────── callout (standalone slide OR inline block) ─────────
-   3px accent left border + a tinted background. Info=blue, warn=red, neutral. */
-.callout { border-radius: var(--r-md); border-left: 3px solid var(--ot-gray); padding: 32px 40px; margin-top: 40px; max-width: 1500px; }
+   A tinted background + uniform hairline. Info=blue, warn=red, neutral —
+   the tint and label color carry the meaning, no accent stripe. */
+.callout { border-radius: var(--r-md); border: 1px solid var(--border-1); padding: 32px 40px; margin-top: 40px; max-width: 1500px; }
 .callout .co-label { font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 10px; }
 .callout .co-body { font-size: 30px; line-height: 1.45; margin: 0; color: var(--ot-gray-dark); }
 .light .callout .co-body { color: var(--ot-gray-dark); }
 .navy .callout .co-body { color: #dcdee8; }
-.callout-info { background: var(--info-bg); border-left-color: var(--info-fg); }
+.callout-info { background: var(--info-bg); }
 .callout-info .co-label { color: var(--info-fg); }
-.callout-warn { background: var(--warn-bg); border-left-color: var(--warn-fg); }
+.callout-warn { background: var(--warn-bg); }
 .callout-warn .co-label { color: var(--warn-fg); }
-.callout-neutral { background: var(--bg-2); border-left-color: var(--ot-gray); }
+.callout-neutral { background: var(--bg-2); }
 .callout-neutral .co-label { color: var(--ot-gray-dark); }
 /* on navy, tint the surfaces so the box still reads as elevated, not a hole */
-.navy .callout-info { background: rgba(67,86,160,0.18); border-left-color: #8a9dd8; }
+.navy .callout { border-color: rgba(255,255,255,0.12); }
+.navy .callout-info { background: rgba(67,86,160,0.18); }
 .navy .callout-info .co-label { color: #aeb8e0; }
-.navy .callout-warn { background: rgba(221,95,96,0.16); border-left-color: var(--ot-red-light); }
+.navy .callout-warn { background: rgba(221,95,96,0.16); }
 .navy .callout-warn .co-label { color: #e57e7f; }
-.navy .callout-neutral { background: rgba(255,255,255,0.06); border-left-color: #9aa1c4; }
+.navy .callout-neutral { background: rgba(255,255,255,0.06); }
 .navy .callout-neutral .co-label { color: #c7cbe0; }
 
 /* ───────── step-screenshot ─────────
@@ -721,7 +723,8 @@ image-slot { width: 100%; height: 760px; box-shadow: var(--shadow-2); }
 .navy .stepshot .ss-head { color: #fff; }
 .stepshot .ss-body { font-size: 32px; line-height: 1.45; color: var(--ot-gray-dark); margin: 22px 0 0; }
 .navy .stepshot .ss-body { color: #c7cbe0; }
-.stepshot .ss-note { font-size: 26px; line-height: 1.4; color: var(--ot-gray); margin: 18px 0 0; padding-left: 22px; border-left: 3px solid var(--ot-red); }
+.stepshot .ss-note { font-size: 26px; line-height: 1.4; color: var(--ot-gray); margin: 18px 0 0; padding-left: 22px; border-left: 2px solid var(--border-2); }
+.navy .stepshot .ss-note { color: #aeb8e0; border-left-color: rgba(255,255,255,0.20); }
 .stepshot .ss-right { flex: 1; display: flex; align-items: center; min-width: 0; }
 .stepshot .ss-right .mediafig { width: 100%; }
 .stepshot .ss-right media-slot { width: 100%; height: 720px; box-shadow: var(--shadow-2); }
@@ -821,8 +824,8 @@ image-slot { width: 100%; height: 760px; box-shadow: var(--shadow-2); }
 
 /* ───────── prompt-panel ─────────
    "Here's the exact prompt" — generalizes the before/after .ba-prompt block. */
-.promptpanel { margin-top: 48px; max-width: 1500px; align-self: flex-start; background: var(--ot-gray-lightest); border-radius: var(--r-lg); border-left: 6px solid var(--ot-red); padding: 44px 56px; flex: 0 0 auto; }
-.navy .promptpanel { background: rgba(255,255,255,0.05); }
+.promptpanel { margin-top: 48px; max-width: 1500px; align-self: flex-start; background: var(--ot-gray-lightest); border-radius: var(--r-lg); border: 1px solid var(--border-1); padding: 44px 56px; flex: 0 0 auto; }
+.navy .promptpanel { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.10); }
 .promptpanel .pp-kicker { margin: 0 0 20px; font-size: 24px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ot-red); }
 .navy .promptpanel .pp-kicker { color: #e57e7f; }
 .promptpanel .pp-text { margin: 0; font-size: 40px; line-height: 1.5; color: var(--ot-gray-dark); font-weight: 400; }

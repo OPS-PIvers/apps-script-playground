@@ -70,7 +70,7 @@
     .stream { display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
     .stream .item { font-size: 26px; line-height: 1.35; color: var(--lp-fg, #fff);
                     background: var(--lp-card, rgba(255,255,255,0.06));
-                    border-left: 3px solid var(--ot-red, #ad2122);
+                    border: 1px solid rgba(120,140,205,0.22);
                     border-radius: 8px; padding: 12px 18px; }
 
     /* word cloud */
