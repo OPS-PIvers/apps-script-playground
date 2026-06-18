@@ -885,10 +885,29 @@
       // Rewrite :root → :host and mirror <html>'s data-*/class/lang onto
       // each thumb host (see _syncThumbHostAttrs) so the same selectors
       // match inside the thumbnail's shadow tree.
+      /* === OPS EXTENSION: bulletproof rail styling — begin ===
+         Reading .cssRules throws SecurityError in opaque-origin embeds — an
+         <iframe sandbox> WITHOUT allow-same-origin gives the document an
+         opaque origin, which makes the deck's OWN linked stylesheets read as
+         "cross-origin" to itself. The browser still FETCHES and APPLIES those
+         sheets (the main stage looks perfect), but JS can't read their rules,
+         so the snapshot below comes back empty and thumbnail clones render
+         unstyled (white, only <img>s show). We record each unreadable sheet's
+         owner <link>/<style> node here; _materialize re-attaches live clones of
+         them into every thumb's shadow root, where the browser applies them
+         natively — no rule-reading required. Empty in the normal path → zero
+         change to the working same-origin case. */
+      const blocked = [];
+      /* === OPS EXTENSION: bulletproof rail styling — end === */
       const authorCss = Array.from(document.styleSheets).map((sh) => {
         try {
           return Array.from(sh.cssRules).map((r) => r.cssText).join('\n');
-        } catch (e) { return ''; }
+        } catch (e) {
+          /* === OPS EXTENSION: bulletproof rail styling — begin === */
+          if (sh.ownerNode) blocked.push(sh.ownerNode);
+          /* === OPS EXTENSION: bulletproof rail styling — end === */
+          return '';
+        }
       }).join('\n')
         // The shadow host is featureless outside the functional :host(...)
         // form, so any compound on :root — [attr], .class, #id, :pseudo —
@@ -914,6 +933,31 @@
         this._adoptedSheet = null;
         this._authorCss = authorCss;
       }
+      /* === OPS EXTENSION: bulletproof rail styling — begin ===
+         Turn each unreadable sheet's owner node into a detached template the
+         thumbs can clone. <link> → a fresh <link> pointing at the same href
+         (absolute, so it resolves regardless of the thumb's shadow context);
+         the browser re-fetches from cache (already loaded for the page) and
+         applies it natively. <style> text is plain DOM — always readable even
+         when .cssRules is blocked — so copy it verbatim. We don't run the
+         :root→:host rewrite here: custom properties defined on :root inherit
+         through the shadow boundary down to the clone, so var()-based theming
+         resolves without it, and the rewrite needs rule text we don't have. */
+      this._relinkTemplates = blocked.map((node) => {
+        if (node.tagName === 'LINK') {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = node.href; // .href is the resolved absolute URL
+          if (node.media) link.media = node.media;
+          if (node.crossOrigin) link.crossOrigin = node.crossOrigin;
+          if (node.integrity) link.integrity = node.integrity;
+          return link;
+        }
+        const style = document.createElement('style');
+        style.textContent = node.textContent || '';
+        return style;
+      });
+      /* === OPS EXTENSION: bulletproof rail styling — end === */
     }
 
     _syncThumbHostAttrs(host, cs) {
@@ -2089,6 +2133,16 @@
         st.textContent = this._authorCss || '';
         sr.appendChild(st);
       }
+      /* === OPS EXTENSION: bulletproof rail styling — begin ===
+         Re-attach any sheet whose rules we couldn't read (opaque-origin /
+         sandboxed embeds) as live <link>/<style> clones. The browser applies
+         these natively, so the clone gets its real styling even though the
+         cssRules snapshot above came back empty for them. Normal same-origin
+         path: _relinkTemplates is empty → this loop is a no-op, zero overhead
+         and zero behavior change. Appended BEFORE the clone so author CSS is in
+         document order ahead of the slide content it styles. */
+      (this._relinkTemplates || []).forEach((tpl) => sr.appendChild(tpl.cloneNode(true)));
+      /* === OPS EXTENSION: bulletproof rail styling — end === */
       sr.appendChild(clone);
       entry.frame.appendChild(host);
       entry.host = host;
