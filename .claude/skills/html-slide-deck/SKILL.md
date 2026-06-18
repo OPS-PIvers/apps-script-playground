@@ -181,12 +181,21 @@ their slide is on screen and render a static fallback for print/export. Types:
 
 ## Landing page
 
-The root `index.html` lists every deck as a card (title, audience, purpose,
-link). When you create a new deck folder, **register it** by adding one entry to
-the `DECKS` array in `index.html` (above the `ADD NEW DECKS ABOVE THIS LINE`
-marker): `{ slug, title, purpose, audience, date, desc }`. Cards are de-duped by
-slug at render, so re-adding an existing deck is a no-op. Keep slugs stable;
-they're URLs.
+The root `index.html` lists every deck as a card, filterable by **Audience** and
+**Type** dropdowns plus a search box. When you create a new deck folder,
+**register it** by adding one entry to the `DECKS` array in `index.html` (above
+the `ADD NEW DECKS ABOVE THIS LINE` marker):
+`{ slug, title, type, audience, date, desc }`.
+
+- `type` and `audience` each accept a **string or an array** — every value
+  becomes a filter option + a card chip (e.g. `type: ["Showcase"]`,
+  `audience: ["Internal", "Staff"]`). Use the structure name for `type` and the
+  audience name(s) for `audience`. The `AUDIENCE_ORDER` / `TYPE_ORDER` lists in
+  `index.html` set the menu order; any value still works, it just sorts last.
+- The legacy `purpose` field is still read as a fallback for `type`.
+
+Cards are de-duped by slug at render, so re-adding an existing deck is a no-op.
+Keep slugs stable; they're URLs.
 
 ## Reference files in this skill
 

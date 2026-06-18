@@ -8,14 +8,16 @@
 <link rel="stylesheet" href="_brand/colors_and_type.css">
 <style>
   /* Brand-styled landing page for the presentations monorepo. Lists every deck
-     as a card. To register a NEW deck, add one entry to the DECKS array near the
-     bottom (keep slugs stable — they're URLs). Adding a deck that's already in
-     the list is a no-op: cards are de-duped by slug at render time. */
+     as a card, filterable by Audience + Type dropdowns and a search box. To
+     register a NEW deck, add one entry to the DECKS array near the bottom (keep
+     slugs stable — they're URLs). Adding a deck already in the list is a no-op:
+     cards are de-duped by slug at render time. */
+  *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; background: var(--navy-grad, linear-gradient(150deg, #1d2a5d 0%, #0c1230 100%)); color: #fff;
          font-family: var(--font-display, system-ui); min-height: 100vh; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 72px 32px 96px; position: relative; }
   .torch-bg { position: fixed; right: -120px; top: -60px; height: 760px; opacity: 0.05; pointer-events: none; }
-  header { display: flex; flex-direction: column; gap: 20px; margin-bottom: 56px; }
+  header { display: flex; flex-direction: column; gap: 20px; margin-bottom: 44px; }
   header img.wordmark { height: 40px; width: auto; align-self: flex-start; }
   .eyebrow { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
              color: #e57e7f; display: inline-flex; align-items: center; gap: 12px; margin: 0; }
@@ -23,21 +25,75 @@
   h1 { font-size: 3.4rem; font-weight: 800; letter-spacing: -0.025em; margin: 0; color: #fff; line-height: 1.05; }
   .tagline { font-size: 1.3rem; font-weight: 300; color: #c7cbe0; margin: 4px 0 0; max-width: 720px; line-height: 1.5; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 28px; }
-  .card { display: flex; flex-direction: column; text-decoration: none; background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.12); border-left: 6px solid var(--ot-red, #ad2122);
-          border-radius: 14px; padding: 30px 32px 26px; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
-  .card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); border-left-color: #e57e7f; }
+  /* ── Controls: search + filter dropdowns ── */
+  .controls { margin-bottom: 32px; }
+  .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .ctrl-h { height: 46px; }
+
+  .search-wrap { position: relative; flex: 1 1 260px; max-width: 420px; }
+  .search-wrap svg { position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+                     width: 18px; height: 18px; stroke: #9aa1c4; fill: none; pointer-events: none; }
+  .search { width: 100%; height: 46px; padding: 0 16px 0 44px; font: inherit; font-size: 0.95rem; color: #fff;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16); border-radius: 10px;
+            outline: none; transition: border-color .15s ease, background .15s ease; }
+  .search::placeholder { color: #9aa1c4; }
+  .search:focus { border-color: #6e83c7; background: rgba(255,255,255,0.09); }
+
+  .filter { position: relative; }
+  .filter-btn { display: inline-flex; align-items: center; gap: 9px; height: 46px; padding: 0 15px; font: inherit;
+                font-size: 0.92rem; font-weight: 600; color: #c7cbe0; background: rgba(255,255,255,0.06);
+                border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; cursor: pointer; white-space: nowrap;
+                transition: border-color .15s ease, background .15s ease, color .15s ease; }
+  .filter-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .filter-btn[aria-expanded="true"], .filter-btn.has-active { border-color: #6e83c7; color: #fff; }
+  .filter-btn .caret { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2;
+                       opacity: 0.7; transition: transform .15s ease; }
+  .filter-btn[aria-expanded="true"] .caret { transform: rotate(180deg); }
+  .filter-count { display: inline-flex; align-items: center; justify-content: center; min-width: 19px; height: 19px;
+                  padding: 0 5px; font-size: 0.72rem; font-weight: 700; color: #fff; background: var(--ot-blue, #2d3f89);
+                  border-radius: 999px; }
+  .filter-count[hidden] { display: none; }
+
+  .filter-menu { position: absolute; top: calc(100% + 6px); left: 0; min-width: 230px; padding: 7px;
+                 background: #161d40; border: 1px solid rgba(255,255,255,0.16); border-radius: 11px;
+                 box-shadow: 0 16px 40px rgba(0,0,0,0.45); z-index: 30; display: flex; flex-direction: column; gap: 1px; }
+  .filter-menu[hidden] { display: none; }
+  .filter-opt { display: flex; align-items: center; gap: 11px; padding: 9px 11px; border-radius: 7px;
+                font-size: 0.9rem; font-weight: 500; color: #dfe2ee; cursor: pointer; user-select: none; }
+  .filter-opt:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .filter-opt input { width: 16px; height: 16px; margin: 0; accent-color: var(--ot-blue, #2d3f89); cursor: pointer; }
+
+  .clear-btn { height: 46px; padding: 0 6px; font: inherit; font-size: 0.9rem; font-weight: 600; color: #9aa1c4;
+               background: none; border: none; cursor: pointer; transition: color .15s ease; }
+  .clear-btn:hover { color: #e57e7f; }
+  .clear-btn[hidden] { display: none; }
+
+  .resultbar { font-family: var(--font-mono, monospace); font-size: 0.82rem; color: #9aa1c4; margin: 16px 0 0; }
+
+  .filter-btn:focus-visible, .search:focus-visible, .filter-opt:focus-within, .clear-btn:focus-visible {
+    outline: 2px solid #6e83c7; outline-offset: 2px; }
+
+  /* ── Deck grid ── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+  .card { display: flex; flex-direction: column; text-decoration: none; background: rgba(255,255,255,0.045);
+          border: 1px solid rgba(120,140,205,0.22); border-radius: 14px; padding: 28px 30px 24px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+          transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease; }
+  .card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.075);
+                border-color: rgba(140,160,225,0.50); box-shadow: 0 16px 40px rgba(0,0,0,0.30); }
   .card .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
   .card .tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-               color: #aeb8e0; background: rgba(255,255,255,0.07); border-radius: 999px; padding: 5px 12px; }
-  .card .tag.purpose { color: #fff; background: var(--ot-blue, #2d3f89); }
+               color: #aeb8e0; background: rgba(255,255,255,0.07); border-radius: 6px; padding: 5px 10px; }
+  .card .tag.type { color: #fff; background: var(--ot-blue, #2d3f89); }
   .card h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.015em; color: #fff; margin: 0 0 8px; line-height: 1.15; }
   .card .date { font-family: var(--font-mono, monospace); font-size: 0.85rem; color: #9aa1c4; margin: 0 0 18px; }
   .card .desc { font-size: 1rem; font-weight: 300; color: #c7cbe0; margin: 0 0 22px; line-height: 1.5; flex: 1 1 auto; }
   .card .open { font-size: 0.95rem; font-weight: 700; color: #e57e7f; }
   .card .open::after { content: " →"; }
-  .empty { color: #9aa1c4; font-size: 1.1rem; }
+  .empty { color: #9aa1c4; font-size: 1.05rem; }
+  .linkbtn { font: inherit; color: #e57e7f; background: none; border: none; cursor: pointer; padding: 0;
+             text-decoration: underline; text-underline-offset: 2px; }
+  .linkbtn:hover { color: #fff; }
   footer { margin-top: 64px; font-size: 0.85rem; color: #9aa1c4; font-family: var(--font-mono, monospace); }
   footer a { color: #aeb8e0; }
 </style>
@@ -49,53 +105,229 @@
     <img class="wordmark" src="_brand/assets/orono-technology-logo-white.png" alt="Orono Technology">
     <p class="eyebrow">Orono Technology</p>
     <h1>Presentations</h1>
-    <p class="tagline">HTML decks built on the <code style="background:rgba(255,255,255,.08);padding:.1em .4em;border-radius:5px;color:#aeb8e0">&lt;deck-stage&gt;</code> engine — served straight from this repo, no build step.</p>
+    <p class="tagline">Slide decks from Orono Technology. Click any one to open it right in your browser.</p>
   </header>
+
+  <div class="controls" id="controls">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="search" class="search" type="search" placeholder="Search presentations…" aria-label="Search presentations" autocomplete="off">
+      </div>
+      <div class="filter" data-facet="audience">
+        <button type="button" class="filter-btn" id="btn-audience" aria-haspopup="true" aria-expanded="false" aria-controls="menu-audience">
+          Audience <span class="filter-count" hidden></span>
+          <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="filter-menu" id="menu-audience" role="group" aria-label="Filter by audience" hidden></div>
+      </div>
+      <div class="filter" data-facet="type">
+        <button type="button" class="filter-btn" id="btn-type" aria-haspopup="true" aria-expanded="false" aria-controls="menu-type">
+          Type <span class="filter-count" hidden></span>
+          <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="filter-menu" id="menu-type" role="group" aria-label="Filter by type" hidden></div>
+      </div>
+      <button type="button" class="clear-btn" id="clearbtn" hidden>Clear all</button>
+    </div>
+    <p class="resultbar" id="resultbar" aria-live="polite"></p>
+  </div>
 
   <div class="grid" id="grid"></div>
 
   <footer>
-    Built with the <strong>html-slide-deck</strong> skill · brand by <a href="#">ops-brand-guidelines</a> ·
-    each deck is a folder; the shared engine + brand live in <code style="color:#9aa1c4">_framework/</code> and <code style="color:#9aa1c4">_brand/</code>.
+    Orono Technology · Orono Public Schools
   </footer>
 </div>
 
 <script>
   /* ─── Deck registry ───────────────────────────────────────────────────────
-     One entry per presentation. The build step (the html-slide-deck skill)
-     appends a new entry when it scaffolds a deck. De-duped by slug at render,
-     so re-adding an existing deck is harmless.
-     Fields: slug (folder = URL), title, purpose (structure), audience, date,
-             desc, and optional thumb (path to a preview image). */
+     One entry per presentation. The html-slide-deck skill appends a new entry
+     when it scaffolds a deck. De-duped by slug at render, so re-adding an
+     existing deck is harmless.
+
+     Fields:
+       slug      folder name = URL (keep stable)
+       title     deck title
+       type      presentation type(s) — string OR array. Drives the Type filter
+                 + blue card chips. e.g. "Showcase", "Workshop", "Onboarding",
+                 "Documentation", "Walkthrough", "Briefing", "Launch"…
+       audience  who it's for — string OR array. Drives the Audience filter
+                 + card chips. e.g. "Internal", "External", "Students", "Staff",
+                 "School Board", "Parents & Community"…
+       date      free-text date / venue line
+       desc      one-line summary
+     Tags are author-defined — any value becomes a filterable option; the lists
+     in AUDIENCE_ORDER / TYPE_ORDER below only set the menu display order. */
   const DECKS = [
     {
       slug: "apps-script-playground-mn-2026",
       title: "The Apps Script Playground",
-      purpose: "Showcase",
-      audience: "External · Conference peers",
+      type: ["Showcase"],
+      audience: ["External", "Conference Peers"],
       date: "MN Thought Leaders Summit · 2026",
       desc: "Anybody can build highly functional web apps now — with a Google Sheet behind them and AI beside you."
     }
     // ── ADD NEW DECKS ABOVE THIS LINE ──
   ];
 
+  /* Menu display order. Known tags sort by this list (your preferred order);
+     anything else sorts alphabetically after. Purely cosmetic — not a whitelist. */
+  const AUDIENCE_ORDER = ["Internal", "External", "Students", "Staff", "School Board",
+    "District Leadership", "Parents & Community", "Partners & Vendors", "Other Districts",
+    "General Public", "Conference Peers"];
+  const TYPE_ORDER = ["Showcase", "Workshop", "Onboarding", "Documentation", "Walkthrough",
+    "Briefing", "Info Session", "Instructional Guide", "Feature Overview", "Launch", "Kickoff & Roadmap"];
+
   (function () {
     const grid = document.getElementById('grid');
+    const controls = document.getElementById('controls');
+    const search = document.getElementById('search');
+    const resultbar = document.getElementById('resultbar');
+    const clearbtn = document.getElementById('clearbtn');
+    const menus = { audience: document.getElementById('menu-audience'), type: document.getElementById('menu-type') };
+    const buttons = { audience: document.getElementById('btn-audience'), type: document.getElementById('btn-type') };
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    // Normalize a field to an array of trimmed tags. Accepts a string or array;
+    // `type` falls back to the legacy `purpose` field for old entries.
+    const asTags = v => (Array.isArray(v) ? v : (v == null || v === '' ? [] : [v])).map(s => String(s).trim()).filter(Boolean);
+    const typesOf = d => asTags(d.type != null ? d.type : d.purpose);
+    const audsOf = d => asTags(d.audience);
+
     const seen = new Set();
     const decks = DECKS.filter(d => d && d.slug && !seen.has(d.slug) && seen.add(d.slug));
-    if (!decks.length) { grid.innerHTML = '<p class="empty">No decks yet. Scaffold one with the html-slide-deck skill.</p>'; return; }
-    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    grid.innerHTML = decks.map(d => `
-      <a class="card" href="${encodeURIComponent(d.slug)}/">
-        <div class="tags">
-          ${d.purpose ? `<span class="tag purpose">${esc(d.purpose)}</span>` : ''}
-          ${d.audience ? `<span class="tag">${esc(d.audience)}</span>` : ''}
-        </div>
-        <h2>${esc(d.title || d.slug)}</h2>
-        ${d.date ? `<p class="date">${esc(d.date)}</p>` : ''}
-        ${d.desc ? `<p class="desc">${esc(d.desc)}</p>` : '<p class="desc"></p>'}
-        <span class="open">Open deck</span>
-      </a>`).join('');
+
+    if (!decks.length) {
+      controls.hidden = true;
+      grid.innerHTML = '<p class="empty">No presentations here yet.</p>';
+      return;
+    }
+
+    // Active filter state: a Set of selected tags per facet, + the search query.
+    const active = { audience: new Set(), type: new Set() };
+    let query = '';
+
+    // Unique tags present in the data, ordered by the canonical list then alpha.
+    const orderedTags = (values, order) => [...new Set(values)].sort((a, b) => {
+      const ia = order.indexOf(a), ib = order.indexOf(b);
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    function buildMenu(facetKey, tags) {
+      if (!tags.length) { buttons[facetKey].closest('.filter').hidden = true; return; }
+      menus[facetKey].innerHTML = tags.map(t =>
+        `<label class="filter-opt"><input type="checkbox" value="${esc(t)}">${esc(t)}</label>`).join('');
+      menus[facetKey].addEventListener('change', e => {
+        const cb = e.target;
+        if (cb.checked) active[facetKey].add(cb.value); else active[facetKey].delete(cb.value);
+        syncButton(facetKey);
+        render();
+      });
+    }
+
+    function syncButton(facetKey) {
+      const n = active[facetKey].size;
+      const badge = buttons[facetKey].querySelector('.filter-count');
+      badge.textContent = n;
+      badge.hidden = n === 0;
+      buttons[facetKey].classList.toggle('has-active', n > 0);
+    }
+
+    function openMenu(facetKey) {
+      Object.keys(menus).forEach(k => { if (k !== facetKey) closeMenu(k); });
+      menus[facetKey].hidden = false;
+      buttons[facetKey].setAttribute('aria-expanded', 'true');
+    }
+    function closeMenu(facetKey) {
+      menus[facetKey].hidden = true;
+      buttons[facetKey].setAttribute('aria-expanded', 'false');
+    }
+    function closeAllMenus() { Object.keys(menus).forEach(closeMenu); }
+
+    Object.keys(buttons).forEach(facetKey => {
+      buttons[facetKey].addEventListener('click', e => {
+        e.stopPropagation();
+        if (menus[facetKey].hidden) openMenu(facetKey); else closeMenu(facetKey);
+      });
+    });
+    // Click-away + Esc close the menus.
+    document.addEventListener('click', e => { if (!e.target.closest('.filter')) closeAllMenus(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllMenus(); });
+
+    buildMenu('audience', orderedTags(decks.flatMap(audsOf), AUDIENCE_ORDER));
+    buildMenu('type', orderedTags(decks.flatMap(typesOf), TYPE_ORDER));
+
+    // A deck matches if it satisfies every active facet (within a facet: ANY of
+    // the picked tags; across facets: all facets) AND the search query.
+    function matches(d) {
+      const da = audsOf(d), dt = typesOf(d);
+      if (active.audience.size && !da.some(a => active.audience.has(a))) return false;
+      if (active.type.size && !dt.some(t => active.type.has(t))) return false;
+      if (query) {
+        const hay = [d.title, d.desc, d.date, ...da, ...dt].join(' ').toLowerCase();
+        if (!hay.includes(query)) return false;
+      }
+      return true;
+    }
+
+    function cardHTML(d) {
+      const dt = typesOf(d), da = audsOf(d);
+      const tags = dt.map(t => `<span class="tag type">${esc(t)}</span>`)
+        .concat(da.map(a => `<span class="tag">${esc(a)}</span>`)).join('');
+      return `
+        <a class="card" href="${encodeURIComponent(d.slug)}/">
+          <div class="tags">${tags}</div>
+          <h2>${esc(d.title || d.slug)}</h2>
+          ${d.date ? `<p class="date">${esc(d.date)}</p>` : ''}
+          <p class="desc">${esc(d.desc || '')}</p>
+          <span class="open">Open deck</span>
+        </a>`;
+    }
+
+    function render() {
+      const shown = decks.filter(matches);
+      const filtering = active.audience.size || active.type.size || query;
+      grid.innerHTML = shown.length
+        ? shown.map(cardHTML).join('')
+        : '<p class="empty">No presentations match. <button type="button" class="linkbtn" data-action="clear">Clear all</button></p>';
+      const noun = n => n === 1 ? 'presentation' : 'presentations';
+      resultbar.textContent = filtering
+        ? `Showing ${shown.length} of ${decks.length} ${noun(decks.length)}`
+        : `${decks.length} ${noun(decks.length)}`;
+      clearbtn.hidden = !filtering;
+    }
+
+    function clearAll() {
+      active.audience.clear();
+      active.type.clear();
+      query = '';
+      search.value = '';
+      document.querySelectorAll('.filter-opt input:checked').forEach(cb => { cb.checked = false; });
+      Object.keys(buttons).forEach(syncButton);
+      render();
+    }
+
+    clearbtn.addEventListener('click', clearAll);
+    // Delegated handler for the "Clear all" link in the empty state.
+    grid.addEventListener('click', e => { if (e.target.closest('[data-action="clear"]')) clearAll(); });
+
+    search.addEventListener('input', () => { query = search.value.trim().toLowerCase(); render(); });
+    search.addEventListener('keydown', e => { if (e.key === 'Escape') { search.value = ''; query = ''; render(); } });
+    // "/" jumps to search, the way GitHub/Slack do — unless you're already typing.
+    document.addEventListener('keydown', e => {
+      if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+        e.preventDefault();
+        search.focus();
+      }
+    });
+
+    render();
   })();
 </script>
 </body>
